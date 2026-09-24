@@ -22,7 +22,7 @@ class Media
             return $path;
         }
 
-        return '/media/'.ltrim($path, '/');
+        return url('/media/'.ltrim($path, '/'));
     }
 
     /**
@@ -30,7 +30,7 @@ class Media
      */
     public static function avatar(string $seed): string
     {
-        return '/media/avatar/'.rawurlencode(mb_substr(trim($seed) ?: 'Jora', 0, 40)).'.svg';
+        return url('/media/avatar/'.rawurlencode(mb_substr(trim($seed) ?: 'Jora', 0, 40)).'.svg');
     }
 
     public static function exists(?string $path): bool

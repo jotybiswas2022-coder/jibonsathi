@@ -1,0 +1,9 @@
+User-agent: *
+Disallow: /admin
+Disallow: /settings
+Disallow: /messages
+Disallow: /interests
+Disallow: /favorites
+Allow: /
+
+Sitemap: /sitemap.xml

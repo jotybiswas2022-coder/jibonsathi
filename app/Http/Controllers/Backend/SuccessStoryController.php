@@ -1,0 +1,136 @@
+<?php
+
+namespace App\Http\Controllers\Backend;
+
+use App\Http\Controllers\Controller;
+use App\Http\Requests\Backend\SuccessStoryRequest;
+use App\Models\SuccessStory;
+use App\Models\User;
+use Illuminate\Contracts\View\View;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Storage;
+
+class SuccessStoryController extends Controller
+{
+    public function index(Request $request): View
+    {
+        Gate::authorize('manage', User::class);
+
+        $filters = $request->validate([
+            'status' => ['nullable', 'in:published,draft,all'],
+            'q' => ['nullable', 'string', 'max:80'],
+        ]);
+
+        $status = $filters['status'] ?? 'all';
+
+        $stories = SuccessStory::query()
+            ->when($status === 'published', fn ($q) => $q->where('is_published', true))
+            ->when($status === 'draft', fn ($q) => $q->where('is_published', false))
+            ->when(filled($filters['q'] ?? null), fn ($q) => $q->where(function ($inner) use ($filters) {
+                $inner->where('title', 'like', '%'.$filters['q'].'%')
+                    ->orWhere('groom_name', 'like', '%'.$filters['q'].'%')
+                    ->orWhere('bride_name', 'like', '%'.$filters['q'].'%');
+            }))
+            ->orderBy('sort_order')
+            ->latest()
+            ->paginate(10)
+            ->withQueryString();
+
+        return view('backend.success-stories.index', [
+            'stories' => $stories,
+            'status' => $status,
+            'filters' => $filters,
+            'counts' => [
+                'total' => SuccessStory::query()->count(),
+                'published' => SuccessStory::query()->where('is_published', true)->count(),
+                'draft' => SuccessStory::query()->where('is_published', false)->count(),
+            ],
+        ]);
+    }
+
+    public function create(): View
+    {
+        Gate::authorize('manage', User::class);
+
+        return view('backend.success-stories.create', ['story' => new SuccessStory]);
+    }
+
+    public function store(SuccessStoryRequest $request): RedirectResponse
+    {
+        $story = SuccessStory::create($this->payload($request));
+
+        return redirect()
+            ->route('backend.success-stories.index')
+            ->with('success', "\"{$story->title}\" was created.");
+    }
+
+    public function edit(SuccessStory $successStory): View
+    {
+        Gate::authorize('manage', User::class);
+
+        return view('backend.success-stories.edit', ['story' => $successStory]);
+    }
+
+    public function update(SuccessStoryRequest $request, SuccessStory $successStory): RedirectResponse
+    {
+        $successStory->update($this->payload($request, $successStory));
+
+        return redirect()
+            ->route('backend.success-stories.index')
+            ->with('success', 'Success story updated.');
+    }
+
+    public function togglePublish(SuccessStory $successStory): RedirectResponse
+    {
+        Gate::authorize('manage', User::class);
+
+        $successStory->update(['is_published' => ! $successStory->is_published]);
+
+        return back()->with('success', $successStory->is_published
+            ? 'Story published to the website.'
+            : 'Story unpublished and hidden from the website.');
+    }
+
+    public function destroy(SuccessStory $successStory): RedirectResponse
+    {
+        Gate::authorize('manage', User::class);
+
+        if ($successStory->photo_path) {
+            Storage::disk('public')->delete($successStory->photo_path);
+        }
+
+        $successStory->delete();
+
+        return back()->with('success', 'Success story deleted.');
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function payload(SuccessStoryRequest $request, ?SuccessStory $story = null): array
+    {
+        $data = [
+            'title' => $request->validated('title'),
+            'groom_name' => $request->validated('groom_name'),
+            'bride_name' => $request->validated('bride_name'),
+            'location' => $request->validated('location'),
+            'story' => $request->validated('story'),
+            'married_on' => $request->validated('married_on'),
+            'is_published' => $request->boolean('is_published'),
+            'is_featured' => $request->boolean('is_featured'),
+            'sort_order' => (int) $request->input('sort_order', 0),
+        ];
+
+        if ($request->hasFile('photo')) {
+            if ($story?->photo_path) {
+                Storage::disk('public')->delete($story->photo_path);
+            }
+
+            $data['photo_path'] = $request->file('photo')->store('stories', 'public');
+        }
+
+        return $data;
+    }
+}

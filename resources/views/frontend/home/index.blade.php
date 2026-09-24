@@ -1,6 +1,6 @@
 @extends('frontend.layouts.app')
 
-@section('title', 'Jora — Find Someone Who Complements Your Life')
+@section('title', 'Jibon Sathi — Find Someone Who Complements Your Life')
 
 @section('content')
     {{-- ============================= HERO ============================= --}}
@@ -55,7 +55,7 @@
                     @php($first = $heroUsers->first())
                     <div class="hero-float-chip hero-chip-1">
                         <span class="avatar avatar-sm"><img src="{{ $first?->photoUrl() }}" alt=""></span>
-                        <span>{{ $first?->name ?? 'Nusrat' }} &amp; joined Jora</span>
+                        <span>{{ $first?->name ?? 'Nusrat' }} &amp; joined Jibon Sathi</span>
                     </div>
                     <div class="hero-float-chip hero-chip-2">
                         <span class="badge badge-success"><i class="fas fa-badge-check"></i> Verified</span>
@@ -174,7 +174,7 @@
             <div class="section-head">
                 <span class="section-eyebrow"><i class="fas fa-compass"></i> How It Works</span>
                 <h2>Four Simple Steps To Forever</h2>
-                <p>Getting started with Jora takes only a few minutes — the rest is up to chemistry.</p>
+                <p>Getting started with Jibon Sathi takes only a few minutes — the rest is up to chemistry.</p>
             </div>
             <div class="steps">
                 <div class="card step-card">
@@ -205,9 +205,9 @@
     <section class="section">
         <div class="container">
             <div class="section-head">
-                <span class="section-eyebrow"><i class="fas fa-heart"></i> Why Choose Jora</span>
+                <span class="section-eyebrow"><i class="fas fa-heart"></i> Why Choose Jibon Sathi</span>
                 <h2>Built On Trust, Not Paywalls</h2>
-                <p>Every feature on Jora is completely free — forever. No hidden charges, no premium tiers.</p>
+                <p>Every feature on Jibon Sathi is completely free — forever. No hidden charges, no premium tiers.</p>
             </div>
             <div class="feature-grid">
                 <div class="card feature-tile card-hover">
@@ -274,7 +274,7 @@
                 <div class="section-head">
                     <span class="section-eyebrow"><i class="fas fa-briefcase"></i> Success Stories</span>
                     <h2>Two Lives, One Beautiful Story</h2>
-                    <p>Real couples who found each other on Jora and started their forever.</p>
+                    <p>Real couples who found each other on Jibon Sathi and started their forever.</p>
                 </div>
                 <div class="grid grid-3">
                     @foreach ($stories as $story)

@@ -1,5 +1,5 @@
 @php($settings = \App\Models\SiteSetting::all_cached())
-@php($siteName = $settings['site_name'] ?? 'Jora')
+@php($siteName = $settings['site_name'] ?? 'Jibon Sathi')
 <footer class="footer">
     <div class="container">
         <div class="footer-top">
@@ -8,7 +8,7 @@
                     <span class="brand-mark gold"><i class="fas fa-heart"></i></span>
                     {{ $siteName }}
                 </a>
-                <p>{{ $settings['footer_about'] ?? 'Jora is a free matrimony platform built on trust, privacy and genuine profiles — helping two lives come together meaningfully.' }}</p>
+                <p>{{ $settings['footer_about'] ?? 'Jibon Sathi is a free matrimony platform built on trust, privacy and genuine profiles — helping two lives come together meaningfully.' }}</p>
                 <div class="social-row">
                     @if (!empty($settings['facebook_url']))<a href="{{ $settings['facebook_url'] }}" target="_blank" rel="noopener" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>@endif
                     @if (!empty($settings['instagram_url']))<a href="{{ $settings['instagram_url'] }}" target="_blank" rel="noopener" aria-label="Instagram"><i class="fab fa-instagram"></i></a>@endif

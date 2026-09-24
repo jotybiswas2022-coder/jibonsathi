@@ -46,7 +46,7 @@
                     <tr>
                         <td>
                             <div class="cell-user">
-                                <span class="avatar avatar-sm"><img src="{{ $v->user?->primaryPhoto?->url() ?? \App\Support\Media::avatar($v->user?->name ?? 'Jora') }}" alt="" onerror="this.style.display='none'"><span class="initials">{{ $v->user?->initials ?? 'J' }}</span></span>
+                                <span class="avatar avatar-sm"><img src="{{ $v->user?->primaryPhoto?->url() ?? \App\Support\Media::avatar($v->user?->name ?? 'Jibon Sathi') }}" alt="" onerror="this.style.display='none'"><span class="initials">{{ $v->user?->initials ?? 'J' }}</span></span>
                                 <div>
                                     <div class="cu-name"><a href="{{ route('backend.verification.show', $v) }}">{{ $v->user?->name ?? '—' }}</a></div>
                                     <div class="cu-sub">{{ $v->user?->email }}</div>

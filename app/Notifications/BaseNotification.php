@@ -73,9 +73,9 @@ abstract class BaseNotification extends Notification
             ->line($content['message']);
 
         if (! empty($content['url'])) {
-            $mail->action('View on Jora', url($content['url']));
+            $mail->action('View on Jibon Sathi', url($content['url']));
         }
 
-        return $mail->line('With love, the Jora team.');
+        return $mail->line('With love, the Jibon Sathi team.');
     }
 }

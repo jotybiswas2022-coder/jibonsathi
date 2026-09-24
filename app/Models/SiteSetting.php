@@ -20,20 +20,20 @@ class SiteSetting extends Model
      * @var array<string, string>
      */
     public const DEFAULTS = [
-        'site_name' => 'Jora',
+        'site_name' => 'Jibon Sathi',
         'tagline' => 'Bringing Two Lives Together.',
-        'contact_email' => 'hello@jora.example',
+        'contact_email' => 'hello@jibonsathi.example',
         'contact_phone' => '+880 1700 000000',
         'address' => 'Gulshan Avenue, Dhaka, Bangladesh',
         'facebook_url' => 'https://facebook.com',
         'instagram_url' => 'https://instagram.com',
         'twitter_url' => 'https://twitter.com',
         'linkedin_url' => 'https://linkedin.com',
-        'seo_title' => 'Jora — Free Matrimony for Meaningful Marriages',
-        'seo_description' => 'Jora is a completely free matrimony platform connecting serious, verified profiles who are ready to build a life together.',
+        'seo_title' => 'Jibon Sathi — Free Matrimony for Meaningful Marriages',
+        'seo_description' => 'Jibon Sathi is a completely free matrimony platform connecting serious, verified profiles who are ready to build a life together.',
         'hero_headline' => 'Find Someone Who Complements Your Life',
         'hero_subheading' => 'Meaningful connections, genuine profiles, and a better way to find your life partner.',
-        'footer_about' => 'Jora is a free, privacy-first matrimony platform built for people who are serious about finding a life partner.',
+        'footer_about' => 'Jibon Sathi is a free, privacy-first matrimony platform built for people who are serious about finding a life partner.',
         'privacy_policy' => '',
         'terms_conditions' => '',
     ];

@@ -12,7 +12,7 @@ class WelcomeNotification extends BaseNotification
     public function content(): array
     {
         return [
-            'title' => 'Welcome to Jora',
+            'title' => 'Welcome to Jibon Sathi',
             'message' => 'Your free account is ready. Complete your profile to start discovering meaningful matches.',
             'url' => route('dashboard', absolute: false),
             'tone' => 'primary',

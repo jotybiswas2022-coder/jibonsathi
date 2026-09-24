@@ -24,7 +24,7 @@ class MediaController extends Controller
     public function avatar(string $seed): Response
     {
         $seed = rawurldecode($seed);
-        $seed = preg_replace('/\.svg$/', '', $seed) ?: 'Jora';
+        $seed = preg_replace('/\.svg$/', '', $seed) ?: 'Jibon Sathi';
         $seed = mb_substr(trim($seed), 0, 40);
 
         $hash = md5($seed);

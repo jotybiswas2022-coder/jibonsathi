@@ -8,7 +8,7 @@
         <div class="flex items-center justify-between mb-4">
             <a href="{{ route('home') }}" class="brand">
                 <span class="brand-mark"><i class="fas fa-heart"></i></span>
-                Jora
+                Jibon Sathi
             </a>
             <form method="POST" action="{{ route('register.skip') }}">@csrf<button class="btn btn-ghost btn-sm text-muted">Skip for now</button></form>
         </div>

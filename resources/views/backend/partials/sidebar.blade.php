@@ -9,7 +9,7 @@
 <aside class="admin-sidebar">
     <div class="admin-brand">
         <span class="mark"><i class="fas fa-heart"></i></span>
-        <span>Jora Admin</span>
+        <span>Jibon Sathi Admin</span>
     </div>
 
     <nav class="side-nav">

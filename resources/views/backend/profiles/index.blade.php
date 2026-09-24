@@ -49,7 +49,7 @@
                     <tr>
                         <td>
                             <div class="cell-user">
-                                <span class="avatar avatar-sm"><img src="{{ $p->user?->primaryPhoto?->url() ?? \App\Support\Media::avatar($p->user?->name ?? 'Jora') }}" alt="" onerror="this.style.display='none'"><span class="initials">{{ $p->user?->initials ?? 'J' }}</span></span>
+                                <span class="avatar avatar-sm"><img src="{{ $p->user?->primaryPhoto?->url() ?? \App\Support\Media::avatar($p->user?->name ?? 'Jibon Sathi') }}" alt="" onerror="this.style.display='none'"><span class="initials">{{ $p->user?->initials ?? 'J' }}</span></span>
                                 <div>
                                     <div class="cu-name"><a href="{{ route('backend.profiles.show', $p) }}">{{ $p->user?->name ?? '—' }}</a></div>
                                     <div class="cu-sub">{{ $p->user?->email }} · {{ $p->user?->phone }}</div>

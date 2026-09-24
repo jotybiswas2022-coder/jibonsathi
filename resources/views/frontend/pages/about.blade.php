@@ -1,22 +1,22 @@
 @extends('frontend.layouts.app')
 
-@section('title', 'About Jora')
+@section('title', 'About Jibon Sathi')
 
 @section('content')
 <div class="container table-page" style="max-width:880px;padding-block:48px">
     <div class="page-head hero-head" style="text-align:center;flex-direction:column;align-items:center">
-        <h1 class="page-title" style="margin:0">About Jora</h1>
+        <h1 class="page-title" style="margin:0">About Jibon Sathi</h1>
         <p class="page-sub">Bringing two lives together.</p>
     </div>
 
     <div class="card card-pad" style="padding:clamp(24px,4vw,40px)">
         <p style="line-height:1.9;color:var(--muted)">
-            <strong style="color:var(--text)">Jora</strong> (জোড়া — meaning "a pair") is a modern, free matrimony platform.
+            <strong style="color:var(--text)">Jibon Sathi</strong> (জীবনসাথী — meaning "life partner") is a modern, free matrimony platform.
             We believe finding a life partner should be meaningful, respectful and — most importantly — free for everyone
             who is serious about taking this step.
         </p>
         <p style="line-height:1.9;color:var(--muted)">
-            Every profile on Jora is manually reviewed by our moderation team before it appears in search results.
+            Every profile on Jibon Sathi is manually reviewed by our moderation team before it appears in search results.
             Your privacy is protected with careful defaults, and your identity documents are stored on private servers and
             only used to verify you're really you.
         </p>
@@ -41,7 +41,7 @@
     </div>
 
     <div style="text-align:center;margin-top:34px">
-        <a href="{{ route('register') }}" class="btn btn-primary btn-lg">Join Jora Free</a>
+        <a href="{{ route('register') }}" class="btn btn-primary btn-lg">Join Jibon Sathi Free</a>
     </div>
 </div>
 @endsection

@@ -41,7 +41,7 @@ class ProfileStepRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'date_of_birth.before' => 'You must be at least 18 years old to use Jora.',
+            'date_of_birth.before' => 'You must be at least 18 years old to use Jibon Sathi.',
             'age_max.gte' => 'The maximum age must be greater than the minimum age.',
             'height_max_cm.gte' => 'The maximum height must be greater than the minimum height.',
         ];

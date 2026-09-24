@@ -40,8 +40,8 @@
                         <td>
                             <div class="cell-user">
                                 <div style="display:flex">
-                                    <span class="avatar avatar-sm" style="margin-right:-8px;border:2px solid #fff"><img src="{{ $c->userOne?->primaryPhoto?->url() ?? \App\Support\Media::avatar($c->userOne?->name ?? 'Jora') }}" alt="" onerror="this.style.display='none'"><span class="initials">{{ $c->userOne?->initials ?? 'J' }}</span></span>
-                                    <span class="avatar avatar-sm" style="border:2px solid #fff"><img src="{{ $c->userTwo?->primaryPhoto?->url() ?? \App\Support\Media::avatar($c->userTwo?->name ?? 'Jora') }}" alt="" onerror="this.style.display='none'"><span class="initials">{{ $c->userTwo?->initials ?? 'J' }}</span></span>
+                                    <span class="avatar avatar-sm" style="margin-right:-8px;border:2px solid #fff"><img src="{{ $c->userOne?->primaryPhoto?->url() ?? \App\Support\Media::avatar($c->userOne?->name ?? 'Jibon Sathi') }}" alt="" onerror="this.style.display='none'"><span class="initials">{{ $c->userOne?->initials ?? 'J' }}</span></span>
+                                    <span class="avatar avatar-sm" style="border:2px solid #fff"><img src="{{ $c->userTwo?->primaryPhoto?->url() ?? \App\Support\Media::avatar($c->userTwo?->name ?? 'Jibon Sathi') }}" alt="" onerror="this.style.display='none'"><span class="initials">{{ $c->userTwo?->initials ?? 'J' }}</span></span>
                                 </div>
                                 <div>
                                     <div class="cu-name">{{ $c->userOne?->name ?? 'Deleted' }} &amp; {{ $c->userTwo?->name ?? 'Deleted' }}</div>

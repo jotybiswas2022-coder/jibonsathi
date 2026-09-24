@@ -1,5 +1,5 @@
 /* ==========================================================================
-   Jora Admin — backend interactions
+   Jibon Sathi Admin — backend interactions
    ========================================================================== */
 (function () {
   'use strict';

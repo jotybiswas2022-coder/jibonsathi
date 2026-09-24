@@ -46,7 +46,7 @@
                     <tr>
                         <td>
                             <div class="cell-user">
-                                <span class="avatar avatar-sm"><img src="{{ $r->reportedUser?->primaryPhoto?->url() ?? \App\Support\Media::avatar($r->reportedUser?->name ?? 'Jora') }}" alt="" onerror="this.style.display='none'"><span class="initials">{{ $r->reportedUser?->initials ?? 'J' }}</span></span>
+                                <span class="avatar avatar-sm"><img src="{{ $r->reportedUser?->primaryPhoto?->url() ?? \App\Support\Media::avatar($r->reportedUser?->name ?? 'Jibon Sathi') }}" alt="" onerror="this.style.display='none'"><span class="initials">{{ $r->reportedUser?->initials ?? 'J' }}</span></span>
                                 <div>
                                     <div class="cu-name"><a href="{{ route('backend.reports.show', $r) }}">{{ $r->reportedUser?->name ?? 'Deleted user' }}</a></div>
                                     <div class="cu-sub">{{ $r->reportedUser?->email }}</div>

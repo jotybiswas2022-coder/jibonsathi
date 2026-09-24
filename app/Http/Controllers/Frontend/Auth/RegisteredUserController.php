@@ -104,7 +104,7 @@ class RegisteredUserController extends Controller
 
         return redirect()
             ->route('dashboard')
-            ->with('success', 'Your profile is ready. Welcome to Jora!');
+            ->with('success', 'Your profile is ready. Welcome to Jibon Sathi!');
     }
 
     public function skipToDashboard(Request $request): RedirectResponse

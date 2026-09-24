@@ -1,5 +1,5 @@
 @php($settings = \App\Models\SiteSetting::all_cached())
-@php($siteName = $settings['site_name'] ?? 'Jora')
+@php($siteName = $settings['site_name'] ?? 'Jibon Sathi')
 <header class="navbar">
     <div class="container navbar-inner">
         <a href="{{ route('home') }}" class="brand">

@@ -4,7 +4,7 @@
 
 @section('auth-content')
     <h1>Welcome back</h1>
-    <p class="auth-sub">Sign in to continue your journey on Jora.</p>
+    <p class="auth-sub">Sign in to continue your journey on Jibon Sathi.</p>
 
     <form method="POST" action="{{ route('login.store') }}">
         @csrf
@@ -51,6 +51,6 @@
     </form>
 
     <div class="divider"></div>
-    <p class="text-center text-muted text-small mb-4">New to Jora?</p>
+    <p class="text-center text-muted text-small mb-4">New to Jibon Sathi?</p>
     <a href="{{ route('register') }}" class="btn btn-brand-outline btn-block">Create Your Free Profile</a>
 @endsection

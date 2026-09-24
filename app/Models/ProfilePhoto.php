@@ -32,7 +32,7 @@ class ProfilePhoto extends Model
 
     public function url(): string
     {
-        return Media::url($this->path, $this->user?->name ?? 'Jora');
+        return Media::url($this->path, $this->user?->name ?? 'Jibon Sathi');
     }
 
     public function isApproved(): bool

@@ -5,8 +5,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield('title', 'Dashboard') — Jora Admin</title>
-    <link rel="stylesheet" href="{{ asset('assets/backend/css/app.css') }}?v=2">
+    <title>@yield('title', 'Dashboard') — Jibon Sathi Admin</title>
+    <style>
+    {!! file_get_contents(public_path('assets/backend/css/app.css')) !!}
+</style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -21,7 +23,7 @@
             <header class="admin-topbar">
                 <div>
                     <h1>@yield('title', 'Dashboard')</h1>
-                    <div class="crumb">@yield('crumb', 'Jora Control Panel')</div>
+                    <div class="crumb">@yield('crumb', 'Jibon Sathi Control Panel')</div>
                 </div>
                 <div class="flex items-center gap-3">
                     <a href="{{ route('home') }}" class="btn btn-outline btn-sm" target="_blank" rel="noopener">

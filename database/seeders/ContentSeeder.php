@@ -24,23 +24,23 @@ class ContentSeeder extends Seeder
     private function seedSettings(): void
     {
         $settings = [
-            'site_name' => ['Jora', 'general'],
+            'site_name' => ['Jibon Sathi', 'general'],
             'tagline' => ['Bringing Two Lives Together.', 'general'],
-            'contact_email' => ['hello@jora.example', 'general'],
+            'contact_email' => ['hello@jibonsathi.example', 'general'],
             'contact_phone' => ['+880 1700 000000', 'general'],
             'address' => ['Gulshan Avenue, Dhaka, Bangladesh', 'general'],
             'facebook_url' => ['https://facebook.com', 'social'],
             'instagram_url' => ['https://instagram.com', 'social'],
             'twitter_url' => ['https://twitter.com', 'social'],
             'linkedin_url' => ['https://linkedin.com', 'social'],
-            'seo_title' => ['Jora — Free Matrimony for Meaningful Marriages', 'seo'],
-            'seo_description' => ['Jora is a completely free matrimony platform connecting serious, verified profiles who are ready to build a life together.', 'seo'],
+            'seo_title' => ['Jibon Sathi — Free Matrimony for Meaningful Marriages', 'seo'],
+            'seo_description' => ['Jibon Sathi is a completely free matrimony platform connecting serious, verified profiles who are ready to build a life together.', 'seo'],
             'hero_headline' => ['Find Someone Who Complements Your Life', 'content'],
             'hero_subheading' => ['Meaningful connections, genuine profiles, and a better way to find your life partner.', 'content'],
-            'footer_about' => ['Jora is a free, privacy-first matrimony platform built for people who are serious about finding a life partner.', 'content'],
+            'footer_about' => ['Jibon Sathi is a free, privacy-first matrimony platform built for people who are serious about finding a life partner.', 'content'],
             'privacy_policy' => [<<<'TEXT'
 <h2>Privacy at a glance</h2>
-<p>Your privacy matters to us. This page explains what information Jora collects and how we use it to help you find a life partner.</p>
+<p>Your privacy matters to us. This page explains what information Jibon Sathi collects and how we use it to help you find a life partner.</p>
 <h3>What we collect</h3>
 <p>When you create a profile we collect the details you choose to share — name, contact details, and your personal, family and lifestyle information. We also log basic usage data so the service performs well.</p>
 <h3>How we use it</h3>
@@ -52,7 +52,7 @@ class ContentSeeder extends Seeder
 TEXT, 'legal'],
             'terms_conditions' => [<<<'TEXT'
 <h2>Terms of service</h2>
-<p>By using Jora you agree to these simple terms.</p>
+<p>By using Jibon Sathi you agree to these simple terms.</p>
 <h3>Eligibility</h3>
 <p>You must be of legal marriageable age and genuinely looking for a life partner. All members are expected to be truthful in their profiles.</p>
 <h3>Acceptable use</h3>
@@ -105,7 +105,7 @@ TEXT, 'legal'],
                 'groom_name' => 'Sabbir Rahman',
                 'bride_name' => 'Sadia Islam',
                 'location' => 'Sylhet',
-                'story' => 'Both joining Jora after difficult marriages, Sabbir and Sadia entered with cautious hearts. Honest, unhurried conversation helped them rebuild trust. Today they are building a blended family that fills their home with laughter.',
+                'story' => 'Both joining Jibon Sathi after difficult marriages, Sabbir and Sadia entered with cautious hearts. Honest, unhurried conversation helped them rebuild trust. Today they are building a blended family that fills their home with laughter.',
                 'married_on' => '2025-12-22',
                 'photo_path' => 'seed-photos/story-3.svg',
                 'is_published' => true,

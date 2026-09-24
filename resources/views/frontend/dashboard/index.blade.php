@@ -6,7 +6,7 @@
     <div class="page-head">
         <div>
             <h1 class="page-title">Welcome, {{ Str::before(auth()->user()->name, ' ') }}</h1>
-            <p class="page-sub">Here's what's happening on Jora today.</p>
+            <p class="page-sub">Here's what's happening on Jibon Sathi today.</p>
         </div>
         <a href="{{ route('discover.index') }}" class="btn btn-primary">
             <i class="fas fa-search"></i> Find Matches

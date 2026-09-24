@@ -18,8 +18,8 @@ class AccountStatusNotification extends BaseNotification
         $suspended = $this->status === 'suspended';
 
         $message = $suspended
-            ? 'Your Jora account has been suspended by our moderation team.'
-            : 'Your Jora account has been reactivated. Welcome back!';
+            ? 'Your Jibon Sathi account has been suspended by our moderation team.'
+            : 'Your Jibon Sathi account has been reactivated. Welcome back!';
 
         if ($this->note) {
             $message .= ' Note: '.$this->note;

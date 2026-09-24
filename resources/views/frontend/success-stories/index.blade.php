@@ -6,7 +6,7 @@
 <div class="container table-page" style="max-width:1060px;padding-block:48px">
     <div class="page-head hero-head" style="text-align:center;flex-direction:column;align-items:center">
         <h1 class="page-title" style="margin:0">Real Couples. Real Love.</h1>
-        <p class="page-sub">Stories of Jora members who found their life partner through our community.</p>
+        <p class="page-sub">Stories of Jibon Sathi members who found their life partner through our community.</p>
     </div>
 
     @if ($stories->isEmpty())

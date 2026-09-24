@@ -27,7 +27,7 @@
     <div class="card card-pad" style="max-width:640px;margin-top:20px;border-left:4px solid var(--danger,#e11d48)">
         <h3 class="card-title"><i class="fas fa-trash"></i> Delete Account</h3>
         <p class="text-muted text-small mb-4">
-            Permanently remove your account, photos, messages and other personal data from Jora. This cannot be undone.
+            Permanently remove your account, photos, messages and other personal data from Jibon Sathi. This cannot be undone.
         </p>
         <form method="POST" action="{{ route('settings.account.destroy') }}"
               data-confirm="This will permanently delete your account and all data. Are you absolutely sure?">

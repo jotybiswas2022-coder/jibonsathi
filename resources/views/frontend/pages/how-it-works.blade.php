@@ -5,7 +5,7 @@
 @section('content')
 <div class="container table-page" style="max-width:880px;padding-block:48px">
     <div class="page-head hero-head" style="text-align:center;flex-direction:column;align-items:center">
-        <h1 class="page-title" style="margin:0">How Jora Works</h1>
+        <h1 class="page-title" style="margin:0">How Jibon Sathi Works</h1>
         <p class="page-sub">Four warm steps to the beginning of a beautiful journey.</p>
     </div>
 
@@ -28,7 +28,7 @@
     <div class="banner banner-gold mt-5" style="margin-top:34px">
         <div style="flex:1">
             <div style="font-weight:700;margin-bottom:4px">Ready to meet someone special?</div>
-            <div class="text-muted text-small">Join thousands of families who found their match on Jora.</div>
+            <div class="text-muted text-small">Join thousands of families who found their match on Jibon Sathi.</div>
         </div>
         <a href="{{ route('register') }}" class="btn btn-primary">Create Free Profile</a>
     </div>

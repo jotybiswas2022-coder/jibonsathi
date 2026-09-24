@@ -64,11 +64,11 @@
         <div style="display:flex;flex-direction:column;gap:20px">
             <div class="card card-pad" style="text-align:center">
                 <span class="avatar" style="width:76px;height:76px;margin:0 auto 12px;border-radius:20px">
-                    <img src="{{ $report->reportedUser?->primaryPhoto?->url() ?? Media::avatar($report->reportedUser?->name ?? 'Jora') }}" alt="" onerror="this.style.display='none'">
+                    <img src="{{ $report->reportedUser?->primaryPhoto?->url() ?? Media::avatar($report->reportedUser?->name ?? 'Jibon Sathi') }}" alt="" onerror="this.style.display='none'">
                     <span class="initials" style="font-size:26px">{{ $report->reportedUser?->initials ?? 'J' }}</span>
                 </span>
                 <h3 style="margin-bottom:2px">{{ $report->reportedUser?->name ?? 'Deleted user' }}</h3>
-                <p class="text-muted text-small">{{ $report->reportedUser?->email ?? 'No longer on Jora' }}</p>
+                <p class="text-muted text-small">{{ $report->reportedUser?->email ?? 'No longer on Jibon Sathi' }}</p>
                 @if ($report->reportedUser)
                     <a href="{{ route('backend.users.show', $report->reportedUser) }}" class="btn btn-soft btn-sm btn-block"><i class="fas fa-user"></i> View Member</a>
                 @endif

@@ -94,9 +94,9 @@ class UsersAndProfilesSeeder extends Seeder
     private function createAdmin(): User
     {
         $admin = User::firstOrCreate(
-            ['email' => 'admin@jora.local'],
+            ['email' => 'admin@jibonsathi.local'],
             [
-                'name' => 'Jora Admin',
+                'name' => 'Jibon Sathi Admin',
                 'username' => 'admin',
                 'phone' => '01700000000',
                 'email_verified_at' => now(),
@@ -119,7 +119,7 @@ class UsersAndProfilesSeeder extends Seeder
                 'division' => 'Dhaka',
                 'district' => 'Dhaka',
                 'city' => 'Dhaka',
-                'about_me' => 'Platform administrator for Jora.',
+                'about_me' => 'Platform administrator for Jibon Sathi.',
                 'headline' => 'Administrator',
                 'profile_completion' => 100,
                 'profile_status' => 'approved',

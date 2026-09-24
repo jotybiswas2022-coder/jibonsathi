@@ -1,5 +1,5 @@
 /* ==========================================================================
-   Jora — Frontend interactions
+   Jibon Sathi — Frontend interactions
    ========================================================================== */
 (function () {
   'use strict';
@@ -125,10 +125,10 @@
 
   function openModal(m) { m.classList.add('open'); document.body.style.overflow = 'hidden'; m.setAttribute('aria-hidden', 'false'); }
   function closeModal(m) { m.classList.remove('open'); document.body.style.overflow = ''; m.setAttribute('aria-hidden', 'true'); }
-  window.Jora = window.Jora || {};
-  window.Jora.openModal = openModal;
-  window.Jora.closeModal = closeModal;
-  window.Jora.flash = { success: flashSuccess, error: flashError };
+  window.JibonSathi = window.JibonSathi || {};
+  window.JibonSathi.openModal = openModal;
+  window.JibonSathi.closeModal = closeModal;
+  window.JibonSathi.flash = { success: flashSuccess, error: flashError };
 
   /* ------------------------------ confirm dialogs --------------------------- */
   function initConfirms() {

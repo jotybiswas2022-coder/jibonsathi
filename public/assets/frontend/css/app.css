@@ -1318,3 +1318,61 @@ input[type="date"] { min-height: 48px; }
   .hero-photo-card, .hero-float-chip, .hero-deco-blob { animation: none; }
   html { scroll-behavior: auto; }
 }
+
+/* ---------- 26.13 Mobile polish ---------- */
+/* Base .grid-2/.grid-3/.grid-4 had no responsive overrides — fix columns per breakpoint */
+@media (max-width: 991px) {
+  .grid-4 { grid-template-columns: repeat(2, 1fr); }
+  .grid-3 { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 640px) {
+  .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+  .grid { gap: 16px; }
+}
+
+/* Hero: tighter rhythm + 2×2 stat cards on phones */
+@media (max-width: 600px) {
+  .hero-inner { gap: 36px; }
+  .hero h1 { font-size: clamp(30px, 9vw, 36px); }
+  .hero-sub { font-size: 16px; }
+  .hero-ctas { gap: 10px; }
+  .hero-ctas .btn { flex: 1 1 100%; }
+}
+@media (max-width: 480px) {
+  .hero-stat { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+  .hero-stat > div { min-width: 0; padding: 10px 14px; }
+  .hero-stat .num { font-size: 23px; }
+}
+
+/* Search panel: stack actions, full-width button */
+@media (max-width: 600px) {
+  .search-grid { padding: 18px 18px 4px; }
+  .search-panel-actions { flex-direction: column; align-items: stretch; padding: 8px 18px 18px; }
+  .search-panel-actions .btn { width: 100%; }
+  .quick-chips { justify-content: center; }
+}
+
+/* Steps & feature tiles: comfortable single/double column */
+@media (max-width: 480px) {
+  .step-card { padding: 24px 16px 20px; }
+  .feature-tile { padding: 22px 20px; }
+}
+
+/* Stats band & CTA: reduce density on phones */
+@media (max-width: 480px) {
+  .stats-band .sb-cell { padding: 22px 14px; }
+  .stats-band .sb-num { font-size: 24px; }
+  .cta-band { padding: 36px 22px; }
+}
+
+/* Story spotlight card on mobile */
+@media (max-width: 1100px) {
+  .fb-story-card { padding: 24px 22px; }
+}
+
+/* Section rhythm on small screens */
+@media (max-width: 600px) {
+  .section-head { margin-bottom: 30px; }
+  .section-head h2 { font-size: clamp(24px, 7vw, 30px); }
+}
+

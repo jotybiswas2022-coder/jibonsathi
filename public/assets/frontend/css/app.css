@@ -1766,6 +1766,15 @@ input[type="date"] { min-height: 48px; }
   body:has(section.hero) .section { padding-block: clamp(34px, 8vw, 56px); }
   body:has(section.hero) .search-panel .field > label { font-size: 12px; }
   body:has(section.hero) :is(.grid-profiles, .cards-grid) .pcard-verify .badge { font-size: 11px; }
+  /* The hero artwork was sized for a desktop canvas: the mandala alone came out
+     605px wide on a 390px screen (155% of it) and the two glow blobs another
+     333px and 267px, so the decoration was bigger than the phone. */
+  body:has(section.hero) .hero-mandala { width: 290px; height: 290px; max-width: none; }
+  body:has(section.hero) .hero-deco-blob.b1 { width: 190px; height: 190px; }
+  body:has(section.hero) .hero-deco-blob.b2 { width: 150px; height: 150px; }
+  /* Four stat cards sat at 81px each below two 56px buttons. */
+  body:has(section.hero) .hero-stat { margin-top: 20px; padding-top: 18px; gap: 12px; }
+  body:has(section.hero) .hero-stat > div { min-width: 92px; padding: 9px 12px; }
 }
 /* The footer stacks its link columns from 900px down, so the rows get their
    padding there rather than only on phones. */

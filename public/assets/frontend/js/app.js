@@ -157,6 +157,7 @@
     const setOpen = (open) => {
       document.body.classList.toggle('sidebar-open', open);
       toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+      toggle.classList.toggle('active', open);
     };
 
     toggle.addEventListener('click', () => {

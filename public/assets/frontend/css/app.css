@@ -606,16 +606,17 @@ select.input:disabled { background-color: var(--bg); color: var(--muted-2); }
 
 .member-content { min-width: 0; }
 
-/* Mobile menu trigger and drawer shell. Hidden on desktop, where the sidebar
+/* Mobile section menu: the trigger rides in the sticky navbar beside the other
+   icon buttons, so it is always in reach. Hidden on desktop, where the sidebar
    is already a permanent column. */
-.member-bar { display: none; }
-.member-bar-toggle {
-  width: 44px; height: 44px; border-radius: 12px; flex: none;
-  display: inline-flex; align-items: center; justify-content: center;
-  background: #fff; border: 1px solid var(--border); color: var(--text);
-  font-size: 17px; cursor: pointer;
+.side-toggle { display: none; }
+@media (max-width: 991px) {
+  .side-toggle { display: inline-flex; color: var(--brand); background: var(--brand-050); border-color: transparent; }
+  .side-toggle:hover { background: var(--brand); color: #fff; border-color: var(--brand); }
+  /* Keeps the wordmark tucked against the trigger instead of floating it into
+     the middle of the space-between navbar. */
+  .navbar-inner:has(.side-toggle) .brand { margin-right: auto; }
 }
-.member-bar-toggle:hover { background: var(--brand-050); color: var(--brand); }
 .sidebar-head { display: none; }
 .sidebar-head-title { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted-2); font-weight: 700; }
 .sidebar-head-close {
@@ -645,8 +646,6 @@ select.input:disabled { background-color: var(--bg); color: var(--muted-2); }
 @media (max-width: 991px) {
   .member-layout { grid-template-columns: 1fr; padding-bottom: 84px; }
   .bottom-nav { display: grid; }
-
-  .member-bar { display: flex; align-items: center; }
 
   /* The twelve sections no longer fit a column, so the sidebar slides in over
      the page instead of disappearing. */

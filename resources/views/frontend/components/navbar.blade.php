@@ -4,6 +4,7 @@
     <span class="navbar-ribbon" aria-hidden="true"></span>
 
     <div class="container navbar-inner">
+        @yield('navbar-start')
         <a href="{{ route('home') }}" class="brand">
             <span class="brand-mark"><i class="fas fa-heart"></i></span>
             <span class="brand-text">{{ $siteName }}</span>

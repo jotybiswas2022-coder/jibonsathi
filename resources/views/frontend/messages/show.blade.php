@@ -15,13 +15,14 @@
         </x-frontend::alert>
     @endif
 
-    @include('frontend.messages.partials.sidebar', [
-        'conversations' => $conversations,
-        'active' => $active,
-        'search' => $search,
-    ])
+    <div class="chat-layout">
+        @include('frontend.messages.partials.sidebar', [
+            'conversations' => $conversations,
+            'active' => $active,
+            'search' => $search,
+        ])
 
-    <div class="chat-panel">
+        <div class="chat-panel">
         @if (! $partner)
             <x-frontend::empty-state :icon="'fa-user-slash'" :title="'Chat unavailable'"
                 :description="'This conversation is no longer available.'" />
@@ -75,5 +76,6 @@
                 @endif
             </div>
         @endif
+        </div>
     </div>
 @endsection

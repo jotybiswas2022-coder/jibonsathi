@@ -16,13 +16,14 @@
         </div>
     </div>
 
-    @include('frontend.messages.partials.sidebar', [
-        'conversations' => $conversations,
-        'active' => $active,
-        'search' => $search,
-    ])
+    <div class="chat-layout">
+        @include('frontend.messages.partials.sidebar', [
+            'conversations' => $conversations,
+            'active' => $active,
+            'search' => $search,
+        ])
 
-    <div class="chat-panel">
+        <div class="chat-panel">
         @if ($conversations->isEmpty())
             <x-frontend::empty-state :icon="'fa-comments'" :title="'No conversations yet'"
                 :description="'Once an interest is accepted you can start chatting with that member here.'" />
@@ -32,5 +33,6 @@
                 <p class="text-muted">Select a conversation to start reading.</p>
             </div>
         @endif
+        </div>
     </div>
 @endsection

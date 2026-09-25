@@ -1,6 +1,8 @@
 @props(['conversations', 'active', 'search'])
 
-<aside class="conv-list">
+{{-- On a single conversation the list is hidden on small screens so the chat,
+     and the partner's name in its header, is the first thing on the page. --}}
+<aside class="conv-list {{ $active ? 'mobile-hide' : '' }}">
     <form method="GET" action="{{ route('messages.index') }}" class="conv-search">
         <i class="fas fa-search"></i>
         <input type="text" name="q" value="{{ $search }}" placeholder="Search conversations..." class="input">

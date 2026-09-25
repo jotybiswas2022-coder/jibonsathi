@@ -1,6 +1,6 @@
 @extends('frontend.layouts.member')
 
-@section('title', 'Messages')
+@section('title', $partner ? 'Messages with '.$partner->name : 'Messages')
 
 @section('member-content')
     <div class="page-head">
@@ -29,6 +29,8 @@
         @else
             <div class="chat-thread">
                 <header class="chat-head">
+                    <a href="{{ route('messages.index') }}" class="btn-icon btn-icon-sm chat-back"
+                       title="All conversations"><i class="fas fa-arrow-left"></i></a>
                     <a href="{{ route('profiles.show', $partner) }}" class="chat-partner">
                         <x-frontend::avatar :user="$partner" :size="42" :showOnline="true" />
                         <div>

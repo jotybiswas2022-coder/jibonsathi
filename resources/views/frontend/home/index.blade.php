@@ -65,7 +65,7 @@
                             @endif
                         </div>
                         <div class="hero-arch-badge">
-                            <i class="fas fa-hands-holding-heart"></i> Rishta ready
+                            <i class="fas fa-hand-holding-heart"></i> Rishta ready
                         </div>
                     </div>
 
@@ -81,7 +81,7 @@
                     @endif
 
                     <div class="hero-float-chip hero-chip-1">
-                        <span class="badge badge-success"><i class="fas fa-badge-check"></i> Verified</span>
+                        <span class="badge badge-success"><i class="fas fa-circle-check"></i> Verified</span>
                         Genuine profiles only
                     </div>
                     <div class="hero-float-chip hero-chip-3">
@@ -390,7 +390,7 @@
                     <p>Age, lifestyle, education, family values and more — our matching engine weighs what truly matters and finds real compatibility, so you start from genuine common ground.</p>
                 </div>
                 <div class="card feature-tile reveal" style="--reveal-delay:100ms">
-                    <div class="ft-ico" style="background:var(--success-bg);color:var(--success)"><i class="fas fa-badge-check"></i></div>
+                    <div class="ft-ico" style="background:var(--success-bg);color:var(--success)"><i class="fas fa-user-check"></i></div>
                     <h3>Verified Profiles</h3>
                     <p>Identity checks keep fake profiles away so you can trust who you meet.</p>
                 </div>
@@ -405,7 +405,7 @@
                     <p>No payments, no subscriptions, no premium plans. A quality matrimony platform for everyone.</p>
                 </div>
                 <div class="card feature-tile reveal" style="--reveal-delay:100ms">
-                    <div class="ft-ico" style="background:#F3E8FF;color:#9333EA"><i class="fas fa-hands-holding-heart"></i></div>
+                    <div class="ft-ico" style="background:#F3E8FF;color:#9333EA"><i class="fas fa-hand-holding-heart"></i></div>
                     <h3>Serious Connections</h3>
                     <p>Members here are looking for marriage — meaningful relationships, not casual browsing.</p>
                 </div>

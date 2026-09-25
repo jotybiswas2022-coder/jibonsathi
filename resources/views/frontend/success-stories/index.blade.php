@@ -32,7 +32,7 @@
                         <div class="story-meta">
                             <span><i class="fas fa-location-dot"></i> {{ $story->location }}</span>
                             @if ($story->married_on)
-                                <span><i class="fas fa-calendar-heart"></i> {{ $story->married_on->format('F Y') }}</span>
+                                <span><i class="fas fa-calendar-days"></i> {{ $story->married_on->format('F Y') }}</span>
                             @endif
                         </div>
                         <p class="text-muted text-small story-excerpt">{{ \Illuminate\Support\Str::limit($story->story, 130) }}</p>

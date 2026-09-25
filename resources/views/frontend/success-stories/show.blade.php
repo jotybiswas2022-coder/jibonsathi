@@ -22,7 +22,7 @@
         <div class="story-meta" style="gap:16px;margin-top:6px">
             <span><i class="fas fa-location-dot"></i> {{ $story->location }}</span>
             @if ($story->married_on)
-                <span><i class="fas fa-calendar-heart"></i> Married {{ $story->married_on->format('F Y') }}</span>
+                <span><i class="fas fa-calendar-days"></i> Married {{ $story->married_on->format('F Y') }}</span>
             @endif
         </div>
 

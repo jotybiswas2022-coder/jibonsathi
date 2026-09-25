@@ -727,7 +727,7 @@ select.input:disabled { background-color: var(--bg); color: var(--muted-2); }
 
 /* Feature list */
 .feature-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; }
-.feature-tile { padding: 26px; display: flex; flex-direction: column; gap: 12px; }
+.feature-tile { padding: 26px; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 12px; }
 .feature-tile .ft-ico { width: 52px; height: 52px; border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 22px; background: var(--brand-100); color: var(--brand); }
 .feature-tile h3 { font-size: 17px; margin: 0; }
 .feature-tile p { color: var(--muted); font-size: 13.5px; margin: 0; }

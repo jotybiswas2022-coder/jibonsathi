@@ -127,7 +127,7 @@
             </div>
 
             @if ($recommended->isNotEmpty())
-                <div class="grid-3" style="--cols:3">
+                <div class="grid grid-3 cards-grid dash-matches">
                     @foreach ($recommended->take(6) as $candidate)
                         <x-frontend::profile-card :user="$candidate" :score="$scores[$candidate->id] ?? null" :showActions="false" />
                     @endforeach

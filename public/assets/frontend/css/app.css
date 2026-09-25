@@ -1748,24 +1748,30 @@ input[type="date"] { min-height: 48px; }
 }
 /* 28.4 held the hero search at two columns all the way down to 320px, which
    left each select narrower than its own widest option ("Awaiting Divorce",
-   "Secondary (SSC)"), so the text clipped. One column below 440px fixes it.
-   The same pass restores a readable size to the field labels and the Verified
-   badge, and gives the footer links a real tap row instead of a 22px line. */
+   "Secondary (SSC)"), so the text clipped. One column below 440px fixes it. */
+@media (max-width: 440px) {
+  .search-grid { grid-template-columns: 1fr; }
+}
+/* The homepage ran a larger type scale than the rest of the site (h1 32.8px,
+   h2 27.3px, body 15.5px against the 24px / 14.5px every inner page uses), so
+   the whole page read as magnified on a phone. These match the scale the rest
+   of the site already uses, and the section padding drops with it. Scoped with
+   :has() because the hero markup is unique to the homepage. */
 @media (max-width: 600px) {
-  .search-panel .field > label { font-size: 12px; }
-  :is(.grid-profiles, .cards-grid) .pcard-verify .badge { font-size: 11px; }
+  body:has(section.hero) .hero-inner { padding-block: 36px; }
+  body:has(section.hero) .hero h1 { font-size: clamp(24px, 6.4vw, 28px); }
+  body:has(section.hero) h2 { font-size: clamp(21px, 6vw, 25px); }
+  body:has(section.hero) .hero-sub,
+  body:has(section.hero) .section-head p { font-size: 14.5px; }
+  body:has(section.hero) .section { padding-block: clamp(34px, 8vw, 56px); }
+  body:has(section.hero) .search-panel .field > label { font-size: 12px; }
+  body:has(section.hero) :is(.grid-profiles, .cards-grid) .pcard-verify .badge { font-size: 11px; }
 }
 /* The footer stacks its link columns from 900px down, so the rows get their
    padding there rather than only on phones. */
 @media (max-width: 900px) {
   .footer-links { gap: 2px; }
   .footer-links a { padding-block: 6px; }
-}
-@media (max-width: 400px) {
-  .hero h1 { font-size: clamp(28px, 8.4vw, 33px); }
-}
-@media (max-width: 440px) {
-  .search-grid { grid-template-columns: 1fr; }
 }
 
 /* ==========================================================================

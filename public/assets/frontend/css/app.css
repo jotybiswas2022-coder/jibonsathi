@@ -606,6 +606,25 @@ select.input:disabled { background-color: var(--bg); color: var(--muted-2); }
 
 .member-content { min-width: 0; }
 
+/* Mobile menu trigger and drawer shell. Hidden on desktop, where the sidebar
+   is already a permanent column. */
+.member-bar { display: none; }
+.member-bar-toggle {
+  width: 44px; height: 44px; border-radius: 12px; flex: none;
+  display: inline-flex; align-items: center; justify-content: center;
+  background: #fff; border: 1px solid var(--border); color: var(--text);
+  font-size: 17px; cursor: pointer;
+}
+.member-bar-toggle:hover { background: var(--brand-050); color: var(--brand); }
+.sidebar-head { display: none; }
+.sidebar-head-title { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted-2); font-weight: 700; }
+.sidebar-head-close {
+  margin-left: auto; width: 36px; height: 36px; border-radius: 10px;
+  display: inline-flex; align-items: center; justify-content: center;
+  background: transparent; border: 1px solid var(--border); color: var(--muted); font-size: 16px; cursor: pointer;
+}
+.sidebar-head-close:hover { background: var(--brand-050); color: var(--brand); }
+
 /* Bottom navigation (mobile) */
 .bottom-nav {
   position: fixed; bottom: 0; left: 0; right: 0; z-index: 45;
@@ -625,8 +644,28 @@ select.input:disabled { background-color: var(--bg); color: var(--muted-2); }
 
 @media (max-width: 991px) {
   .member-layout { grid-template-columns: 1fr; padding-bottom: 84px; }
-  .sidebar { display: none; }
   .bottom-nav { display: grid; }
+
+  .member-bar { display: flex; align-items: center; }
+
+  /* The twelve sections no longer fit a column, so the sidebar slides in over
+     the page instead of disappearing. */
+  .sidebar {
+    position: fixed; top: 0; bottom: 0; left: 0; z-index: 100;
+    width: min(300px, 86vw); height: 100dvh; border-radius: 0; border-left: 0;
+    padding: 14px 14px calc(20px + env(safe-area-inset-bottom));
+    overflow-y: auto; overscroll-behavior: contain;
+    transform: translateX(-100%); visibility: hidden;
+    transition: transform 0.24s ease, visibility 0.24s ease;
+    box-shadow: 0 0 40px rgba(31, 41, 55, 0.18);
+  }
+  body.sidebar-open .sidebar { transform: none; visibility: visible; }
+  body.sidebar-open { overflow: hidden; }
+  body.sidebar-open::after {
+    content: ''; position: fixed; inset: 0; z-index: 99;
+    background: rgba(31, 41, 55, 0.5);
+  }
+  .sidebar-head { display: flex; align-items: center; gap: 10px; padding-bottom: 10px; margin-bottom: 4px; border-bottom: 1px solid var(--border); }
 }
 
 /* --------------------------------------------------------------------------

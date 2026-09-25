@@ -10,6 +10,7 @@
   document.addEventListener('DOMContentLoaded', () => {
     initToasts();
     initNav();
+    initSidebarDrawer();
     initDropdowns();
     initModals();
     initConfirms();
@@ -144,6 +145,45 @@
       document.body.classList.toggle('nav-open');
       const open = document.body.classList.contains('nav-open');
       toggle.querySelector('i').className = open ? 'fas fa-xmark' : 'fas fa-bars';
+    });
+  }
+
+  /* ---------------------------- sidebar drawer ----------------------------- */
+  function initSidebarDrawer() {
+    const toggle = $('[data-sidebar-toggle]');
+    const sidebar = $('#memberSidebar');
+    if (!toggle || !sidebar) return;
+
+    const setOpen = (open) => {
+      document.body.classList.toggle('sidebar-open', open);
+      toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+    };
+
+    toggle.addEventListener('click', () => {
+      setOpen(!document.body.classList.contains('sidebar-open'));
+    });
+
+    $$('[data-sidebar-close]', sidebar).forEach((btn) => {
+      btn.addEventListener('click', () => setOpen(false));
+    });
+
+    /* Following a link loads a new page, so close before the navigation. */
+    $$('.side-item', sidebar).forEach((link) => {
+      link.addEventListener('click', () => setOpen(false));
+    });
+
+    /* The backdrop is a body::after pseudo-element, so a click on it lands on
+       the body itself. */
+    document.addEventListener('click', (e) => {
+      if (e.target === document.body) setOpen(false);
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') setOpen(false);
+    });
+
+    window.addEventListener('resize', () => {
+      if (window.innerWidth > 991) setOpen(false);
     });
   }
 

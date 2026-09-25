@@ -81,7 +81,12 @@
                             <div class="cell-user">
                                 <span class="avatar avatar-sm"><img src="{{ $u->primaryPhoto?->url() ?? \App\Support\Media::avatar($u->name) }}" alt="" onerror="this.style.display='none'"><span class="initials">{{ $u->initials }}</span></span>
                                 <div>
-                                    <div class="cu-name"><a href="{{ route('backend.users.show', $u) }}">{{ $u->name }}</a> {{ $u->is_admin ? '<i class="fas fa-crown" title="Admin" style="color:var(--accent)"></i>' : '' }}</div>
+                                    <div class="cu-name">
+                                        <a href="{{ route('backend.users.show', $u) }}">{{ $u->name }}</a>
+                                        @if ($u->is_admin)
+                                            <i class="fas fa-crown admin-mark" title="Admin" aria-label="Administrator"></i>
+                                        @endif
+                                    </div>
                                     <div class="cu-sub">{{ $u->email }} · {{ $u->phone }}</div>
                                 </div>
                             </div>

@@ -18,6 +18,7 @@
     initPhotoThumbs();
     initChat();
     initDiscoverFilters();
+    initFilterDrawer();
     initInterestActions();
     initNotifBell();
     initAutoClose();
@@ -363,6 +364,37 @@
     });
     $$('input[type="text"], input[type="number"], input[type="date"]', form).forEach((el) => {
       el.addEventListener('input', () => { clearTimeout(timeout); timeout = setTimeout(run, 650); });
+    });
+  }
+
+  /* ---------------------------- filter sheet (mobile) ---------------------------- */
+  function initFilterDrawer() {
+    const toggle = $('[data-filter-toggle]');
+    const closers = $$('[data-filter-close]');
+    if (!toggle && !closers.length) return;
+
+    const setOpen = (open) => document.body.classList.toggle('filters-open', open);
+
+    if (toggle) {
+      toggle.setAttribute('aria-expanded', 'false');
+      toggle.addEventListener('click', (e) => {
+        e.preventDefault();
+        const open = !document.body.classList.contains('filters-open');
+        setOpen(open);
+        toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+      });
+    }
+
+    closers.forEach((btn) => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        setOpen(false);
+        if (toggle) toggle.setAttribute('aria-expanded', 'false');
+      });
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') setOpen(false);
     });
   }
 

@@ -18,7 +18,10 @@
             <aside class="filter-panel">
                 <div class="filter-head">
                     <h3><i class="fas fa-sliders-h"></i> Filters</h3>
-                    <a href="{{ route('discover.index') }}" class="text-small text-muted">Reset</a>
+                    <a href="{{ route('discover.index') }}" class="text-small text-muted filter-reset">Reset</a>
+                    <button type="button" class="filter-close" data-filter-close aria-label="Close filters">
+                        <i class="fas fa-xmark"></i>
+                    </button>
                 </div>
 
                 <div class="filter-row">
@@ -146,14 +149,22 @@
                         </label>
                     </div>
                 @endauth
+
+                {{-- Mobile-only: closes the filter sheet; filters apply live. --}}
+                <button type="button" class="btn btn-primary btn-block filter-apply" data-filter-close>
+                    <i class="fas fa-circle-check"></i> Show results
+                </button>
             </aside>
 
             <div class="discover-main">
                 <div class="discover-toolbar">
-                    <p class="text-muted text-small m-0" style="display:flex;align-items:center;gap:8px">
+                    <button type="button" class="btn btn-outline btn-sm filter-toggle" data-filter-toggle>
+                        <i class="fas fa-sliders-h"></i> Filters
+                    </button>
+                    <p class="text-muted text-small m-0 discover-toolbar-hint">
                         <i class="fas fa-filter"></i> Refine your search
                     </p>
-                    <select name="sort" class="input" style="max-width:230px">
+                    <select name="sort" class="input discover-sort">
                         @foreach ($sorts as $key => $label)
                             <option value="{{ $key }}" @selected(($filters['sort'] ?? 'recommended') === $key)>{{ $label }}</option>
                         @endforeach

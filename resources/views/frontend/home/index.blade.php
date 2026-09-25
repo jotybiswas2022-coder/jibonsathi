@@ -249,7 +249,7 @@
                 <p>Handpicked, genuine profiles from verified members who are serious about a meaningful relationship.</p>
             </div>
             <div class="featured-band">
-                <div class="grid reveal">
+                <div class="grid grid-profiles reveal">
                     @forelse ($featured as $member)
                         @include('frontend.components.profile-card', ['user' => $member, 'score' => $scores[$member->id] ?? null])
                     @empty
@@ -427,7 +427,7 @@
                     <h2>Recommended For You</h2>
                     <p>Profiles selected based on your preferences and life choices.</p>
                 </div>
-                <div class="grid reveal" style="grid-template-columns:repeat(auto-fill,minmax(250px,1fr))">
+                <div class="grid grid-profiles reveal">
                     @foreach ($recommended as $member)
                         @include('frontend.components.profile-card', ['user' => $member, 'score' => $scores[$member->id] ?? null])
                     @endforeach

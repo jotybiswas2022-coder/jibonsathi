@@ -52,7 +52,7 @@
         @if ($showActions && !$isSelf)
             <div class="pcard-actions">
                 <a href="{{ route('profiles.show', $user) }}" class="btn btn-soft btn-sm">
-                    <i class="fas fa-eye"></i> View Profile
+                    <i class="fas fa-eye"></i> <span class="btn-label">View Profile</span>
                 </a>
                 @auth
                     @if ($user->canInteractWith(auth()->user()))

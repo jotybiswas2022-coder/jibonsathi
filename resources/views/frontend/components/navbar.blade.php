@@ -1,10 +1,12 @@
 @php($settings = \App\Models\SiteSetting::all_cached())
 @php($siteName = $settings['site_name'] ?? 'Jibon Sathi')
 <header class="navbar">
+    <span class="navbar-ribbon" aria-hidden="true"></span>
+
     <div class="container navbar-inner">
         <a href="{{ route('home') }}" class="brand">
             <span class="brand-mark"><i class="fas fa-heart"></i></span>
-            {{ $siteName }}
+            <span class="brand-text">{{ $siteName }}</span>
         </a>
 
         <nav class="nav-links">
@@ -26,10 +28,12 @@
                 <i class="fas fa-briefcase"></i> Success Stories
             </a>
 
+            {{-- Guests: shown only inside the opened mobile menu. The desktop CTAs
+                 live in .nav-actions — keeping a single copy of each. --}}
             @guest
-                <div class="nav-cta-desktop">
-                    <a href="{{ route('login') }}" class="btn btn-brand-outline btn-sm">Login</a>
-                    <a href="{{ route('register') }}" class="btn btn-primary btn-sm">Create Profile</a>
+                <div class="nav-cta-mobile">
+                    <a href="{{ route('login') }}" class="btn btn-brand-outline">Login</a>
+                    <a href="{{ route('register') }}" class="btn btn-primary">Create Profile</a>
                 </div>
             @endguest
         </nav>
@@ -71,13 +75,13 @@
                     </div>
                 </div>
             @else
-                <div class="flex gap-2 nav-cta-desktop">
-                    <a href="{{ route('login') }}" class="btn btn-brand-outline">Login</a>
-                    <a href="{{ route('register') }}" class="btn btn-primary">Create Profile</a>
+                <div class="nav-cta-desktop">
+                    <a href="{{ route('login') }}" class="btn btn-brand-outline btn-sm">Login</a>
+                    <a href="{{ route('register') }}" class="btn btn-primary btn-sm btn-shine">Create Profile</a>
                 </div>
             @endauth
 
-            <button class="btn-icon nav-toggle" data-nav-toggle aria-label="Toggle menu">
+            <button class="btn-icon nav-toggle" data-nav-toggle aria-label="Toggle menu" aria-expanded="false">
                 <i class="fas fa-bars"></i>
             </button>
         </div>

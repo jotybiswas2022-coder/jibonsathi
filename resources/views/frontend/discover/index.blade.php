@@ -90,7 +90,7 @@
                 </div>
 
                 <div class="filter-row">
-                    <label class="filter-label">Income</label>
+                    <label class="filter-label">Income (BDT)</label>
                     <select name="income" class="input">
                         <option value="">Any income</option>
                         @foreach (\App\Support\Reference::incomeRanges() as $key => $label)

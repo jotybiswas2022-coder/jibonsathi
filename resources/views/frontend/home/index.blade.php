@@ -30,7 +30,7 @@
                     <div class="hero-trust-row">
                         <span><i class="fas fa-circle-check"></i> Manually reviewed profiles</span>
                         <span><i class="fas fa-lock"></i> Private by default</span>
-                        <span><i class="fas fa-indian-rupee-sign"></i> No hidden charges</span>
+                        <span><i class="fas fa-bangladeshi-taka-sign"></i> No hidden charges</span>
                     </div>
 
                     <div class="hero-stat">

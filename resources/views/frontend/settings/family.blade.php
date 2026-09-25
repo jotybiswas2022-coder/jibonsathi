@@ -64,7 +64,7 @@
             </div>
 
             <div class="field">
-                <label for="family_income_range">Family Income Range</label>
+                <label for="family_income_range">Family Income Range (BDT)</label>
                 <select name="family_income_range" id="family_income_range" class="input">
                     <option value="">Select</option>
                     @foreach (\App\Support\Reference::incomeRanges() as $key => $label)

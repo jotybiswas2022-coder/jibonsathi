@@ -51,7 +51,7 @@
                 <div><dt>Employment Type</dt><dd>{{ $R::label($occ->employment_type, 'employment') }}</dd></div>
             @endif
             @if ($occ?->income_range)
-                <div><dt>Annual Income</dt><dd>{{ $R::label($occ->income_range, 'income') }}</dd></div>
+                <div><dt>Annual Income (BDT)</dt><dd>{{ $R::label($occ->income_range, 'income') }}</dd></div>
             @endif
             @if ($occ?->work_location)
                 <div><dt>Work Location</dt><dd>{{ $occ->work_location }}</dd></div>
@@ -75,7 +75,7 @@
                 <div><dt>Brothers</dt><dd>{{ $family?->brothers ?? 0 }}</dd></div>
                 <div><dt>Sisters</dt><dd>{{ $family?->sisters ?? 0 }}</dd></div>
                 @if ($family?->family_income_range)
-                    <div><dt>Family Income</dt><dd>{{ $R::label($family->family_income_range, 'income') }}</dd></div>
+                    <div><dt>Family Income (BDT)</dt><dd>{{ $R::label($family->family_income_range, 'income') }}</dd></div>
                 @endif
             </dl>
             @if ($family?->about_family)

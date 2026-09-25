@@ -40,14 +40,14 @@ class Reference
     public static function educationLevels(): array
     {
         return [
-            'ssc' => 'SSC / O-Level',
-            'hsc' => 'HSC / A-Level',
+            'ssc' => 'Secondary (SSC)',
+            'hsc' => 'Higher Secondary (HSC)',
             'diploma' => 'Diploma',
-            'bachelor' => 'Bachelor Degree',
-            'masters' => 'Master Degree',
+            'bachelor' => "Bachelor's Degree",
+            'masters' => "Master's Degree",
             'phd' => 'PhD / Doctorate',
             'medical' => 'MBBS / Medical',
-            'engineering' => 'BSc Engineering',
+            'engineering' => 'B.Sc. Engineering',
             'other' => 'Other',
         ];
     }
@@ -56,12 +56,12 @@ class Reference
     public static function incomeRanges(): array
     {
         return [
-            'below_25k' => 'Below 25,000',
-            '25k_50k' => '25,000 - 50,000',
-            '50k_100k' => '50,000 - 1,00,000',
-            '100k_200k' => '1,00,000 - 2,00,000',
-            '200k_500k' => '2,00,000 - 5,00,000',
-            'above_500k' => 'Above 5,00,000',
+            'below_25k' => 'Below ৳25,000',
+            '25k_50k' => '৳25,000 - ৳50,000',
+            '50k_100k' => '৳50,000 - ৳1,00,000',
+            '100k_200k' => '৳1,00,000 - ৳2,00,000',
+            '200k_500k' => '৳2,00,000 - ৳5,00,000',
+            'above_500k' => 'Above ৳5,00,000',
             'prefer_not_to_say' => 'Prefer not to say',
         ];
     }

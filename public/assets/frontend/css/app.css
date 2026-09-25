@@ -1645,6 +1645,20 @@ input[type="date"] { min-height: 48px; }
   .grid.grid-profiles.grid-center-rows > * { flex: 0 1 calc((100% - 60px) / 4); min-width: 250px; }
 }
 
+/* Three story cards with a double-width feature card leave one card alone on the
+   second row, against the left edge. Same treatment as above: a wrapping flex
+   row centres the short row, with the bases pinned to the column widths the
+   grid already produced, so no card resizes. */
+@media (min-width: 992px) {
+  .grid-3.grid-center-rows { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; }
+  .grid-3.grid-center-rows > * { flex: 0 1 calc((100% - 40px) / 3); }
+  .grid-3.grid-center-rows > .feature { flex: 0 1 calc((200% - 20px) / 3); }
+}
+@media (min-width: 641px) and (max-width: 991px) {
+  .grid-3.grid-center-rows { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; }
+  .grid-3.grid-center-rows > * { flex: 0 1 calc((100% - 20px) / 2); }
+}
+
 /* ------------------- 28.2 Hero: keep the visual in a contained box ------------------- */
 @media (max-width: 991px) {
   .hero-visual { max-width: 440px; margin-inline: auto; width: 100%; }

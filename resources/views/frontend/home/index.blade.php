@@ -450,7 +450,7 @@
                     <h2>Two Lives, One Beautiful Story</h2>
                     <p>Real couples who found each other on Jibon Sathi and started their forever.</p>
                 </div>
-                <div class="grid grid-3">
+                <div class="grid grid-3 grid-center-rows">
                     @foreach ($stories as $index => $story)
                         <a href="{{ route('success-stories.show', $story) }}" class="card story-card card-hover reveal {{ $index === 0 ? 'feature' : '' }}" style="--reveal-delay:{{ ($index % 3) * 90 }}ms">
                             <div class="story-media">

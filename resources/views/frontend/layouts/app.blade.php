@@ -32,7 +32,7 @@
         @include('frontend.components.bottom-nav')
     @endauth
 
-    <script src="{{ asset('assets/frontend/js/app.js') }}?v=3"></script>
+    <script src="{{ asset('assets/frontend/js/app.js') }}?v=4"></script>
     <script>
         window.JibonSathi = window.JibonSathi || {};
         @auth

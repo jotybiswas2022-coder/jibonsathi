@@ -24,7 +24,47 @@
     initCharacterCounters();
     initScrollReveal();
     initNavbarScroll();
+    initCounters();
   });
+
+  /* ------------------------------ animated counters ------------------------------ */
+  function initCounters() {
+    const els = $$('[data-counter]');
+    if (!els.length) return;
+
+    const reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    const run = (el) => {
+      const target = parseInt(el.dataset.counter, 10);
+      if (!Number.isFinite(target)) return;
+      const suffix = el.dataset.suffix || '';
+
+      if (reduced) { el.textContent = target.toLocaleString() + suffix; return; }
+
+      const duration = 1400;
+      const start = performance.now();
+      const tick = (now) => {
+        const p = Math.min(1, (now - start) / duration);
+        const eased = 1 - Math.pow(1 - p, 3);
+        el.textContent = Math.round(target * eased).toLocaleString() + suffix;
+        if (p < 1) requestAnimationFrame(tick);
+      };
+      requestAnimationFrame(tick);
+    };
+
+    if (!('IntersectionObserver' in window)) { els.forEach(run); return; }
+
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          run(entry.target);
+          io.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.4 });
+
+    els.forEach((el) => io.observe(el));
+  }
 
   /* ------------------------------ scroll reveal ------------------------------ */
   function initScrollReveal() {

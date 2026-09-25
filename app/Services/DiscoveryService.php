@@ -56,6 +56,18 @@ class DiscoveryService
     }
 
     /**
+     * Most recently joined members, for the homepage "new this season" rail.
+     */
+    public function newest(int $limit = 12): Collection
+    {
+        return $this->baseQuery()
+            ->whereHas('profile', fn ($q) => $q->whereNotNull('date_of_birth'))
+            ->orderByDesc('users.created_at')
+            ->limit($limit)
+            ->get();
+    }
+
+    /**
      * Discoverable members for a signed-in viewer.
      *
      * @param  array<string, mixed>  $filters

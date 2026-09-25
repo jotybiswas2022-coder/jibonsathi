@@ -3,16 +3,21 @@
 @section('title', 'Jibon Sathi — Find Someone Who Complements Your Life')
 
 @section('content')
+    @php($heroUsers = $featured->take(4)->values())
+    @php($heroMain = $heroUsers->first())
+
     {{-- ============================= HERO ============================= --}}
     <section class="hero">
         <div class="hero-deco-blob b1"></div>
         <div class="hero-deco-blob b2"></div>
+
         <div class="container">
             <div class="hero-inner">
-                <div>
+                <div class="hero-copy">
                     <span class="hero-pill"><i class="fas fa-heart"></i> 100% free — forever, for everyone</span>
                     <h1>Find Someone Who <span class="hl">Complements</span> Your Life</h1>
                     <p class="hero-sub">Meaningful connections, genuine verified profiles, and a better way to find your life partner — built on trust, privacy and family values.</p>
+
                     <div class="hero-ctas">
                         <a href="{{ route('discover.index') }}" class="btn btn-primary btn-lg">
                             <i class="fas fa-magnifying-glass"></i> Find Your Match
@@ -21,50 +26,61 @@
                             <i class="fas fa-user-plus"></i> Create Your Profile
                         </a>
                     </div>
+
                     <div class="hero-trust-row">
                         <span><i class="fas fa-circle-check"></i> Manually reviewed profiles</span>
                         <span><i class="fas fa-lock"></i> Private by default</span>
                         <span><i class="fas fa-indian-rupee-sign"></i> No hidden charges</span>
                     </div>
+
                     <div class="hero-stat">
-                        <div><div class="num">{{ number_format($stats['members']) }}+</div><div class="lbl">Members</div></div>
-                        <div><div class="num">{{ number_format($stats['verified']) }}</div><div class="lbl">Verified Profiles</div></div>
-                        <div><div class="num">{{ number_format($stats['stories']) }}</div><div class="lbl">Success Stories</div></div>
-                        <div><div class="num">{{ $stats['divisions'] }}</div><div class="lbl">Locations</div></div>
+                        <div>
+                            <div class="num" data-counter="{{ $stats['members'] }}" data-suffix="+">{{ number_format($stats['members']) }}+</div>
+                            <div class="lbl">Members</div>
+                        </div>
+                        <div>
+                            <div class="num" data-counter="{{ $stats['verified'] }}">{{ number_format($stats['verified']) }}</div>
+                            <div class="lbl">Verified Profiles</div>
+                        </div>
+                        <div>
+                            <div class="num" data-counter="{{ $stats['stories'] }}">{{ number_format($stats['stories']) }}</div>
+                            <div class="lbl">Success Stories</div>
+                        </div>
+                        <div>
+                            <div class="num" data-counter="{{ $stats['divisions'] }}">{{ $stats['divisions'] }}</div>
+                            <div class="lbl">Locations</div>
+                        </div>
                     </div>
                 </div>
 
-                <div class="hero-visual">
-                    <div class="hero-photo-ring">
-                        @php($heroUsers = $featured->take(3)->values())
-                        @if ($heroUsers->count() >= 3)
-                            <div class="hero-photo-card hero-photo-1">
-                                <img src="{{ $heroUsers[0]->photoUrl() }}" alt="{{ $heroUsers[0]->name }}">
-                            </div>
-                            <div class="hero-photo-card hero-photo-2">
-                                <img src="{{ $heroUsers[1]->photoUrl() }}" alt="{{ $heroUsers[1]->name }}">
-                            </div>
-                            <div class="hero-photo-card hero-photo-3">
-                                <img src="{{ $heroUsers[2]->photoUrl() }}" alt="{{ $heroUsers[2]->name }}">
-                            </div>
-                        @else
-                            <div class="hero-photo-card hero-photo-1">
-                                <div class="pcard-phill-img"><span>👰</span></div>
-                            </div>
-                            <div class="hero-photo-card hero-photo-2">
-                                <div class="pcard-phill-img"><span>🤵</span></div>
-                            </div>
-                            <div class="hero-photo-card hero-photo-3">
-                                <div class="pcard-phill-img"><span>💍</span></div>
-                            </div>
-                        @endif
+                <div class="hero-visual reveal">
+                    <div class="hero-mandala"></div>
+
+                    <div class="hero-arch">
+                        <div class="hero-arch-photo">
+                            @if ($heroMain)
+                                <img src="{{ $heroMain->photoUrl() }}" alt="{{ $heroMain->name }}">
+                            @else
+                                <span>💍</span>
+                            @endif
+                        </div>
+                        <div class="hero-arch-badge">
+                            <i class="fas fa-hands-holding-heart"></i> Rishta ready
+                        </div>
                     </div>
-                    @php($first = $heroUsers->first())
+
+                    @if ($heroUsers->count() >= 2)
+                        <div class="hero-orb orb-1">
+                            <img src="{{ $heroUsers[1]->photoUrl() }}" alt="{{ $heroUsers[1]->name }}">
+                        </div>
+                    @endif
+                    @if ($heroUsers->count() >= 3)
+                        <div class="hero-orb orb-2">
+                            <img src="{{ $heroUsers[2]->photoUrl() }}" alt="{{ $heroUsers[2]->name }}">
+                        </div>
+                    @endif
+
                     <div class="hero-float-chip hero-chip-1">
-                        <span class="avatar avatar-sm"><img src="{{ $first?->photoUrl() }}" alt=""></span>
-                        <span>{{ $first?->name ?? 'Nusrat' }} &amp; joined Jibon Sathi</span>
-                    </div>
-                    <div class="hero-float-chip hero-chip-2">
                         <span class="badge badge-success"><i class="fas fa-badge-check"></i> Verified</span>
                         Genuine profiles only
                     </div>
@@ -72,6 +88,13 @@
                         <span class="badge badge-brand"><i class="fas fa-heart"></i> 92% Match</span>
                         Great compatibility found
                     </div>
+
+                    <span class="hero-petal p1"></span>
+                    <span class="hero-petal p2"></span>
+                    <span class="hero-petal p3"></span>
+                    <span class="hero-petal p4"></span>
+                    <span class="hero-petal p5"></span>
+                    <span class="hero-petal p6"></span>
                 </div>
             </div>
         </div>
@@ -153,8 +176,72 @@
         </form>
     </div>
 
+    {{-- ============================ BROWSE BY ============================ --}}
+    <section class="section section-browse">
+        <div class="container">
+            <div class="section-head reveal">
+                <span class="section-eyebrow"><i class="fas fa-compass"></i> Browse Matches</span>
+                <h2>Start From What Matters Most</h2>
+                <p>Jump straight into the matches that fit your family, faith and future plans.</p>
+            </div>
+
+            <div class="browse-grid">
+                <div class="card browse-card reveal">
+                    <div class="browse-head">
+                        <span class="browse-ico"><i class="fas fa-mosque"></i></span>
+                        <div>
+                            <h3>By Religion</h3>
+                            <p>Find a partner who shares your faith.</p>
+                        </div>
+                    </div>
+                    <div class="browse-chips">
+                        @foreach (\App\Support\Reference::religions() as $key => $label)
+                            <a href="{{ route('discover.index', ['religion' => $key]) }}" class="browse-chip">
+                                {{ $label }} <i class="fas fa-arrow-right"></i>
+                            </a>
+                        @endforeach
+                    </div>
+                </div>
+
+                <div class="card browse-card reveal" style="--reveal-delay:100ms">
+                    <div class="browse-head">
+                        <span class="browse-ico accent"><i class="fas fa-graduation-cap"></i></span>
+                        <div>
+                            <h3>By Education</h3>
+                            <p>Meet members with a similar background.</p>
+                        </div>
+                    </div>
+                    <div class="browse-chips">
+                        @foreach (\App\Support\Reference::educationLevels() as $key => $label)
+                            <a href="{{ route('discover.index', ['education' => $key]) }}" class="browse-chip">
+                                {{ $label }} <i class="fas fa-arrow-right"></i>
+                            </a>
+                        @endforeach
+                    </div>
+                </div>
+
+                <div class="card browse-card reveal" style="--reveal-delay:200ms">
+                    <div class="browse-head">
+                        <span class="browse-ico info"><i class="fas fa-location-dot"></i></span>
+                        <div>
+                            <h3>By Location</h3>
+                            <p>Search profiles across all eight divisions.</p>
+                        </div>
+                    </div>
+                    <div class="browse-chips">
+                        @foreach (\App\Support\Reference::divisionNames() as $division)
+                            <a href="{{ route('discover.index', ['division' => $division]) }}" class="browse-chip">
+                                {{ $division }} <i class="fas fa-arrow-right"></i>
+                            </a>
+                        @endforeach
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
     {{-- ========================= FEATURED PROFILES ========================= --}}
-    <section class="section">
+    <section class="section" style="padding-top:0">
         <div class="container">
             <div class="section-head reveal">
                 <span class="section-eyebrow"><i class="fas fa-star"></i> Featured Profiles</span>
@@ -196,6 +283,60 @@
             </div>
         </div>
     </section>
+
+    {{-- ========================== NEW MEMBERS (marquee) ========================== --}}
+    @if ($newest->isNotEmpty())
+        <section class="section-tight section-new">
+            <div class="container">
+                <div class="section-head reveal">
+                    <span class="section-eyebrow"><i class="fas fa-user-plus"></i> Just Joined</span>
+                    <h2>New Members This Season</h2>
+                    <p>Fresh profiles added recently — be among the first to say hello.</p>
+                </div>
+            </div>
+
+            <div class="marquee reveal">
+                <div class="marquee-track">
+                    @foreach ($newest as $member)
+                        <a href="{{ route('profiles.show', $member) }}" class="member-pill">
+                            <span class="avatar avatar-md"><img src="{{ $member->photoUrl() }}" alt="{{ $member->name }}" loading="lazy"></span>
+                            <span class="mp-info">
+                                <span class="mp-name">
+                                    {{ $member->name }}
+                                    @if ($member->isVerifiedProfile())<i class="fas fa-circle-check mp-verify"></i>@endif
+                                </span>
+                                <span class="mp-meta">
+                                    @if ($member->age()){{ $member->age() }} yrs · @endif{{ $member->profile?->locationLabel() }}
+                                </span>
+                            </span>
+                        </a>
+                    @endforeach
+                </div>
+                <div class="marquee-track" aria-hidden="true">
+                    @foreach ($newest as $member)
+                        <a href="{{ route('profiles.show', $member) }}" class="member-pill" tabindex="-1">
+                            <span class="avatar avatar-md"><img src="{{ $member->photoUrl() }}" alt="" loading="lazy"></span>
+                            <span class="mp-info">
+                                <span class="mp-name">
+                                    {{ $member->name }}
+                                    @if ($member->isVerifiedProfile())<i class="fas fa-circle-check mp-verify"></i>@endif
+                                </span>
+                                <span class="mp-meta">
+                                    @if ($member->age()){{ $member->age() }} yrs · @endif{{ $member->profile?->locationLabel() }}
+                                </span>
+                            </span>
+                        </a>
+                    @endforeach
+                </div>
+            </div>
+
+            <div class="text-center mt-5">
+                <a href="{{ route('discover.index', ['sort' => 'newest']) }}" class="btn btn-soft">
+                    <i class="fas fa-arrow-right"></i> See Newest Members
+                </a>
+            </div>
+        </section>
+    @endif
 
     {{-- ============================ HOW IT WORKS ============================ --}}
     <section class="section" style="background:linear-gradient(180deg,#FFF3EC,#FFF9F5)">
@@ -347,19 +488,19 @@
         <div class="container">
             <div class="stats-band reveal">
                 <div class="sb-cell">
-                    <div class="sb-num">{{ number_format($stats['members']) }}+</div>
+                    <div class="sb-num" data-counter="{{ $stats['members'] }}" data-suffix="+">{{ number_format($stats['members']) }}+</div>
                     <div class="sb-lbl">Registered Members</div>
                 </div>
                 <div class="sb-cell">
-                    <div class="sb-num">{{ number_format($stats['verified']) }}</div>
+                    <div class="sb-num" data-counter="{{ $stats['verified'] }}">{{ number_format($stats['verified']) }}</div>
                     <div class="sb-lbl">Verified Profiles</div>
                 </div>
                 <div class="sb-cell">
-                    <div class="sb-num">{{ number_format($stats['stories']) }}</div>
+                    <div class="sb-num" data-counter="{{ $stats['stories'] }}">{{ number_format($stats['stories']) }}</div>
                     <div class="sb-lbl">Marriages Celebrated</div>
                 </div>
                 <div class="sb-cell">
-                    <div class="sb-num">{{ $stats['divisions'] }}</div>
+                    <div class="sb-num" data-counter="{{ $stats['divisions'] }}">{{ $stats['divisions'] }}</div>
                     <div class="sb-lbl">Divisions Covered</div>
                 </div>
             </div>

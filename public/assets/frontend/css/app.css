@@ -1376,3 +1376,247 @@ input[type="date"] { min-height: 48px; }
   .section-head h2 { font-size: clamp(24px, 7vw, 30px); }
 }
 
+/* ==========================================================================
+   27. Homepage v3 — premium desi matrimony
+   Ornate arch hero, mandala + petal motion, browse-by tiles, member marquee.
+   Appended last so these rules win over earlier ones.
+   ========================================================================== */
+
+/* ------------------------------- 27.1 Hero visual ------------------------------- */
+.hero-visual {
+  position: relative;
+  min-height: 540px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  isolation: isolate;
+}
+
+/* Rotating mandala glow behind the arch */
+.hero-mandala {
+  position: absolute;
+  width: 640px; height: 640px;
+  max-width: 145%; max-height: 145%;
+  border-radius: 50%;
+  z-index: 0;
+  pointer-events: none;
+  background: repeating-conic-gradient(
+    from 0deg,
+    rgba(212, 175, 55, 0.22) 0deg 4deg,
+    rgba(212, 175, 55, 0) 4deg 12deg
+  );
+  -webkit-mask-image: radial-gradient(circle, transparent 52%, #000 57%, #000 63%, transparent 68%);
+  mask-image: radial-gradient(circle, transparent 52%, #000 57%, #000 63%, transparent 68%);
+  animation: mandalaSpin 90s linear infinite;
+}
+.hero-mandala::after {
+  content: ''; position: absolute; inset: 18%; border-radius: 50%;
+  border: 1px dashed rgba(139, 30, 63, 0.14);
+}
+@keyframes mandalaSpin { to { transform: rotate(360deg); } }
+
+/* Arched photo frame — the centrepiece */
+.hero-arch {
+  position: relative;
+  width: min(340px, 78%);
+  aspect-ratio: 3 / 4;
+  padding: 12px;
+  z-index: 1;
+  border-radius: 999px 999px 30px 30px;
+  background: linear-gradient(165deg, #FFFFFF, #FFF3EC 60%, #FBE7E0);
+  border: 1px solid var(--border-strong);
+  box-shadow: 0 34px 80px rgba(139, 30, 63, 0.22), 0 6px 18px rgba(139, 30, 63, 0.08);
+  animation: archFloat 9s ease-in-out infinite;
+}
+.hero-arch::before {
+  content: ''; position: absolute; inset: 6px; border-radius: inherit;
+  border: 2px dashed rgba(212, 175, 55, 0.6);
+  pointer-events: none;
+  z-index: 2;
+}
+.hero-arch::after {
+  content: ''; position: absolute; inset: 12px; border-radius: 999px 999px 22px 22px;
+  background: radial-gradient(120% 90% at 50% 0%, rgba(212, 175, 55, 0.14), transparent 62%);
+  pointer-events: none; z-index: 2;
+}
+.hero-arch-photo {
+  position: relative; width: 100%; height: 100%; overflow: hidden;
+  border-radius: 999px 999px 20px 20px;
+  display: flex; align-items: center; justify-content: center;
+  background: linear-gradient(150deg, var(--brand-100), #F6E7ED);
+  z-index: 1;
+}
+.hero-arch-photo img { width: 100%; height: 100%; object-fit: cover; }
+.hero-arch-photo span { font-size: 76px; }
+
+.hero-arch-badge {
+  position: absolute; left: 50%; bottom: -16px; transform: translateX(-50%);
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 9px 18px; border-radius: 999px; white-space: nowrap;
+  background: linear-gradient(135deg, var(--brand), var(--brand-700));
+  color: #fff; font-size: 12.5px; font-weight: 700; letter-spacing: 0.01em;
+  box-shadow: 0 12px 26px rgba(139, 30, 63, 0.34);
+  z-index: 4;
+}
+.hero-arch-badge i { color: var(--accent); }
+@keyframes archFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-12px); }
+}
+
+/* Floating avatar orbits */
+.hero-orb {
+  position: absolute; z-index: 3;
+  width: 76px; height: 76px; border-radius: 50%; overflow: hidden;
+  border: 4px solid #fff; box-shadow: var(--shadow-md);
+  animation: heroFloat 6.5s ease-in-out infinite;
+}
+.hero-orb img { width: 100%; height: 100%; object-fit: cover; }
+.hero-orb .orb-ph {
+  width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;
+  font-size: 26px; background: linear-gradient(135deg, var(--brand-100), #F6E7ED);
+}
+.hero-orb.orb-1 { top: 6%; left: 0; }
+.hero-orb.orb-2 { bottom: 14%; right: 0; animation-delay: 1.6s; }
+.hero-chip-1 { top: 0; right: 0; }
+.hero-chip-3 { bottom: 0; left: 2%; animation-delay: 0.9s; }
+
+/* Falling petals */
+.hero-petal {
+  position: absolute; top: -24px; z-index: 2; pointer-events: none;
+  width: 13px; height: 13px; opacity: 0;
+  border-radius: 62% 0 62% 0;
+  background: radial-gradient(circle at 32% 32%, #FBD3DE, #E79AB2);
+  animation: petalFall 11s linear infinite;
+}
+.hero-petal.p1 { left: 8%; animation-delay: 0s; }
+.hero-petal.p2 { left: 26%; animation-delay: 2.6s; animation-duration: 13s; }
+.hero-petal.p3 { left: 47%; animation-delay: 5.1s; }
+.hero-petal.p4 { left: 63%; animation-delay: 1.4s; animation-duration: 12s; }
+.hero-petal.p5 { left: 80%; animation-delay: 3.9s; animation-duration: 14s; }
+.hero-petal.p6 { left: 92%; animation-delay: 6.8s; }
+@keyframes petalFall {
+  0% { transform: translateY(-30px) translateX(0) rotate(0deg); opacity: 0; }
+  8% { opacity: 0.85; }
+  70% { opacity: 0.7; }
+  100% { transform: translateY(470px) translateX(-26px) rotate(320deg); opacity: 0; }
+}
+
+/* --------------------------- 27.2 Browse-by tiles --------------------------- */
+.section-browse { padding-top: clamp(40px, 6vw, 68px); }
+.browse-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+.browse-card {
+  position: relative; overflow: hidden;
+  padding: 26px 24px;
+  display: flex; flex-direction: column; gap: 18px;
+  border-radius: 20px;
+  transition: transform 0.22s ease, box-shadow 0.22s ease;
+}
+.browse-card::before {
+  content: ''; position: absolute; top: -70px; right: -70px;
+  width: 180px; height: 180px; border-radius: 50%;
+  background: radial-gradient(circle at 40% 40%, var(--brand-050), transparent 70%);
+  transition: transform 0.4s ease;
+}
+.browse-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-md); }
+.browse-card:hover::before { transform: scale(1.6); }
+.browse-head { position: relative; z-index: 1; display: flex; align-items: flex-start; gap: 14px; }
+.browse-ico {
+  flex: none; width: 50px; height: 50px; border-radius: 15px;
+  display: inline-flex; align-items: center; justify-content: center; font-size: 20px;
+  background: var(--brand-100); color: var(--brand);
+}
+.browse-ico.accent { background: var(--accent-050); color: var(--accent-600); }
+.browse-ico.info { background: var(--info-bg); color: var(--info); }
+.browse-head h3 { font-size: 17px; margin: 2px 0 4px; }
+.browse-head p { color: var(--muted); font-size: 13px; margin: 0; }
+.browse-chips {
+  position: relative; z-index: 1;
+  display: flex; flex-wrap: wrap; gap: 8px;
+  margin-top: auto;
+  max-height: 190px; overflow-y: auto;
+  scrollbar-width: thin;
+  padding-right: 2px;
+}
+.browse-chip {
+  display: inline-flex; align-items: center; gap: 7px;
+  padding: 8px 14px; border-radius: 999px;
+  background: var(--brand-050); border: 1px solid transparent;
+  color: var(--brand); font-size: 12.5px; font-weight: 600;
+  transition: all 0.16s ease;
+}
+.browse-chip i { font-size: 10px; opacity: 0; transform: translateX(-4px); transition: all 0.16s ease; }
+.browse-chip:hover { background: var(--brand); color: #fff; border-color: var(--brand); transform: translateY(-1px); }
+.browse-chip:hover i { opacity: 1; transform: translateX(0); }
+
+/* --------------------------- 27.3 New-members marquee --------------------------- */
+.section-new { padding-top: clamp(40px, 6vw, 72px); }
+.marquee {
+  display: flex;
+  gap: 16px;
+  overflow: hidden;
+  padding-block: 12px;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent);
+}
+.marquee-track {
+  display: flex; align-items: center; gap: 16px;
+  flex: none;
+  animation: marqueeScroll 56s linear infinite;
+  will-change: transform;
+}
+.marquee:hover .marquee-track { animation-play-state: paused; }
+@keyframes marqueeScroll {
+  from { transform: translateX(0); }
+  to { transform: translateX(calc(-100% - 16px)); }
+}
+.member-pill {
+  display: inline-flex; align-items: center; gap: 12px;
+  padding: 10px 20px 10px 10px; border-radius: 999px;
+  background: #fff; border: 1px solid var(--border);
+  box-shadow: var(--shadow-xs);
+  white-space: nowrap; flex: none;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+}
+.member-pill:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); border-color: rgba(139, 30, 63, 0.25); }
+.member-pill .avatar { border: 2px solid var(--brand-050); }
+.mp-info { display: flex; flex-direction: column; gap: 1px; }
+.mp-name { font-family: var(--font-display); font-weight: 700; font-size: 14px; color: var(--text); display: inline-flex; align-items: center; gap: 6px; }
+.mp-verify { color: var(--info); font-size: 12px; }
+.mp-meta { font-size: 12px; color: var(--muted); }
+
+/* --------------------------- 27.4 Animated counters --------------------------- */
+[data-counter] { font-variant-numeric: tabular-nums; }
+
+/* --------------------------- 27.5 Reduced motion --------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  .hero-arch, .hero-mandala, .hero-orb, .hero-petal, .marquee-track { animation: none !important; }
+  .hero-petal { display: none; }
+}
+
+/* --------------------------- 27.6 Responsive --------------------------- */
+@media (max-width: 991px) {
+  .hero-visual { min-height: 440px; margin-top: 12px; }
+  .hero-mandala { width: 520px; height: 520px; }
+  .browse-grid { grid-template-columns: 1fr; }
+  .browse-chips { max-height: none; }
+}
+@media (max-width: 600px) {
+  .hero-visual { min-height: 380px; }
+  .hero-arch { width: min(250px, 74%); padding: 10px; }
+  .hero-orb { width: 60px; height: 60px; }
+  .hero-orb.orb-2 { bottom: 10%; }
+  .hero-float-chip { font-size: 12px; padding: 10px 13px; }
+  .hero-chip-1 { top: -6px; right: -6px; }
+  .hero-chip-3 { bottom: -6px; left: -6px; }
+  .member-pill { padding-right: 16px; }
+}
+@media (max-width: 420px) {
+  .hero-chip-1 { display: none; }
+  .hero-orb.orb-1 { left: -6px; }
+}
+

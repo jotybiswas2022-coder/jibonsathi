@@ -24,12 +24,14 @@ class HomeController extends Controller
         $viewer = $request->user();
 
         $featured = $this->discovery->featured(6);
+        $newest = $this->discovery->newest(12);
         $recommended = $viewer ? $this->dashboard->recommended($viewer, 6) : collect();
 
         $gallery = $recommended->isNotEmpty() ? $recommended : $featured;
 
         return view('frontend.home.index', [
             'featured' => $featured,
+            'newest' => $newest,
             'recommended' => $recommended,
             'scores' => $viewer ? $this->matcher->decorate($gallery, $viewer) : [],
             'stories' => SuccessStory::query()

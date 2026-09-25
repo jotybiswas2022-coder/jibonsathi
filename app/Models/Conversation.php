@@ -57,7 +57,13 @@ class Conversation extends Model
             return $this->userTwo;
         }
 
-        return $this->user_one_id === $userId ? $this->userOne : $this->userTwo;
+        // The fallback used to re-test user_one_id, so the second participant
+        // was handed back as their own partner.
+        if ($this->user_two_id === $userId) {
+            return $this->userOne;
+        }
+
+        return null;
     }
 
     public function hasParticipant(int $userId): bool

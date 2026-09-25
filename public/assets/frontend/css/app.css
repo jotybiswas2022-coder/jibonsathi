@@ -1739,6 +1739,29 @@ input[type="date"] { min-height: 48px; }
   .quick-chip, .browse-chip, .member-pill { min-height: 36px; }
 }
 
+/* ------------------- 28.8 Homepage on small phones ------------------- */
+/* 28.4 held the hero search at two columns all the way down to 320px, which
+   left each select narrower than its own widest option ("Awaiting Divorce",
+   "Secondary (SSC)"), so the text clipped. One column below 380px fixes it.
+   The same pass restores a readable size to the field labels and the Verified
+   badge, and gives the footer links a real tap row instead of a 22px line. */
+@media (max-width: 600px) {
+  .search-panel .field > label { font-size: 11px; }
+  :is(.grid-profiles, .cards-grid) .pcard-verify .badge { font-size: 11px; }
+}
+/* The footer stacks its link columns from 900px down, so the rows get their
+   padding there rather than only on phones. */
+@media (max-width: 900px) {
+  .footer-links { gap: 2px; }
+  .footer-links a { padding-block: 6px; }
+}
+@media (max-width: 400px) {
+  .hero h1 { font-size: clamp(28px, 8.4vw, 33px); }
+}
+@media (max-width: 380px) {
+  .search-grid { grid-template-columns: 1fr; }
+}
+
 /* ==========================================================================
    29. Navbar v2
    Fix: the guest "Login / Create Profile" pair was rendered twice on desktop —

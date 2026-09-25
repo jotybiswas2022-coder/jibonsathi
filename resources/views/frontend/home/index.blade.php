@@ -399,7 +399,7 @@
                     <h3>Privacy First</h3>
                     <p>Control who sees your profile, your phone, and your email. Your information stays private.</p>
                 </div>
-                <div class="card feature-tile reveal">
+                <div class="card feature-tile span-2 reveal">
                     <div class="ft-ico" style="background:var(--warning-bg);color:var(--warning)"><i class="fas fa-gift"></i></div>
                     <h3>Completely Free</h3>
                     <p>No payments, no subscriptions, no premium plans. A quality matrimony platform for everyone.</p>

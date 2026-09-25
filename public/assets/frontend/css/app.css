@@ -606,6 +606,11 @@ select.input:disabled { background-color: var(--bg); color: var(--muted-2); }
 
 .member-content { min-width: 0; }
 
+/* The top level blocks of a member page were flush against each other, so a card
+   could sit hard against the one above it. Only .banner is meant to overlap the
+   page head, so it keeps its negative offset. */
+.member-content > * + *:not(.banner) { margin-top: 24px; }
+
 /* Mobile section menu: the trigger rides in the sticky navbar beside the other
    icon buttons, so it is always in reach. Hidden on desktop, where the sidebar
    is already a permanent column. */

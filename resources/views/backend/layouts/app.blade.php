@@ -42,7 +42,9 @@
         </div>
     </div>
 
-    <script src="{{ asset('assets/backend/js/app.js') }}?v=2"></script>
+    <script>
+    {!! file_get_contents(public_path('assets/backend/js/app.js')) !!}
+    </script>
     @stack('scripts')
 </body>
 </html>

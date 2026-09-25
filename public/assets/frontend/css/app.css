@@ -1310,9 +1310,12 @@ input[type="date"] { min-height: 48px; }
 }
 
 /* ---------- 26.12 Scroll reveal ---------- */
+/* Hidden state only applies while JS is active (html.reveal-ready, set by an inline
+   script in <head>). If the app script never loads or JS is disabled, the class is
+   absent and every block stays visible — content must never depend on JS to appear. */
 @media (prefers-reduced-motion: no-preference) {
-  .reveal { opacity: 0; transform: translateY(26px); transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.16, 1, 0.3, 1); transition-delay: var(--reveal-delay, 0ms); will-change: opacity, transform; }
-  .reveal.revealed { opacity: 1; transform: translateY(0); }
+  html.reveal-ready .reveal { opacity: 0; transform: translateY(26px); transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.16, 1, 0.3, 1); transition-delay: var(--reveal-delay, 0ms); will-change: opacity, transform; }
+  html.reveal-ready .reveal.revealed { opacity: 1; transform: translateY(0); }
 }
 @media (prefers-reduced-motion: reduce) {
   .hero-photo-card, .hero-float-chip, .hero-deco-blob { animation: none; }

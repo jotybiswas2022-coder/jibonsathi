@@ -68,6 +68,9 @@
 
   /* ------------------------------ scroll reveal ------------------------------ */
   function initScrollReveal() {
+    // Cancels the <head> failsafe so reveal-ready is not removed again.
+    document.documentElement.setAttribute('data-reveal-init', '1');
+
     const els = $$('.reveal');
     if (!els.length) return;
     if (!('IntersectionObserver' in window)) {

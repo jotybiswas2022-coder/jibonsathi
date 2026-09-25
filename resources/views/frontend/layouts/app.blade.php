@@ -11,6 +11,19 @@
     <style>
     {!! file_get_contents(public_path('assets/frontend/css/app.css')) !!}
 </style>
+    <script>
+        // Progressive enhancement: scroll-reveal blocks are only hidden while JS is
+        // active. If the app script never initialises, everything is shown again.
+        (function () {
+            var root = document.documentElement;
+            root.classList.add('reveal-ready');
+            window.setTimeout(function () {
+                if (root.getAttribute('data-reveal-init') !== '1') {
+                    root.classList.remove('reveal-ready');
+                }
+            }, 2500);
+        })();
+    </script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -32,7 +45,9 @@
         @include('frontend.components.bottom-nav')
     @endauth
 
-    <script src="{{ asset('assets/frontend/js/app.js') }}?v=4"></script>
+    <script>
+    {!! file_get_contents(public_path('assets/frontend/js/app.js')) !!}
+    </script>
     <script>
         window.JibonSathi = window.JibonSathi || {};
         @auth

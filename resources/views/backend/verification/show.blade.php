@@ -62,16 +62,37 @@
                         <textarea name="note" id="note" class="input" rows="3" maxlength="500"
                                   placeholder="Optional note for the member">{{ old('note') }}</textarea>
                     </div>
-                    <div style="display:flex;flex-direction:column;gap:8px">
-                        <button name="decision" value="approved" class="btn btn-success-soft btn-block" style="color:var(--success)"><i class="fas fa-check"></i> Approve Verification</button>
-                        <button name="decision" value="rejected" class="btn btn-danger-soft btn-block" data-confirm-submit data-confirm="Reject this identity verification?"><i class="fas fa-xmark"></i> Reject</button>
-                        <button name="decision" value="pending" class="btn btn-outline btn-block">Keep as Pending</button>
+                    <div class="decision-grid" style="grid-template-columns:1fr">
+                        <button name="decision" value="approved" class="btn btn-success"
+                                data-confirm-title="Approve this verification?"
+                                data-confirm="The member gets a verified badge and can use the features that need one."
+                                data-confirm-ok="Approve verification" data-confirm-icon="success"
+                                data-confirm-color="#16A34A" data-confirm-focus-cancel>
+                            <i class="fas fa-check"></i> Approve Verification
+                        </button>
+                        <button name="decision" value="rejected" class="btn btn-danger-soft"
+                                data-confirm-title="Reject this verification?"
+                                data-confirm="The member is told the document was not accepted and can submit a new one."
+                                data-confirm-ok="Reject verification" data-confirm-icon="error"
+                                data-confirm-color="#DC2626">
+                            <i class="fas fa-xmark"></i> Reject
+                        </button>
+                        <button name="decision" value="pending" class="btn btn-outline"
+                                data-confirm-title="Keep this verification pending?"
+                                data-confirm="Nothing changes except the status stays in the review queue."
+                                data-confirm-ok="Keep pending" data-confirm-icon="question"
+                                data-confirm-color="#6B7280" data-confirm-focus-cancel>
+                            Keep as Pending
+                        </button>
                     </div>
                 </form>
             </div>
 
             <form method="POST" action="{{ route('backend.verification.destroy', $verification) }}"
-                  data-confirm="Delete this verification record and its stored document?" style="text-align:center">
+                  data-confirm-title="Delete this verification record?"
+                  data-confirm="The record and its uploaded document are removed permanently."
+                  data-confirm-ok="Delete record" data-confirm-icon="error"
+                  data-confirm-color="#DC2626" style="text-align:center">
                 @csrf @method('DELETE')
                 <button class="btn btn-ghost btn-sm" style="color:var(--danger)"><i class="fas fa-trash"></i> Delete Record</button>
             </form>

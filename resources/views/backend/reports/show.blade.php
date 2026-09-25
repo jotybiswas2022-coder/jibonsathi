@@ -83,11 +83,35 @@
                         <textarea name="note" id="note" class="input" rows="3" maxlength="500"
                                   placeholder="Internal note on the decision…">{{ old('note') }}</textarea>
                     </div>
-                    <div style="display:flex;flex-direction:column;gap:8px">
-                        <button name="decision" value="investigating" class="btn btn-warning" style="background:var(--warning-bg);color:var(--warning)"><i class="fas fa-magnifying-glass"></i> Mark Investigating</button>
-                        <button name="decision" value="resolved" class="btn btn-success-soft" style="color:var(--success)"><i class="fas fa-check"></i> Resolve</button>
-                        <button name="decision" value="dismissed" class="btn btn-outline"><i class="fas fa-xmark"></i> Dismiss</button>
-                        <button name="decision" value="suspend" class="btn btn-danger" style="background:var(--danger);color:#fff" data-confirm-submit data-confirm="Suspend the reported member's account?"><i class="fas fa-ban"></i> Suspend Reported Member</button>
+                    <div class="decision-grid" style="grid-template-columns:1fr">
+                        <button name="decision" value="investigating" class="btn btn-warning-soft"
+                                data-confirm-title="Mark as investigating?"
+                                data-confirm="The case stays open and the reported member is not notified."
+                                data-confirm-ok="Mark investigating" data-confirm-icon="warning"
+                                data-confirm-color="#D97706" data-confirm-focus-cancel>
+                            <i class="fas fa-magnifying-glass"></i> Mark Investigating
+                        </button>
+                        <button name="decision" value="resolved" class="btn btn-success"
+                                data-confirm-title="Resolve this case?"
+                                data-confirm="The case is closed and the reporter is notified."
+                                data-confirm-ok="Resolve case" data-confirm-icon="success"
+                                data-confirm-color="#16A34A" data-confirm-focus-cancel>
+                            <i class="fas fa-check"></i> Resolve
+                        </button>
+                        <button name="decision" value="dismissed" class="btn btn-outline"
+                                data-confirm-title="Dismiss this case?"
+                                data-confirm="The report is closed with no action taken."
+                                data-confirm-ok="Dismiss case" data-confirm-icon="question"
+                                data-confirm-color="#6B7280" data-confirm-focus-cancel>
+                            <i class="fas fa-xmark"></i> Dismiss
+                        </button>
+                        <button name="decision" value="suspend" class="btn btn-danger"
+                                data-confirm-title="Suspend the reported member?"
+                                data-confirm="{{ $report->reportedUser?->name ?? 'The member' }} is signed out and blocked from the site."
+                                data-confirm-ok="Suspend member" data-confirm-icon="error"
+                                data-confirm-color="#DC2626">
+                            <i class="fas fa-ban"></i> Suspend Reported Member
+                        </button>
                     </div>
                 </form>
             </div>

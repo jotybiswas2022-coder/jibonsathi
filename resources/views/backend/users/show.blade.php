@@ -40,24 +40,40 @@
             <div style="display:flex;flex-direction:column;gap:8px;text-align:left">
                 <a href="{{ route('backend.users.edit', $user) }}" class="btn btn-outline btn-sm"><i class="fas fa-pen"></i> Edit Member</a>
                 @unless ($isVerified)
-                    <form method="POST" action="{{ route('backend.users.verify', $user) }}">
+                    <form method="POST" action="{{ route('backend.users.verify', $user) }}"
+                          data-confirm-title="Approve and verify?"
+                          data-confirm="{{ $user->name }} will get a verified badge and full access to messaging."
+                          data-confirm-ok="Approve &amp; verify" data-confirm-icon="success"
+                          data-confirm-color="#16A34A" data-confirm-focus-cancel>
                         @csrf
                         <button class="btn btn-success-soft btn-sm btn-block"><i class="fas fa-check"></i> Approve & Verify Profile</button>
                     </form>
                 @endunless
                 @if ($user->status !== 'suspended' && ! $user->is_admin)
-                    <form method="POST" action="{{ route('backend.users.suspend', $user) }}" data-confirm="Suspend {{ $user->name }}? They will no longer appear in searches.">
+                    <form method="POST" action="{{ route('backend.users.suspend', $user) }}"
+                          data-confirm-title="Suspend {{ $user->name }}?"
+                          data-confirm="They are signed out, blocked from the site, and disappear from search results."
+                          data-confirm-ok="Suspend member" data-confirm-icon="error"
+                          data-confirm-color="#DC2626">
                         @csrf
                         <button class="btn btn-danger-soft btn-sm btn-block"><i class="fas fa-ban"></i> Suspend</button>
                     </form>
                 @elseif ($user->status === 'suspended')
-                    <form method="POST" action="{{ route('backend.users.activate', $user) }}">
+                    <form method="POST" action="{{ route('backend.users.activate', $user) }}"
+                          data-confirm-title="Reactivate {{ $user->name }}?"
+                          data-confirm="The member signs in again and appears in search results straight away."
+                          data-confirm-ok="Reactivate" data-confirm-icon="question"
+                          data-confirm-color="#16A34A" data-confirm-focus-cancel>
                         @csrf
                         <button class="btn btn-success-soft btn-sm btn-block"><i class="fas fa-rotate-left"></i> Reactivate</button>
                     </form>
                 @endif
                 @if (! $user->is_admin)
-                    <form method="POST" action="{{ route('backend.users.destroy', $user) }}" data-confirm="Permanently remove this member and their data? This cannot be undone.">
+                    <form method="POST" action="{{ route('backend.users.destroy', $user) }}"
+                          data-confirm-title="Delete {{ $user->name }} permanently?"
+                          data-confirm="The member, their messages, photos and reports are removed. This cannot be undone."
+                          data-confirm-ok="Yes, delete everything" data-confirm-icon="error"
+                          data-confirm-color="#DC2626">
                         @csrf @method('DELETE')
                         <button class="btn btn-ghost btn-sm btn-block" style="color:var(--danger)"><i class="fas fa-trash"></i> Delete Member</button>
                     </form>

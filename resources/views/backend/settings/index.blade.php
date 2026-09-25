@@ -12,7 +12,11 @@
         <div class="alert alert-success" data-auto-close><i class="fas fa-circle-check"></i> {{ session('success') }}</div>
     @endif
 
-    <form method="POST" action="{{ route('backend.settings.update') }}" enctype="multipart/form-data" style="max-width:940px">
+    <form method="POST" action="{{ route('backend.settings.update') }}" enctype="multipart/form-data" style="max-width:940px"
+          data-confirm-title="Save these settings?"
+          data-confirm="The changes go live for every visitor immediately."
+          data-confirm-ok="Save settings" data-confirm-icon="question"
+          data-confirm-color="#8B1E3F" data-confirm-focus-cancel>
         @csrf
         @method('POST')
 

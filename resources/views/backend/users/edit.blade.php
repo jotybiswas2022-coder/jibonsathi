@@ -5,7 +5,11 @@
 
 @section('content')
     <div class="card card-pad" style="max-width:640px">
-        <form method="POST" action="{{ route('backend.users.update', $user) }}">
+        <form method="POST" action="{{ route('backend.users.update', $user) }}"
+              data-confirm-title="Save changes to {{ $user->name }}?"
+              data-confirm="The updated details replace the current profile straight away."
+              data-confirm-ok="Save changes" data-confirm-icon="question"
+              data-confirm-color="#8B1E3F" data-confirm-focus-cancel>
             @csrf
             @method('PUT')
 

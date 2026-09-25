@@ -10,6 +10,7 @@
     {!! file_get_contents(public_path('assets/backend/css/app.css')) !!}
 </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="{{ asset('assets/backend/vendor/sweetalert2.min.css') }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 </head>
@@ -29,7 +30,10 @@
                     <a href="{{ route('home') }}" class="btn btn-outline btn-sm" target="_blank" rel="noopener">
                         <i class="fas fa-globe"></i> View Website
                     </a>
-                    <form method="POST" action="{{ route('logout') }}" style="margin:0">
+                    <form method="POST" action="{{ route('logout') }}" style="margin:0"
+                          data-confirm-title="Log out of the admin panel?"
+                          data-confirm="Any unsaved changes on this page will be lost."
+                          data-confirm-ok="Log out" data-confirm-icon="question">
                         @csrf
                         <button type="submit" class="btn btn-ghost btn-sm"><i class="fas fa-right-from-bracket"></i> Logout</button>
                     </form>
@@ -42,6 +46,9 @@
         </div>
     </div>
 
+    <script>
+    {!! file_get_contents(public_path('assets/backend/vendor/sweetalert2.all.min.js')) !!}
+    </script>
     <script>
     {!! file_get_contents(public_path('assets/backend/js/app.js')) !!}
     </script>

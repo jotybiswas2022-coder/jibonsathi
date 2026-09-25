@@ -4,7 +4,11 @@
 
 <form method="POST"
       action="{{ $isEditing ? route('backend.success-stories.update', $story) : route('backend.success-stories.store') }}"
-      enctype="multipart/form-data">
+      enctype="multipart/form-data"
+      data-confirm-title="{{ $isEditing ? 'Save changes to this story?' : 'Create this success story?' }}"
+      data-confirm="{{ $isEditing ? 'Your edits replace the published story straight away.' : 'The story is added to the admin list. Publish it separately when it is ready to go live.' }}"
+      data-confirm-ok="{{ $isEditing ? 'Save changes' : 'Create story' }}" data-confirm-icon="question"
+      data-confirm-color="#8B1E3F" data-confirm-focus-cancel>
     @csrf
     @if ($isEditing) @method('PUT') @endif
 

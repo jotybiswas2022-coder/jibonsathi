@@ -37,12 +37,96 @@
 
   function initDropdowns() { /* reserved */ }
 
+  /* ------------------------- confirms (SweetAlert2) ------------------------ */
+  /* One delegated listener for the whole panel. A single form can carry several
+     confirm buttons, so the message has to come from the button that was used
+     (event.submitter) rather than from every button on the form. */
   function initConfirms() {
-    $$('form[data-confirm], [data-confirm-submit]').forEach((el) => {
-      const form = el.tagName === 'FORM' ? el : el.closest('form');
-      if (!form) return;
-      form.addEventListener('submit', (e) => {
-        if (!confirm(el.getAttribute('data-confirm') || 'Are you sure?')) e.preventDefault();
+    let reSubmitting = false;
+
+    /* Any data-confirm* attribute turns an element into a confirm trigger, so a
+       button may carry just a title, or a title plus a longer explanation. */
+    const hasConfirm = (el) => !!el && Array.from(el.attributes).some((a) => a.name.startsWith('data-confirm'));
+
+    const optionsFor = (el) => {
+      const title = el.getAttribute('data-confirm-title') || 'Are you sure?';
+      const text = el.getAttribute('data-confirm') || '';
+      const confirmText = el.getAttribute('data-confirm-ok') || 'Yes, continue';
+      const cancelText = el.getAttribute('data-confirm-cancel') || 'Cancel';
+      const icon = el.getAttribute('data-confirm-icon') || 'warning';
+      return {
+        title: title,
+        text: text || undefined,
+        icon: icon,
+        showCancelButton: true,
+        confirmButtonText: confirmText,
+        cancelButtonText: cancelText,
+        confirmButtonColor: el.getAttribute('data-confirm-color') || undefined,
+        focusCancel: el.getAttribute('data-confirm-focus-cancel') !== null,
+        reverseButtons: true,
+      };
+    };
+
+    const nativeConfirm = (el) => window.confirm(
+      (el.getAttribute('data-confirm-title') || 'Are you sure?') +
+      (el.getAttribute('data-confirm') ? '\n\n' + el.getAttribute('data-confirm') : '')
+    );
+
+    const send = (form, submitter) => {
+      reSubmitting = true;
+      if (submitter && typeof form.requestSubmit === 'function') {
+        form.requestSubmit(submitter);
+      } else {
+        /* Older browsers drop the submitter, so carry its name/value over. */
+        if (submitter && submitter.name) {
+          const hidden = document.createElement('input');
+          hidden.type = 'hidden';
+          hidden.name = submitter.name;
+          hidden.value = submitter.value;
+          form.appendChild(hidden);
+        }
+        form.submit();
+      }
+      setTimeout(() => { reSubmitting = false; }, 0);
+    };
+
+    document.addEventListener('submit', (e) => {
+      const form = e.target;
+      if (!(form instanceof HTMLFormElement)) return;
+
+      const submitter = e.submitter || form.querySelector('[data-confirm-submit]:focus');
+      const el = hasConfirm(submitter) ? submitter
+        : (hasConfirm(form) ? form : null);
+      if (!el) return;
+      if (reSubmitting) return;
+
+      e.preventDefault();
+      if (typeof window.Swal === 'undefined') {
+        if (nativeConfirm(el)) send(form, submitter);
+        return;
+      }
+      window.Swal.fire(optionsFor(el)).then((result) => {
+        if (result.isConfirmed) send(form, submitter);
+      });
+    });
+
+    /* Submit buttons outside a form (rare) still get a guard. */
+    let reClicking = false;
+    $$('[data-confirm-submit], [data-confirm-title]').forEach((btn) => {
+      if (btn.closest('form')) return;
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        if (reClicking) return;
+        if (typeof window.Swal === 'undefined') {
+          if (nativeConfirm(btn)) { reClicking = true; btn.click(); setTimeout(() => { reClicking = false; }, 0); }
+          return;
+        }
+        window.Swal.fire(optionsFor(btn)).then((result) => {
+          if (!result.isConfirmed) return;
+          reClicking = true;
+          btn.click();
+          setTimeout(() => { reClicking = false; }, 0);
+        });
       });
     });
   }

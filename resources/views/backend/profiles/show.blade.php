@@ -50,7 +50,12 @@
                         @foreach ($photos as $photo)
                             <div style="border-radius:10px;overflow:hidden;position:relative">
                                 <img src="{{ $photo->url() }}" alt="" style="width:100%;aspect-ratio:1;object-fit:cover">
-                                <form method="POST" action="{{ route('backend.profiles.photos.destroy', [$profile, $photo]) }}" data-confirm="Remove this photo from the gallery?" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.45);opacity:0;transition:.15s">
+                                <form method="POST" action="{{ route('backend.profiles.photos.destroy', [$profile, $photo]) }}"
+                                      data-confirm-title="Remove this photo?"
+                                      data-confirm="It disappears from the member's gallery. The member can upload it again later."
+                                      data-confirm-ok="Remove photo" data-confirm-icon="error"
+                                      data-confirm-color="#DC2626"
+                                      style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.45);opacity:0;transition:.15s">
                                     @csrf @method('DELETE')
                                     <button class="btn btn-danger btn-sm"><i class="fas fa-trash"></i></button>
                                 </form>
@@ -104,8 +109,11 @@
         </div>
     </div>
 
-    <div class="card card-pad mt-4" style="max-width:640px">
+    <div class="card card-pad mt-4" style="max-width:720px">
         <h3 class="card-title"><i class="fas fa-gavel"></i> Moderation Decision</h3>
+        <p class="text-muted text-small" style="margin:0 0 14px">
+            Every option asks for confirmation first, so a stray click cannot change a member's status.
+        </p>
         <form method="POST" action="{{ route('backend.profiles.moderate', $profile) }}">
             @csrf
             <div class="field">
@@ -113,11 +121,35 @@
                 <textarea name="note" id="note" class="input" rows="3" maxlength="500"
                           placeholder="e.g. Please add a clear photo, or we removed the listed information because…">{{ old('note') }}</textarea>
             </div>
-            <div class="flex gap-2" style="flex-wrap:wrap">
-                <button name="decision" value="approved" class="btn btn-success-soft"><i class="fas fa-check"></i> Approve Profile</button>
-                <button name="decision" value="pending" class="btn btn-warning" style="background:var(--warning-bg);color:var(--warning)"><i class="fas fa-clock"></i> Back to Pending</button>
-                <button name="decision" value="rejected" class="btn btn-danger-soft" data-confirm-submit data-confirm="Reject this profile? The member will be notified."><i class="fas fa-xmark"></i> Reject</button>
-                <button name="decision" value="suspended" class="btn btn-danger" data-confirm-submit data-confirm="Suspend this member's account?" style="background:var(--danger);color:#fff"><i class="fas fa-ban"></i> Suspend Account</button>
+            <div class="decision-grid">
+                <button name="decision" value="approved" class="btn btn-success"
+                        data-confirm-title="Approve this profile?"
+                        data-confirm="The profile becomes visible in search and the member can receive messages."
+                        data-confirm-ok="Approve profile" data-confirm-icon="success"
+                        data-confirm-color="#16A34A" data-confirm-focus-cancel>
+                    <i class="fas fa-check"></i> Approve Profile
+                </button>
+                <button name="decision" value="pending" class="btn btn-warning"
+                        data-confirm-title="Move back to pending?"
+                        data-confirm="The profile leaves search until you review it again."
+                        data-confirm-ok="Move to pending" data-confirm-icon="warning"
+                        data-confirm-color="#D97706" data-confirm-focus-cancel>
+                    <i class="fas fa-clock"></i> Back to Pending
+                </button>
+                <button name="decision" value="rejected" class="btn btn-danger-soft"
+                        data-confirm-title="Reject this profile?"
+                        data-confirm="The member will be notified and the profile stays hidden."
+                        data-confirm-ok="Reject profile" data-confirm-icon="error"
+                        data-confirm-color="#DC2626" data-confirm-focus-cancel>
+                    <i class="fas fa-xmark"></i> Reject
+                </button>
+                <button name="decision" value="suspended" class="btn btn-danger"
+                        data-confirm-title="Suspend this account?"
+                        data-confirm="The member is signed out and blocked from the site until you reactivate the account."
+                        data-confirm-ok="Suspend account" data-confirm-icon="error"
+                        data-confirm-color="#DC2626">
+                    <i class="fas fa-ban"></i> Suspend Account
+                </button>
             </div>
         </form>
     </div>

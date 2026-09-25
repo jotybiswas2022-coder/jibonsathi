@@ -50,10 +50,15 @@
                         <td><strong>{{ $story->groom_name }}</strong> &amp; <strong>{{ $story->bride_name }}</strong></td>
                         <td class="text-muted">{{ $story->location }}</td>
                         <td>
-                            <form method="POST" action="{{ route('backend.success-stories.toggle-publish', $story) }}">
+                            <form method="POST" action="{{ route('backend.success-stories.toggle-publish', $story) }}"
+                                  data-confirm-title="{{ $story->is_published ? 'Unpublish this story?' : 'Publish this story?' }}"
+                                  data-confirm="{{ $story->is_published ? 'It disappears from the public success-stories page.' : 'It goes live on the public success-stories page straight away.' }}"
+                                  data-confirm-ok="{{ $story->is_published ? 'Unpublish' : 'Publish' }}"
+                                  data-confirm-icon="question"
+                                  data-confirm-color="{{ $story->is_published ? '#6B7280' : '#16A34A' }}"
+                                  data-confirm-focus-cancel>
                                 @csrf
-                                <button class="btn btn-{{ $story->is_published ? 'success-soft btn-sm' : 'warning btn-sm' }}"
-                                        style="{{ ! $story->is_published ? 'background:var(--warning-bg);color:var(--warning)' : '' }}">
+                                <button class="btn btn-{{ $story->is_published ? 'success-soft btn-sm' : 'warning-soft btn-sm' }}">
                                     {{ $story->is_published ? 'Published' : 'Draft' }}
                                 </button>
                             </form>
@@ -64,7 +69,10 @@
                             <a href="{{ route('success-stories.show', $story) }}" target="_blank" class="btn btn-ghost btn-sm"><i class="fas fa-external-link"></i></a>
                             <a href="{{ route('backend.success-stories.edit', $story) }}" class="btn btn-outline btn-sm"><i class="fas fa-pen"></i> Edit</a>
                             <form method="POST" action="{{ route('backend.success-stories.destroy', $story) }}"
-                                  data-confirm="Delete this success story?" style="display:inline">
+                                  data-confirm-title="Delete this success story?"
+                                  data-confirm="{{ $story->groom_name }} &amp; {{ $story->bride_name }} will be removed permanently."
+                                  data-confirm-ok="Delete story" data-confirm-icon="error"
+                                  data-confirm-color="#DC2626" style="display:inline">
                                 @csrf @method('DELETE')
                                 <button class="btn btn-danger-soft btn-sm"><i class="fas fa-trash"></i></button>
                             </form>

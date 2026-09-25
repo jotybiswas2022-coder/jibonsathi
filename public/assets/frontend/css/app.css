@@ -1635,6 +1635,16 @@ input[type="date"] { min-height: 48px; }
 /* ------------------- 28.1 Profile grids: reuse as a shared class ------------------- */
 .grid.grid-profiles { grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); }
 
+/* Up to six recommended cards fill a four-column grid as 4 + 2, so the short last
+   row hugged the left edge. A wrapping flex row centres it instead, and the
+   basis is pinned to the width the grid already produced, so no card resizes.
+   Below four columns, six cards already divide into full rows, so the grid
+   stays as it is. */
+@media (min-width: 1124px) {
+  .grid.grid-profiles.grid-center-rows { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; }
+  .grid.grid-profiles.grid-center-rows > * { flex: 0 1 calc((100% - 60px) / 4); min-width: 250px; }
+}
+
 /* ------------------- 28.2 Hero: keep the visual in a contained box ------------------- */
 @media (max-width: 991px) {
   .hero-visual { max-width: 440px; margin-inline: auto; width: 100%; }

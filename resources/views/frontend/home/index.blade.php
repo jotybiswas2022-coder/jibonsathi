@@ -427,7 +427,7 @@
                     <h2>Recommended For You</h2>
                     <p>Profiles selected based on your preferences and life choices.</p>
                 </div>
-                <div class="grid grid-profiles reveal">
+                <div class="grid grid-profiles grid-center-rows reveal">
                     @foreach ($recommended as $member)
                         @include('frontend.components.profile-card', ['user' => $member, 'score' => $scores[$member->id] ?? null])
                     @endforeach

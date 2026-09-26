@@ -2878,3 +2878,106 @@ body:has(.mobile-cta) { padding-bottom: calc(74px + env(safe-area-inset-bottom))
 @media (max-width: 480px) {
   .discover-hero .page-sub { font-size: 13.5px; }
 }
+
+/* ==========================================================================
+   34. Frontend-wide page headers & polish
+   Inner pages used to open on a bare title with no framing. They now share a
+   single header treatment — a soft gradient band with an accent edge — so the
+   dashboard, settings, interests, messages, verification and marketing pages
+   read as one product. `.page-hero` is the full-bleed band for standalone
+   pages; `.page-head` is the card-style band used inside the member shell.
+   ========================================================================== */
+
+/* --------------------------- 34.1 Full-bleed page hero --------------------------- */
+.page-hero {
+  position: relative; overflow: hidden;
+  padding: clamp(38px, 5.5vw, 72px) 0 clamp(32px, 4.5vw, 56px);
+  text-align: center;
+  background:
+    radial-gradient(760px 340px at 12% -30%, rgba(212, 175, 55, 0.22), transparent 62%),
+    radial-gradient(720px 380px at 92% 0%, rgba(139, 30, 63, 0.12), transparent 62%),
+    linear-gradient(180deg, #FFF3EC, var(--bg));
+  border-bottom: 1px solid var(--border);
+}
+.page-hero h1 {
+  font-size: clamp(27px, 4.2vw, 44px); font-weight: 800;
+  letter-spacing: -0.028em; line-height: 1.12; margin: 14px 0 0;
+}
+.page-hero p { color: var(--muted); max-width: 640px; margin: 12px auto 0; font-size: 16px; }
+.page-hero-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-top: 26px; }
+
+/* --------------------------- 34.2 Inner page header band --------------------------- */
+.page-head:not(.hero-head) {
+  position: relative; overflow: hidden;
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 14px 20px; flex-wrap: wrap;
+  padding: 20px 24px 20px 28px;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+  background:
+    radial-gradient(560px 220px at 6% -70%, rgba(212, 175, 55, 0.18), transparent 62%),
+    radial-gradient(560px 260px at 100% 130%, rgba(139, 30, 63, 0.09), transparent 64%),
+    linear-gradient(180deg, #FFF6F0, #FFFFFF);
+  box-shadow: var(--shadow-sm);
+}
+.page-head:not(.hero-head)::before {
+  content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px;
+  background: linear-gradient(180deg, var(--brand), var(--accent));
+}
+.page-head:not(.hero-head)::after {
+  content: ''; position: absolute; right: 0; top: -96px; pointer-events: none;
+  width: 210px; height: 210px; border-radius: 50%;
+  border: 1.5px solid rgba(212, 175, 55, 0.3);
+}
+.page-head:not(.hero-head) > * { position: relative; z-index: 1; }
+.page-head .page-title { font-size: clamp(21px, 2.6vw, 29px); font-weight: 800; letter-spacing: -0.025em; }
+.page-head .page-sub { margin-top: 5px; font-size: 14px; }
+
+/* Pages that already sit inside a full-bleed band (discover, marketing) keep it flat. */
+.discover-hero .page-head,
+.page-hero .page-head {
+  background: none; border: 0; box-shadow: none; border-radius: 0;
+  padding: 30px 0 18px; margin: 0; overflow: visible;
+}
+.discover-hero .page-head::before,
+.discover-hero .page-head::after,
+.page-hero .page-head::before,
+.page-hero .page-head::after { display: none; }
+
+/* Centered variant, still used where a page wants a framed title. */
+.page-head.hero-head {
+  flex-direction: column; align-items: center; text-align: center;
+  padding: 28px 24px; border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+  background: linear-gradient(180deg, #FFF6F0, #FFFFFF);
+  box-shadow: var(--shadow-sm);
+}
+.page-head.hero-head .page-title { font-size: clamp(24px, 3.4vw, 34px); }
+.page-head.hero-head .page-sub { margin-inline: auto; }
+
+/* --------------------------- 34.3 Mobile --------------------------- */
+@media (max-width: 640px) {
+  .page-head:not(.hero-head) {
+    padding: 15px 16px 15px 19px; gap: 11px; border-radius: var(--radius);
+  }
+  .page-head:not(.hero-head)::after { display: none; }
+  .page-head .page-title { font-size: 20px; }
+  .page-head .page-sub { font-size: 13px; }
+  .page-head .btn { min-height: 40px; }
+}
+@media (max-width: 600px) {
+  .page-hero { padding: 32px 0 28px; }
+  .page-hero h1 { font-size: clamp(23px, 7.4vw, 30px); }
+  .page-hero p { font-size: 14.5px; }
+  .page-hero-actions { margin-top: 22px; }
+  .page-hero-actions .btn { flex: 1 1 100%; }
+}
+
+/* --------------------------- 34.4 Auth pages --------------------------- */
+@media (max-width: 900px) {
+  .auth-form-panel { padding: 34px 20px calc(40px + env(safe-area-inset-bottom)); align-items: flex-start; }
+  .auth-card h1 { font-size: 24px; }
+}
+@media (max-width: 420px) {
+  .auth-form-panel { padding: 26px 16px calc(34px + env(safe-area-inset-bottom)); }
+}

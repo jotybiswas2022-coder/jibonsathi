@@ -3,11 +3,15 @@
 @section('title', 'Contact Us')
 
 @section('content')
-<div class="container table-page" style="max-width:860px;padding-block:48px">
-    <div class="page-head hero-head" style="text-align:center;flex-direction:column;align-items:center">
-        <h1 class="page-title" style="margin:0">Contact Us</h1>
-        <p class="page-sub">Questions, feedback or need a helping hand? We're here.</p>
+<div class="page-hero">
+    <div class="container">
+        <span class="section-eyebrow"><i class="fas fa-headset"></i> Support</span>
+        <h1>Contact Us</h1>
+        <p>Questions, feedback or need a helping hand? We're here.</p>
     </div>
+</div>
+
+<div class="container table-page" style="max-width:860px;padding-block:40px">
 
     <div class="card card-pad" style="max-width:620px;margin:0 auto">
         <form method="POST" action="{{ route('pages.contact.submit') }}">

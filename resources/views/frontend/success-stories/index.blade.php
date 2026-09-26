@@ -3,11 +3,15 @@
 @section('title', 'Success Stories')
 
 @section('content')
-<div class="container table-page" style="max-width:1060px;padding-block:48px">
-    <div class="page-head hero-head" style="text-align:center;flex-direction:column;align-items:center">
-        <h1 class="page-title" style="margin:0">Real Couples. Real Love.</h1>
-        <p class="page-sub">Stories of Jibon Sathi members who found their life partner through our community.</p>
+<div class="page-hero">
+    <div class="container">
+        <span class="section-eyebrow"><i class="fas fa-heart"></i> Success Stories</span>
+        <h1>Real Couples. Real Love.</h1>
+        <p>Stories of Jibon Sathi members who found their life partner through our community.</p>
     </div>
+</div>
+
+<div class="container table-page" style="max-width:1060px;padding-block:40px">
 
     @if ($stories->isEmpty())
         <x-frontend::empty-state :icon="'fa-heart'" :title="'Stories coming soon'"

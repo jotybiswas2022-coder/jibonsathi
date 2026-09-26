@@ -3,11 +3,15 @@
 @section('title', 'About Jibon Sathi')
 
 @section('content')
-<div class="container table-page" style="max-width:880px;padding-block:48px">
-    <div class="page-head hero-head" style="text-align:center;flex-direction:column;align-items:center">
-        <h1 class="page-title" style="margin:0">About Jibon Sathi</h1>
-        <p class="page-sub">Bringing two lives together.</p>
+<div class="page-hero">
+    <div class="container">
+        <span class="section-eyebrow"><i class="fas fa-heart"></i> About Us</span>
+        <h1>About Jibon Sathi</h1>
+        <p>Bringing two lives together.</p>
     </div>
+</div>
+
+<div class="container table-page" style="max-width:880px;padding-block:40px">
 
     <div class="card card-pad" style="padding:clamp(24px,4vw,40px)">
         <p style="line-height:1.9;color:var(--muted)">

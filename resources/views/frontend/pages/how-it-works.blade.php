@@ -3,11 +3,23 @@
 @section('title', 'How It Works')
 
 @section('content')
-<div class="container table-page" style="max-width:880px;padding-block:48px">
-    <div class="page-head hero-head" style="text-align:center;flex-direction:column;align-items:center">
-        <h1 class="page-title" style="margin:0">How Jibon Sathi Works</h1>
-        <p class="page-sub">Four warm steps to the beginning of a beautiful journey.</p>
+<div class="page-hero">
+    <div class="container">
+        <span class="section-eyebrow"><i class="fas fa-compass"></i> How It Works</span>
+        <h1>How Jibon Sathi Works</h1>
+        <p>Four warm steps to the beginning of a beautiful journey.</p>
+        <div class="page-hero-actions">
+            <a href="{{ route('register') }}" class="btn btn-primary btn-lg">
+                <i class="fas fa-user-plus"></i> Create Free Profile
+            </a>
+            <a href="{{ route('discover.index') }}" class="btn btn-brand-outline btn-lg">
+                <i class="fas fa-magnifying-glass"></i> Browse Members
+            </a>
+        </div>
     </div>
+</div>
+
+<div class="container table-page" style="max-width:880px;padding-block:40px">
 
     <div class="how-steps">
         @foreach ([

@@ -43,7 +43,7 @@ class SuccessStoryController extends Controller
             'status' => $status,
             'filters' => $filters,
             'counts' => [
-                'total' => SuccessStory::query()->count(),
+                'all' => SuccessStory::query()->count(),
                 'published' => SuccessStory::query()->where('is_published', true)->count(),
                 'draft' => SuccessStory::query()->where('is_published', false)->count(),
             ],
@@ -66,42 +66,42 @@ class SuccessStoryController extends Controller
             ->with('success', "\"{$story->title}\" was created.");
     }
 
-    public function edit(SuccessStory $successStory): View
+    public function edit(SuccessStory $story): View
     {
         Gate::authorize('manage', User::class);
 
-        return view('backend.success-stories.edit', ['story' => $successStory]);
+        return view('backend.success-stories.edit', ['story' => $story]);
     }
 
-    public function update(SuccessStoryRequest $request, SuccessStory $successStory): RedirectResponse
+    public function update(SuccessStoryRequest $request, SuccessStory $story): RedirectResponse
     {
-        $successStory->update($this->payload($request, $successStory));
+        $story->update($this->payload($request, $story));
 
         return redirect()
             ->route('backend.success-stories.index')
             ->with('success', 'Success story updated.');
     }
 
-    public function togglePublish(SuccessStory $successStory): RedirectResponse
+    public function togglePublish(SuccessStory $story): RedirectResponse
     {
         Gate::authorize('manage', User::class);
 
-        $successStory->update(['is_published' => ! $successStory->is_published]);
+        $story->update(['is_published' => ! $story->is_published]);
 
-        return back()->with('success', $successStory->is_published
+        return back()->with('success', $story->is_published
             ? 'Story published to the website.'
             : 'Story unpublished and hidden from the website.');
     }
 
-    public function destroy(SuccessStory $successStory): RedirectResponse
+    public function destroy(SuccessStory $story): RedirectResponse
     {
         Gate::authorize('manage', User::class);
 
-        if ($successStory->photo_path) {
-            Storage::disk('public')->delete($successStory->photo_path);
+        if ($story->photo_path) {
+            Storage::disk('public')->delete($story->photo_path);
         }
 
-        $successStory->delete();
+        $story->delete();
 
         return back()->with('success', 'Success story deleted.');
     }

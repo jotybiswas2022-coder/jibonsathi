@@ -589,6 +589,62 @@ table.st-table { min-width: 0; }
   .st-table tbody td[colspan]::before { content: none; }
   .st-live-empty { border: 1px solid var(--border); border-radius: var(--radius); background: #fff; }
 }
+/* ==========================================================================
+   Story create / edit form
+   A wide column for what is written, a narrow rail for how it is published, so
+   the writing is not squeezed into the leftovers beside a sidebar.
+   ========================================================================== */
+.story-form { display: grid; grid-template-columns: minmax(0, 1fr) 330px; gap: 18px; align-items: start; margin-bottom: 16px; }
+.story-form-main, .story-form-side { display: flex; flex-direction: column; gap: 18px; min-width: 0; }
+.story-form-main .field:last-child, .story-form-side .field:last-child { margin-bottom: 0; }
+
+/* Switches with a sentence of explanation beside them, rather than a bare
+   toggle and a label the visitor has to guess at. */
+.switch-row { display: flex; align-items: flex-start; gap: 13px; padding: 12px 0; cursor: pointer; }
+.switch-row + .switch-row { border-top: 1px solid #F6F1ED; }
+.switch-row .switch { flex: none; margin-top: 2px; }
+.switch-row .switch input:focus-visible + .track { outline: 3px solid rgba(139,30,63,.3); outline-offset: 2px; }
+.switch-text { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.switch-text .sr-title { font-size: 13.5px; font-weight: 600; }
+.switch-text .hint { font-size: 12px; }
+
+/* The cover picker is the main event in its card, so it gets the full width. */
+.uploader-cover { flex-direction: column; align-items: stretch; text-align: center; padding: 18px 16px; }
+.uploader-cover .media-thumb { width: 100%; height: 132px; border-radius: 12px; }
+.uploader-cover .media-thumb i { font-size: 26px; }
+.uploader-cover .uploader-info { align-items: center; text-align: center; }
+
+.st-status-card .set-card-body { padding: 14px 18px; }
+.st-status-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.st-status-k { display: block; font-size: 10.5px; letter-spacing: .09em; text-transform: uppercase; color: var(--muted-2); font-weight: 700; margin-bottom: 5px; }
+
+@media (max-width: 1080px) {
+  .story-form { grid-template-columns: 1fr; }
+  /* Publishing matters more than the cover once the rail is gone, so it is not
+     pushed below a long writing card on a narrow screen. */
+  .story-form-main { order: 2; }
+  .story-form-side { order: 1; }
+}
+
+@media (max-width: 900px) {
+  .story-form { gap: 14px; }
+  .story-form-main, .story-form-side { gap: 14px; }
+}
+
+@media (max-width: 700px) {
+  .uploader-cover .media-thumb { height: 116px; }
+  .set-card-body { padding: 16px; }
+  .save-bar .sb-actions .btn { flex: 1; }
+}
+
+@media (max-width: 560px) {
+  /* Three buttons in a row (cancel, discard, save) cannot fit a 360px screen,
+     so the bar stacks and the buttons wrap rather than run off the edge. */
+  .save-bar { flex-direction: column; align-items: stretch; gap: 10px; }
+  .save-bar .sb-actions { flex-wrap: wrap; width: 100%; }
+  .save-bar .sb-actions .btn { flex: 1 1 45%; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   * { animation-duration: .01ms !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
 }

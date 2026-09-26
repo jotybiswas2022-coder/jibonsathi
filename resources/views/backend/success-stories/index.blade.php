@@ -44,9 +44,13 @@
     <div class="stat-grid st-tiles">
         @foreach ($views as $view)
             @php $isActive = $status === $view['key']; @endphp
+            {{-- The href is a real filter link, so the tiles still work without JS.
+                 With JS on, the click is intercepted and the rows are filtered in
+                 place instead of reloading the page. --}}
             <a class="card stat-tile st-tile {{ $isActive ? 'is-active' : '' }}"
                href="{{ route('backend.success-stories.index', array_filter(['status' => $view['key'] === 'all' ? null : $view['key'], 'q' => $term ?: null])) }}"
-               @if ($isActive) aria-current="page" @endif>
+               data-status-filter="{{ $view['key'] }}"
+               @if ($isActive) aria-current="true" @endif>
                 <span class="st-ico {{ $view['tone'] }}"><i class="fas {{ $view['icon'] }}"></i></span>
                 <span class="st-num" data-st-count>{{ $counts[$view['key']] ?? 0 }}</span>
                 <span class="st-lbl">{{ $view['label'] }}</span>
@@ -59,7 +63,7 @@
          keeps the query shareable. The JS layers instant filtering on top and
          only searches this page; Enter runs the full search across every page. --}}
     <form method="GET" action="{{ route('backend.success-stories.index') }}" class="filter-bar st-toolbar" data-live-search>
-        <input type="hidden" name="status" value="{{ $status === 'all' ? '' : $status }}">
+        <input type="hidden" name="status" value="{{ $status === 'all' ? '' : $status }}" data-status-input>
 
         <div class="field st-search-field">
             <label for="stSearch">Search stories</label>
@@ -84,7 +88,7 @@
 
         <div class="field actions">
             <button class="btn btn-primary"><i class="fas fa-filter"></i> Filter</button>
-            <a href="{{ route('backend.success-stories.index') }}" class="btn btn-outline"
+            <a href="{{ route('backend.success-stories.index') }}" class="btn btn-outline" data-live-search-reset
                @if ($term === '' && $status === 'all') aria-disabled="true" tabindex="-1" style="pointer-events:none;opacity:.5" @endif>
                 Reset
             </a>
@@ -118,6 +122,8 @@
             <tbody data-live-search-rows>
                 @forelse ($stories as $story)
                     <tr data-story-row
+                        data-status="{{ $story->is_published ? 'published' : 'draft' }}"
+                        data-featured="{{ $story->is_featured ? '1' : '0' }}"
                         data-search="{{ mb_strtolower($story->title.' '.$story->groom_name.' '.$story->bride_name.' '.$story->location) }}">
                         <td data-label="Story">
                             <div class="cell-user st-cell">
@@ -220,11 +226,16 @@
             </tbody>
         </table>
 
-        {{-- Shown by the live search when a term hides every row on the page. --}}
+        {{-- Shown by the live search when the current term and status hide every
+             row on the page. The copy and the link are rewritten by the filter so
+             it never claims a page is empty when other pages still have matches. --}}
         <div class="empty-state st-live-empty" data-live-search-empty hidden>
-            <i class="fas fa-magnifying-glass"></i>
-            <h3>Nothing on this page matches</h3>
-            <p>The stories on other pages may still match. Press Enter to search every page.</p>
+            <i class="fas fa-magnifying-glass" data-live-empty-icon></i>
+            <h3 data-live-empty-title>Nothing on this page matches</h3>
+            <p data-live-empty-text>The stories on other pages may still match. Press Enter to search every page.</p>
+            <a href="{{ route('backend.success-stories.index') }}" class="btn btn-outline" data-live-empty-link hidden>
+                Search every page
+            </a>
         </div>
     </div>
 

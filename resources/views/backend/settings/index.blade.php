@@ -375,7 +375,10 @@
                         <span data-sb-text>All changes saved</span>
                     </div>
                     <div class="sb-actions">
-                        <button type="reset" class="btn btn-ghost" data-reset-form hidden>Discard</button>
+                        {{-- type=button, not reset: a reset button would wipe the form
+                             natively the moment it is clicked, before the confirm
+                             below is answered, so cancelling would lose the edits. --}}
+                        <button type="button" class="btn btn-ghost" data-reset-form hidden>Discard</button>
                         <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Save All Settings</button>
                     </div>
                 </div>

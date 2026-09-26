@@ -16,6 +16,7 @@
     initAutoClose();
     initCharts();
     initTabs();
+    initFormKit($('[data-form-kit]'));
     initSettings();
     initLiveSearch();
   });
@@ -299,9 +300,13 @@
     });
   }
 
-  /* ============================== settings page ============================== */
-  function initSettings() {
-    const form = $('#settingsForm');
+  /* ================================ form kit ================================ */
+  /* Character counters, file-picker previews, clearable fields and the
+     unsaved-changes bar, shared by every long admin form. A form opts in by
+     carrying the matching data attributes, and anything a form does not have is
+     skipped, so this is safe to run on any form. `onReset` lets a form re-paint
+     its own previews after the visitor discards their edits. */
+  function initFormKit(form, onReset) {
     if (!form) return;
 
     /* A validation bounce re-renders the form; bring the summary into view so the
@@ -320,6 +325,10 @@
     const barText = $('[data-sb-text]', form);
     const barIcon = $('[data-sb-icon]', form);
     const resetBtn = $('[data-reset-form]', form);
+
+    /* A form can word its own untouched state ("No unsaved changes" on an edit
+       form reads better than "All changes saved", which is not true yet). */
+    const cleanLabel = barText?.dataset.sbClean || 'All changes saved';
 
     /* ---------------------------- character counters --------------------------- */
     /* `field` is the input, `counter` the label-adjacent readout. Colour is
@@ -344,34 +353,6 @@
       updateCounter(pair.counter, pair.field);
       pair.field.addEventListener('input', () => updateCounter(pair.counter, pair.field));
     });
-
-    /* ------------------------------ live previews ----------------------------- */
-    const siteName = form.elements.site_name;
-    const tagline = form.elements.tagline;
-    const seoTitle = form.elements.seo_title;
-    const seoDesc = form.elements.seo_description;
-    const heroHeadline = form.elements.hero_headline;
-    const heroSub = form.elements.hero_subheading;
-
-    const setText = (selector, value, fallback) => {
-      const el = $(selector);
-      if (el) el.textContent = value.trim() || fallback;
-    };
-
-    const paintPreviews = () => {
-      setText('[data-serp-title]', seoTitle.value, 'Your page title');
-      setText('[data-serp-desc]', seoDesc.value, 'Add a meta description to control the grey snippet Google shows here.');
-      setText('[data-hero-brand]', siteName.value, 'Jibon Sathi');
-      setText('[data-hero-headline]', heroHeadline.value, 'Find the life you were meant for');
-      setText('[data-hero-sub]', heroSub.value, 'Tell us about yourself and let verified matches come to you.');
-      setText('[data-hero-tagline]', tagline.value, '');
-      setText('[data-serp-url]', siteName.value, config_app_name());
-    };
-
-    [siteName, tagline, seoTitle, seoDesc, heroHeadline, heroSub]
-      .filter(Boolean)
-      .forEach((el) => el.addEventListener('input', paintPreviews));
-    paintPreviews();
 
     /* ------------------------------ file pickers ------------------------------ */
     $$('[data-preview]', form).forEach((input) => {
@@ -440,7 +421,7 @@
       const now = snapshot();
       if (!bar) return;
       bar.classList.toggle('is-dirty', now !== initialState);
-      if (barText) barText.textContent = now !== initialState ? 'You have unsaved changes' : 'All changes saved';
+      if (barText) barText.textContent = now !== initialState ? 'You have unsaved changes' : cleanLabel;
       if (barIcon) barIcon.className = now !== initialState ? 'fas fa-triangle-exclamation' : 'fas fa-circle-check';
       if (resetBtn) resetBtn.hidden = now === initialState;
     };
@@ -461,10 +442,11 @@
       form.reset();
       dirty = false;
       paintBar();
-      paintPreviews();
       counters.forEach((pair) => updateCounter(pair.counter, pair.field));
       $$('[data-clearable]', form).forEach(paintClear);
       $$('[data-uploader]', form).forEach((label) => label.classList.remove('has-file'));
+      $$('[data-file-name]', form).forEach((el) => { el.textContent = ''; });
+      if (typeof onReset === 'function') onReset();
     };
 
     if (resetBtn) {
@@ -498,6 +480,42 @@
     });
 
     paintBar();
+  }
+
+  /* ============================== settings page ============================== */
+  function initSettings() {
+    const form = $('#settingsForm');
+    if (!form) return;
+
+    initFormKit(form, () => paintPreviews());
+
+    /* ------------------------------ live previews ----------------------------- */
+    const siteName = form.elements.site_name;
+    const tagline = form.elements.tagline;
+    const seoTitle = form.elements.seo_title;
+    const seoDesc = form.elements.seo_description;
+    const heroHeadline = form.elements.hero_headline;
+    const heroSub = form.elements.hero_subheading;
+
+    const setText = (selector, value, fallback) => {
+      const el = $(selector);
+      if (el) el.textContent = value.trim() || fallback;
+    };
+
+    const paintPreviews = () => {
+      setText('[data-serp-title]', seoTitle.value, 'Your page title');
+      setText('[data-serp-desc]', seoDesc.value, 'Add a meta description to control the grey snippet Google shows here.');
+      setText('[data-hero-brand]', siteName.value, 'Jibon Sathi');
+      setText('[data-hero-headline]', heroHeadline.value, 'Find the life you were meant for');
+      setText('[data-hero-sub]', heroSub.value, 'Tell us about yourself and let verified matches come to you.');
+      setText('[data-hero-tagline]', tagline.value, '');
+      setText('[data-serp-url]', siteName.value, config_app_name());
+    };
+
+    [siteName, tagline, seoTitle, seoDesc, heroHeadline, heroSub]
+      .filter(Boolean)
+      .forEach((el) => el.addEventListener('input', paintPreviews));
+    paintPreviews();
 
     /* ------------------------- rail: smooth scroll + spy ---------------------- */
     const links = $$('[data-set-link]', form);
@@ -566,7 +584,11 @@
   /* ------------------------------ live search ----------------------------- */
   /* Filters the rows already on the page as you type, and marks the hits. The
      surrounding form is a normal GET search, so Enter still runs the full
-     query across every page and the page works with this script disabled. */
+     query across every page and the page works with this script disabled.
+
+     The status tiles are live too: clicking one filters the rows in place and
+     rewrites the query string, rather than reloading the page. Their hrefs are
+     real filter links, so without JS they still work as plain navigation. */
   function initLiveSearch() {
     const form = $('[data-live-search]');
     if (!form) return;
@@ -574,12 +596,34 @@
     const input = $('[data-live-search-input]', form);
     const clearBtn = $('[data-live-search-clear]', form);
     const counter = $('[data-live-search-count]');
-    const hint = $('[data-live-search-hint]');
+    const hint = $('[data-live-search-hint]', form);
     const blank = $('[data-live-search-empty]');
+    const blankTitle = $('[data-live-empty-title]');
+    const blankText = $('[data-live-empty-text]');
+    const blankIcon = $('[data-live-empty-icon]');
+    const blankLink = $('[data-live-empty-link]');
+    const statusInput = $('[data-status-input]', form);
     if (!input) return;
 
     const rows = $$('[data-story-row]');
     if (!rows.length) return;
+
+    /* One entry per tile, holding the key plus the count the server printed.
+       The count is the total for the whole library, not just this page, which
+       is what the empty state needs in order to stay honest. */
+    const tiles = $$('[data-status-filter]').map((el) => ({
+      el: el,
+      key: el.dataset.statusFilter,
+      href: el.href,
+      count: parseInt($('[data-st-count]', el)?.textContent ?? '', 10) || 0,
+    }));
+
+    const LABELS = { all: 'all', published: 'published', draft: 'draft', featured: 'featured' };
+    const SINGULAR = { all: 'story', published: 'published story', draft: 'draft', featured: 'featured story' };
+    const PLURAL = { all: 'stories', published: 'published stories', draft: 'drafts', featured: 'featured stories' };
+
+    /* "1 draft" but "3 drafts", so the empty-state sentences read properly. */
+    const counted = (n, key) => `${n} ${n === 1 ? SINGULAR[key] : PLURAL[key]}`;
 
     const escapeRe = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
@@ -594,49 +638,127 @@
     let term = input.value.trim().toLowerCase();
     let re = term.length > 1 ? new RegExp(`(${escapeRe(term)})`, 'gi') : null;
 
-    /* When the page was opened with ?q= the server already did the filtering,
-       so the row list is only the current page of an already-filtered result.
-       Track that value so init does not overwrite the server's wording. */
+    /* The active status is whichever tile the server marked as current. */
+    const activeTile = tiles.find((t) => t.el.classList.contains('is-active'));
+    let status = activeTile ? activeTile.key : 'all';
+
+    /* When the page was opened with ?q= or ?status= the server already did the
+       filtering, so the row list is only the current page of an already
+       filtered result. Track those two values so apply() does not overwrite the
+       server's wording while the view still matches what the server returned. */
     const serverTerm = term;
+    const serverStatus = status;
     const serverTotal = parseInt(counter?.dataset.liveSearchTotal ?? '', 10);
+
+    /* Only write when there is a target, so pages that do not use the richer
+       copy keep whatever the blade rendered. */
+    const setEmptyText = (el, value) => { if (el) el.textContent = value; };
 
     const apply = () => {
       let shown = 0;
 
       rows.forEach((row) => {
-        const hit = ! term || row.dataset.search.includes(term);
+        const byTerm = ! term || row.dataset.search.includes(term);
+        const byStatus = status === 'all'
+          || (status === 'featured' ? row.dataset.featured === '1' : row.dataset.status === status);
+        const hit = byTerm && byStatus;
         row.hidden = ! hit;
         if (hit) shown++;
       });
 
       cells.forEach((c) => paint(c.el, c.html, re));
 
-      const serverFiltered = term === serverTerm;
+      /* Still showing exactly what the server sent? Then its count is the real
+         total. Once the term or the status moves, only the local count is known. */
+      const serverSynced = term === serverTerm && status === serverStatus;
 
       if (counter) {
-        if (serverFiltered) {
+        if (serverSynced) {
           const n = Number.isFinite(serverTotal) ? serverTotal : rows.length;
-          const label = term ? `${n} ${n === 1 ? 'match' : 'matches'}` : `${n} ${n === 1 ? 'story' : 'stories'}`;
-          counter.textContent = term ? label : `${label} on this page`;
+          counter.textContent = term ? `${n} ${n === 1 ? 'match' : 'matches'}` : `${n} ${n === 1 ? 'story' : 'stories'}`;
         } else {
           counter.textContent = `${shown} ${shown === 1 ? 'match' : 'matches'} on this page`;
         }
       }
 
+      const label = LABELS[status];
       if (hint) {
-        hint.textContent = serverFiltered
-          ? (term ? `Filtered on the server across all ${Number.isFinite(serverTotal) ? serverTotal : rows.length} ${term === '' ? 'stories' : 'matches'}.` : 'Type to filter the rows below, or press Enter to search every page.')
-          : (shown ? `Filtering the ${rows.length} ${rows.length === 1 ? 'row' : 'rows'} on this page.` : 'Nothing on this page matches.');
+        hint.textContent = serverSynced
+          ? (term
+            ? `Filtered on the server across all ${Number.isFinite(serverTotal) ? serverTotal : rows.length} ${serverTotal === 1 ? 'story' : 'stories'}.`
+            : `Showing ${LABELS[status] === 'all' ? 'every story' : LABELS[status]}. Type to filter the rows below, or press Enter to search every page.`)
+          : (shown
+            ? `Filtering the ${rows.length} ${rows.length === 1 ? 'row' : 'rows'} on this page by ${term ? `“${term}”` : label}.`
+            : 'Nothing on this page matches.');
       }
 
       if (blank) blank.hidden = shown !== 0;
 
+      /* A live filter can only ever see this page, so when it empties out say
+         what is really going on instead of implying the library is empty. */
+      if (shown === 0) {
+        const tile = tiles.find((t) => t.key === status);
+        const total = tile ? tile.count : 0;
+        const termPart = term ? ` matching “${term}”` : '';
+
+        if (term) {
+          setEmptyText(blankTitle, `No ${PLURAL[status]}${termPart} on this page`);
+          setEmptyText(blankText, total > 0
+            ? `There ${total === 1 ? 'is' : 'are'} ${counted(total, status)}${termPart} in total, on other pages. Press Enter to search every page.`
+            : `Nothing in the library is ${label}${termPart}. Try a different word or clear the search.`);
+        } else if (total > rows.length) {
+          setEmptyText(blankTitle, `No ${label} on this page`);
+          setEmptyText(blankText, `All ${counted(total, status)} are on other pages. Search every page to see them.`);
+        } else {
+          setEmptyText(blankTitle, `No ${label} to show`);
+          setEmptyText(blankText, `There are no ${PLURAL[status]} in the library right now.`);
+        }
+
+        if (blankIcon) blankIcon.className = status === 'all' ? 'fas fa-magnifying-glass' : 'fas fa-filter';
+        if (blankLink) {
+          blankLink.hidden = total === 0;
+          if (total > 0 && tile) blankLink.href = tile.href;
+        }
+      }
+
       if (clearBtn) clearBtn.hidden = term === '';
+    };
+
+    /* Keep the address bar describing what is on screen. replaceState is used
+       rather than pushState so the back button is not flooded with one entry
+       per keystroke, and so the tiles and the term can never disagree. */
+    const syncUrl = () => {
+      const tile = tiles.find((t) => t.key === status);
+      if (! tile || ! window.history || typeof history.replaceState !== 'function') return;
+      const url = new URL(tile.href);
+      if (term) url.searchParams.set('q', term);
+      else url.searchParams.delete('q');
+      if (url.href !== location.href) history.replaceState(null, '', url);
+    };
+
+    /* Move the filter without a reload: repaint the tiles, keep the hidden
+       status field and the address bar in step so the view stays shareable. */
+    const setStatus = (key) => {
+      if (! LABELS[key]) return;
+      status = key;
+
+      tiles.forEach((t) => {
+        const on = t.key === key;
+        t.el.classList.toggle('is-active', on);
+        if (on) t.el.setAttribute('aria-current', 'true');
+        else t.el.removeAttribute('aria-current');
+      });
+
+      if (statusInput) statusInput.value = key === 'all' ? '' : key;
+
+      syncUrl();
+      apply();
     };
 
     const onInput = debounce(() => {
       term = input.value.trim().toLowerCase();
       re = term.length > 1 ? new RegExp(`(${escapeRe(term)})`, 'gi') : null;
+      syncUrl();
       apply();
     }, 130);
 
@@ -653,6 +775,31 @@
       clearBtn.addEventListener('click', () => {
         input.value = '';
         onInput();
+        input.focus();
+      });
+    }
+
+    /* Modified clicks and middle clicks still open the real href, so the tiles
+       keep behaving like links for anyone who wants a new tab. */
+    tiles.forEach((t) => {
+      t.el.addEventListener('click', (e) => {
+        if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
+        e.preventDefault();
+        setStatus(t.key);
+      });
+    });
+
+    /* Reset drops the term and the status together, in place. */
+    const reset = $('[data-live-search-reset]', form);
+    if (reset) {
+      reset.addEventListener('click', (e) => {
+        if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
+        if (! input.value && status === 'all') return;
+        e.preventDefault();
+        input.value = '';
+        term = '';
+        re = null;
+        setStatus('all');
         input.focus();
       });
     }

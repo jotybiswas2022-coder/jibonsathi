@@ -5,14 +5,52 @@
 @php $selected = fn (string $key): mixed => $filters[$key] ?? null; @endphp
 
 @section('content')
-<div class="container discover-page">
-    <div class="page-head">
-        <div>
-            <h1 class="page-title">Discover Matches</h1>
-            <p class="page-sub">Filter to find someone who feels right for you.</p>
+@php
+    $baseFilters = collect($filters)->except('page')->all();
+    $hasFilters = collect($baseFilters)->except('sort')->filter(fn ($v) => $v !== null && $v !== '')->isNotEmpty();
+    $isActive = fn (string $key, $value = null): bool => $value === null
+        ? filled($baseFilters[$key] ?? null)
+        : (string) ($baseFilters[$key] ?? '') === (string) $value;
+    // Quick chips merge into the current filters so they never wipe a search.
+    $quickUrl = function (array $over = []) use ($baseFilters) {
+        $query = array_filter(array_merge($baseFilters, $over), fn ($v) => $v !== null && $v !== '');
+        return route('discover.index', $query);
+    };
+@endphp
+
+<div class="discover-hero">
+    <div class="container">
+        <div class="page-head">
+            <div>
+                <h1 class="page-title">Discover Matches</h1>
+                <p class="page-sub">Filter to find someone who feels right for you.</p>
+            </div>
+        </div>
+
+        <div class="quick-filters" aria-label="Quick filters">
+            <a href="{{ route('discover.index') }}" class="quick-filter {{ $hasFilters ? '' : 'active' }}">
+                <i class="fas fa-layer-group"></i> All
+            </a>
+            <a href="{{ $quickUrl(['gender' => 'female']) }}" class="quick-filter {{ $isActive('gender', 'female') ? 'active' : '' }}">
+                <i class="fas fa-venus"></i> Brides
+            </a>
+            <a href="{{ $quickUrl(['gender' => 'male']) }}" class="quick-filter {{ $isActive('gender', 'male') ? 'active' : '' }}">
+                <i class="fas fa-mars"></i> Grooms
+            </a>
+            <a href="{{ $quickUrl(['verified' => 1]) }}" class="quick-filter {{ $isActive('verified') ? 'active' : '' }}">
+                <i class="fas fa-circle-check"></i> Verified
+            </a>
+            <a href="{{ $quickUrl(['location' => 'Dhaka']) }}" class="quick-filter {{ $isActive('location', 'Dhaka') ? 'active' : '' }}">
+                <i class="fas fa-location-dot"></i> Dhaka
+            </a>
+            <a href="{{ $quickUrl(['sort' => 'newest']) }}" class="quick-filter {{ $isActive('sort', 'newest') ? 'active' : '' }}">
+                <i class="fas fa-user-plus"></i> Newest
+            </a>
         </div>
     </div>
+</div>
 
+<div class="container discover-page">
     <div class="discover-layout">
         <form action="{{ route('discover.index') }}" method="GET" data-discover-filter class="filter-panel-wrap">
             <aside class="filter-panel">

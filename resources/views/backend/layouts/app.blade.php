@@ -22,20 +22,26 @@
 
         <div class="admin-main">
             <header class="admin-topbar">
-                <div>
-                    <h1>@yield('title', 'Dashboard')</h1>
-                    <div class="crumb">@yield('crumb', 'Jibon Sathi Control Panel')</div>
+                <div class="flex items-center gap-3 tb-title">
+                    <button type="button" class="icon-btn side-toggle" data-sidebar-toggle
+                            aria-label="Open navigation menu" aria-controls="adminSidebar">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <div>
+                        <h1>@yield('title', 'Dashboard')</h1>
+                        <div class="crumb">@yield('crumb', 'Jibon Sathi Control Panel')</div>
+                    </div>
                 </div>
-                <div class="flex items-center gap-3">
+                <div class="flex items-center gap-3 tb-actions">
                     <a href="{{ route('home') }}" class="btn btn-outline btn-sm" target="_blank" rel="noopener">
-                        <i class="fas fa-globe"></i> View Website
+                        <i class="fas fa-globe"></i> <span>View Website</span>
                     </a>
                     <form method="POST" action="{{ route('logout') }}" style="margin:0"
                           data-confirm-title="Log out of the admin panel?"
                           data-confirm="Any unsaved changes on this page will be lost."
                           data-confirm-ok="Log out" data-confirm-icon="question">
                         @csrf
-                        <button type="submit" class="btn btn-ghost btn-sm"><i class="fas fa-right-from-bracket"></i> Logout</button>
+                        <button type="submit" class="btn btn-ghost btn-sm"><i class="fas fa-right-from-bracket"></i> <span>Logout</span></button>
                     </form>
                 </div>
             </header>

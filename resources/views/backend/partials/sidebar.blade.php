@@ -6,7 +6,7 @@
     $openReports = \App\Models\Report::query()->whereIn('status', ['pending', 'investigating'])->count();
     $active = fn (array $parts) => collect($parts)->contains(fn ($p) => Str::startsWith($path, $p));
 @endphp
-<aside class="admin-sidebar">
+<aside class="admin-sidebar" id="adminSidebar">
     <div class="admin-brand">
         <span class="mark"><i class="fas fa-heart"></i></span>
         <span>Jibon Sathi Admin</span>

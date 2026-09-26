@@ -687,3 +687,114 @@ table.st-table { min-width: 0; }
 @media (prefers-reduced-motion: reduce) {
   * { animation-duration: .01ms !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
 }
+
+/* ==========================================================================
+   Messages oversight
+   ========================================================================== */
+.ms-toolbar { margin-bottom: 14px; }
+.ms-preview { display: flex; flex-direction: column; gap: 2px; min-width: 0; max-width: 340px; }
+.ms-preview-who { font-size: 12px; font-weight: 700; color: var(--muted); }
+.ms-preview-body {
+  font-size: 13.5px; color: var(--text);
+  display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical;
+  overflow: hidden; overflow-wrap: anywhere;
+}
+.ms-report-note { font-size: 11.5px; color: var(--muted-2); margin-top: 4px; }
+
+/* Two overlapping avatars read as "these two people" at a glance, which a pair
+   of separate rows in the same cell does not. */
+.ms-avatars { display: inline-flex; flex: none; }
+.ms-avatar { width: 40px; height: 40px; border-radius: 50%; border: 2px solid #fff; }
+.ms-avatar + .ms-avatar { margin-left: -12px; }
+.ms-cell { align-items: center; gap: 13px; }
+
+.ms-alert {
+  display: flex; align-items: flex-start; gap: 12px; padding: 13px 16px; margin-bottom: 16px;
+  border: 1px solid rgba(217,119,6,.32); border-left: 3px solid var(--warning);
+  border-radius: var(--radius); background: var(--warning-bg); color: #7C4A04; font-size: 13.5px;
+}
+.ms-alert > i { margin-top: 2px; }
+.ms-alert a { color: inherit; font-weight: 700; text-decoration: underline; }
+
+.ms-participants { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin-bottom: 18px; }
+.ms-participant { padding: 16px 18px; display: flex; flex-direction: column; gap: 13px; }
+.ms-participant-head { display: flex; align-items: center; gap: 13px; min-width: 0; }
+.ms-participant-avatar { width: 46px; height: 46px; border-radius: 14px; flex: none; }
+.ms-participant-name { font-size: 15px; font-weight: 700; color: var(--text); }
+.ms-participant-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.ms-participant-row { display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; color: var(--muted); }
+.ms-participant-row i { font-size: 11px; color: var(--muted-2); }
+.ms-participant-link { align-self: flex-start; }
+
+.ms-thread-head { align-items: center; }
+.ms-thread-sub { margin: 3px 0 0; font-size: 12.5px; color: var(--muted); }
+.ms-thread-foot { padding: 14px; border-top: 1px solid var(--border); }
+
+/* The log scrolls on its own so a long thread does not push the participants
+   and the page head off the screen. Height is capped rather than fixed, so a
+   two message thread is not wrapped in 600px of empty panel. */
+.ms-log { height: auto; max-height: 62vh; min-height: 240px; }
+.ms-log-inner { gap: 12px; padding: 18px 20px; }
+
+.ms-day { display: flex; align-items: center; gap: 12px; margin: 6px 0 2px; }
+.ms-day::before, .ms-day::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+.ms-day span {
+  flex: none; font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase;
+  color: var(--muted-2); background: #F3F4F6; padding: 4px 11px; border-radius: 999px;
+}
+
+.ms-msg { display: flex; gap: 10px; max-width: 78%; }
+.ms-msg.is-one { align-self: flex-start; }
+.ms-msg.is-two { align-self: flex-end; flex-direction: row-reverse; }
+.ms-msg-avatar { width: 32px; height: 32px; border-radius: 50%; flex: none; align-self: flex-end; }
+.ms-msg-main { min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+.ms-msg.is-two .ms-msg-main { align-items: flex-end; }
+.ms-msg-meta { display: flex; align-items: center; gap: 8px; font-size: 11.5px; color: var(--muted-2); flex-wrap: wrap; }
+.ms-msg.is-two .ms-msg-meta { flex-direction: row-reverse; }
+.ms-msg-who { font-weight: 700; color: var(--muted); }
+.ms-msg-unread { color: var(--warning); font-weight: 600; display: inline-flex; align-items: center; gap: 4px; }
+.ms-msg-unread i { font-size: 10px; }
+.ms-bubble {
+  padding: 10px 14px; border-radius: 16px; font-size: 14px; line-height: 1.5;
+  background: #fff; border: 1px solid var(--border); overflow-wrap: anywhere;
+  box-shadow: var(--shadow-sm); white-space: pre-line;
+}
+.ms-msg.is-one .ms-bubble { border-bottom-left-radius: 5px; }
+.ms-msg.is-two .ms-bubble { background: var(--brand-050); border-color: rgba(139,30,63,.18); border-bottom-right-radius: 5px; }
+.ms-log-empty { margin: auto; }
+
+@media (max-width: 900px) {
+  /* Two participant cards, two message previews and five table columns all
+     stop fitting well before this, so everything becomes a single stack. */
+  .ms-participants { grid-template-columns: 1fr; gap: 12px; }
+  .ms-table tbody td[data-label="Status"] { align-items: flex-start; }
+  .ms-table tbody td[data-label="Status"]::before { margin-top: 2px; }
+  .ms-preview { max-width: none; }
+}
+
+@media (max-width: 700px) {
+  .ms-log { max-height: none; }
+  .ms-log-inner { padding: 14px 13px; gap: 10px; }
+  /* Full width on a phone, because a 78% column of a 360px screen leaves a
+     ~70px bubble that wraps every few words. */
+  .ms-msg { max-width: 100%; }
+  .ms-msg.is-two { flex-direction: row-reverse; }
+  .ms-thread-head { flex-direction: column; align-items: flex-start; gap: 10px; }
+  .ms-alert { padding: 12px 13px; }
+}
+
+@media (max-width: 560px) {
+  /* Reuse the same two column compact tiles as the story filters. */
+  .ms-tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  .ms-tiles .stat-tile {
+    display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center;
+    column-gap: 11px; padding: 12px 13px;
+  }
+  .ms-tiles .stat-tile .st-ico { grid-row: 1 / span 2; width: 34px; height: 34px; font-size: 14px; border-radius: 11px; margin-bottom: 0; }
+  .ms-tiles .stat-tile .st-num { font-size: 20px; line-height: 1.15; }
+  .ms-tiles .stat-tile .st-lbl { font-size: 11.5px; line-height: 1.3; }
+  .ms-tiles .stat-tile .st-sub { display: none; }
+  .ms-participant { padding: 14px 15px; }
+  .ms-msg-avatar { width: 28px; height: 28px; }
+  .ms-bubble { font-size: 13.5px; padding: 9px 12px; }
+}

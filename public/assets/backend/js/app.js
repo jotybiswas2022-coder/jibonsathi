@@ -19,6 +19,8 @@
     initFormKit($('[data-form-kit]'));
     initSettings();
     initLiveSearch();
+    initListFilter();
+    initThreadLog();
   });
 
   function initToasts() {
@@ -853,6 +855,183 @@
     }
 
     /* "/" jumps to the box from anywhere that is not already a text field. */
+    document.addEventListener('keydown', (e) => {
+      if (e.key !== '/' || e.metaKey || e.ctrlKey || e.altKey) return;
+      const el = document.activeElement;
+      if (el && (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' || el.tagName === 'SELECT' || el.isContentEditable)) return;
+      e.preventDefault();
+      input.focus();
+      input.select();
+    });
+
+    apply();
+  }
+
+  /* ============================== message thread ============================== */
+  /* The log scrolls on its own, so a long thread has to open at the newest
+     message rather than at the top of the oldest page. */
+  function initThreadLog() {
+    const log = $('[data-ms-log]');
+    if (! log) return;
+
+    const jump = () => { log.scrollTop = log.scrollHeight; };
+
+    if (log.scrollHeight > log.clientHeight) {
+      jump();
+      /* Late loading images can change the height after the first paint, which
+         would leave the view parked above the newest message. */
+      window.addEventListener('load', jump);
+      $$('img', log).forEach((img) => {
+        if (! img.complete) img.addEventListener('load', jump, { once: true });
+      });
+    }
+  }
+
+  /* ============================== messages list ============================== */
+  /* A smaller sibling of initLiveSearch for pages that filter a plain list by
+     one term and one scope. It is deliberately separate rather than a mode of
+     the story search, which is tied to status tiles and featured flags. */
+  function initListFilter() {
+    const form = $('[data-ms-filter]');
+    if (! form) return;
+
+    const input = $('[data-ms-filter-input]', form);
+    const clearBtn = $('[data-ms-filter-clear]', form);
+    const counter = $('[data-ms-filter-count]');
+    const hint = $('[data-ms-filter-hint]');
+    const blank = $('[data-ms-filter-empty]');
+    const blankLink = $('[data-ms-empty-link]');
+    const scopeInput = $('[data-ms-scope-input]', form);
+    if (! input) return;
+
+    const rows = $$('[data-ms-row]');
+    if (! rows.length) return;
+
+    const tiles = $$('[data-ms-scope]').map((el) => ({
+      el: el,
+      key: el.dataset.msScope,
+      count: parseInt($('[data-ms-count]', el)?.textContent ?? '', 10) || 0,
+    }));
+
+    const escapeRe = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const cells = rows.flatMap((row) => $$('[data-hl]', row).map((el) => ({ el: el, html: el.innerHTML })));
+    const paint = (el, html, re) => { el.innerHTML = re ? html.replace(re, '<mark>$1</mark>') : html; };
+
+    const activeTile = tiles.find((t) => t.el.classList.contains('is-active'));
+    let scope = activeTile ? activeTile.key : 'all';
+    let term = input.value.trim().toLowerCase();
+    let re = term.length > 1 ? new RegExp(`(${escapeRe(term)})`, 'gi') : null;
+
+    const pageTotal = parseInt(counter?.dataset.msFilterTotal ?? '', 10) || 0;
+    /* Values the server used, so a ?q=/?scope= load keeps the server's wording
+       until the visitor actually changes something. */
+    const serverTerm = term;
+    const serverScope = scope;
+
+    /* A row matches the scope when it is a flagged thread, or when the active
+       scope is a property it simply has or has not got. */
+    const inScope = (row) => {
+      if (scope === 'all') return true;
+      if (scope === 'flagged') return row.dataset.scope === 'flagged';
+      if (scope === 'empty') return row.dataset.empty === '1';
+      if (scope === 'week') return row.dataset.week === '1';
+      return true;
+    };
+
+    const apply = () => {
+      let shown = 0;
+
+      rows.forEach((row) => {
+        const hit = (! term || row.dataset.search.includes(term)) && inScope(row);
+        row.hidden = ! hit;
+        if (hit) shown++;
+      });
+
+      cells.forEach((c) => paint(c.el, c.html, re));
+
+      /* Still showing exactly what the server returned? Then its count is the
+         real total and the wording stays. Otherwise count the visible rows and
+         say so, rather than claiming a page holds every match. */
+      const untouched = term === serverTerm && scope === serverScope;
+      if (counter) {
+        if (untouched) {
+          counter.textContent = pageTotal + ' ' + (pageTotal === 1 ? 'thread' : 'threads');
+        } else {
+          counter.textContent = shown + ' on this page'
+            + (shown === 1 ? ' match' : ' matches');
+        }
+      }
+
+      if (hint) {
+        if (untouched && ! term) {
+          hint.textContent = 'Type to filter the rows below, or press Enter to search every page.';
+        } else if (term) {
+          hint.textContent = 'Filtering the ' + shown + ' ' + (shown === 1 ? 'thread' : 'threads')
+            + ' on this page. Press Enter to search every page.';
+        } else {
+          hint.textContent = 'Showing ' + shown + ' ' + (shown === 1 ? 'thread' : 'threads') + ' on this page.';
+        }
+      }
+
+      if (blank) {
+        blank.hidden = shown > 0;
+        if (blankLink) blankLink.hidden = shown > 0;
+      }
+    };
+
+    const setScope = (key) => {
+      scope = key;
+      tiles.forEach((t) => t.el.classList.toggle('is-active', t.key === key));
+      if (scopeInput) scopeInput.value = key === 'all' ? '' : key;
+    };
+
+    let timer;
+    input.addEventListener('input', () => {
+      clearTimeout(timer);
+      timer = setTimeout(() => {
+        term = input.value.trim().toLowerCase();
+        re = term.length > 1 ? new RegExp(`(${escapeRe(term)})`, 'gi') : null;
+        if (clearBtn) clearBtn.hidden = input.value === '';
+        apply();
+      }, 140);
+    });
+
+    if (clearBtn) {
+      clearBtn.addEventListener('click', () => {
+        input.value = '';
+        term = '';
+        re = null;
+        clearBtn.hidden = true;
+        apply();
+        input.focus();
+      });
+    }
+
+    tiles.forEach((t) => {
+      t.el.addEventListener('click', (e) => {
+        if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
+        e.preventDefault();
+        setScope(t.key);
+        apply();
+      });
+    });
+
+    const reset = $('[data-ms-filter-reset]', form);
+    if (reset) {
+      reset.addEventListener('click', (e) => {
+        if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
+        if (! input.value && scope === 'all') return;
+        e.preventDefault();
+        input.value = '';
+        term = '';
+        re = null;
+        if (clearBtn) clearBtn.hidden = true;
+        setScope('all');
+        apply();
+        input.focus();
+      });
+    }
+
     document.addEventListener('keydown', (e) => {
       if (e.key !== '/' || e.metaKey || e.ctrlKey || e.altKey) return;
       const el = document.activeElement;

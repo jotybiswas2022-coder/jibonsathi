@@ -97,6 +97,47 @@ class Conversation extends Model
     }
 
     /**
+     * Open (unresolved) reports per side, counting the eager loaded relations.
+     *
+     * The controller loads only the open reports, so this is a count of an
+     * already small collection. Returns zeros when the relations are absent,
+     * rather than firing a query for every row of an unrendered list.
+     *
+     * @return array{one: int, two: int}
+     */
+    public function openReportCounts(): array
+    {
+        return [
+            'one' => $this->userOne?->relationLoaded('reportsReceived') ? $this->userOne->reportsReceived->count() : 0,
+            'two' => $this->userTwo?->relationLoaded('reportsReceived') ? $this->userTwo->reportsReceived->count() : 0,
+        ];
+    }
+
+    public function hasOpenReports(): bool
+    {
+        $counts = $this->openReportCounts();
+
+        return $counts['one'] > 0 || $counts['two'] > 0;
+    }
+
+    public function participantsLabel(): string
+    {
+        $one = $this->userOne?->name ?? 'Deleted member';
+        $two = $this->userTwo?->name ?? 'Deleted member';
+
+        return $one.' & '.$two;
+    }
+
+    /**
+     * The participant a message came from, so the thread can put each side of
+     * the conversation on its own row.
+     */
+    public function isFromUserOne(?int $senderId): bool
+    {
+        return $senderId !== null && $senderId === $this->user_one_id;
+    }
+
+    /**
      * Locate (or create) the conversation between two users.
      */
     public static function between(int $firstId, int $secondId): self

@@ -109,7 +109,7 @@ p { margin: 0 0 1em; }
 .card-body { padding: 22px; }
 .card-pad { padding: 22px; }
 
-.avatar { width: 42px; height: 42px; border-radius: 50%; overflow: hidden; flex: none; background: var(--brand-100); position: relative; }
+.avatar { display: block; width: 42px; height: 42px; border-radius: 50%; overflow: hidden; flex: none; background: var(--brand-100); position: relative; }
 .avatar img { width: 100%; height: 100%; object-fit: cover; }
 .avatar .initials { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-weight: 700; color: var(--brand); font-family: var(--font-display); }
 .avatar-sm { width: 34px; height: 34px; font-size: 12px; }
@@ -140,10 +140,10 @@ select.input { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://ww
 
 /* Admin shell */
 .admin-layout { display: grid; grid-template-columns: 248px 1fr; min-height: 100vh; }
-.admin-sidebar { background: linear-gradient(180deg, var(--brand-800), #3f0c19); color: rgba(255,255,255,.78); display: flex; flex-direction: column; position: sticky; top: 0; height: 100vh; padding: 20px 14px; }
+.admin-sidebar { background: linear-gradient(180deg, var(--brand-800), #3f0c19); color: rgba(255,255,255,.78); display: flex; flex-direction: column; position: sticky; top: 0; height: 100vh; padding: 20px 14px; overflow-y: auto; overscroll-behavior: contain; }
 .admin-brand { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 19px; color: #fff; padding: 4px 8px 20px; }
 .admin-brand .mark { width: 36px; height: 36px; border-radius: 11px; background: linear-gradient(135deg, var(--accent), #B99727); display: flex; align-items: center; justify-content: center; font-size: 17px; color: var(--brand-800); }
-.side-nav { display: flex; flex-direction: column; gap: 3px; }
+.side-nav { display: flex; flex-direction: column; gap: 3px; min-height: 0; }
 .side-nav .snav-label { font-size: 10.5px; letter-spacing: .1em; text-transform: uppercase; color: rgba(255,255,255,.4); font-weight: 700; padding: 18px 10px 6px; }
 .side-nav a { display: flex; align-items: center; gap: 11px; padding: 11px 12px; border-radius: 11px; color: rgba(255,255,255,.68); font-size: 13.5px; font-weight: 500; transition: all .16s ease; }
 .side-nav a i { width: 20px; text-align: center; font-size: 15px; }

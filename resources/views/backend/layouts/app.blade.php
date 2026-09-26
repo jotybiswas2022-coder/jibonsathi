@@ -8,9 +8,9 @@
     <title>@yield('title', 'Dashboard') — Jibon Sathi Admin</title>
     <style>
     {!! file_get_contents(public_path('assets/backend/css/app.css')) !!}
+    {!! file_get_contents(public_path('assets/backend/vendor/sweetalert2.min.css')) !!}
 </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="stylesheet" href="{{ asset('assets/backend/vendor/sweetalert2.min.css') }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 </head>

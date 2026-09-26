@@ -86,11 +86,15 @@
             </p>
         </div>
 
+        {{-- The box filters as you type, so there is nothing to press. A hidden
+             submit button keeps Enter working in every browser and with JavaScript
+             off, since a form with no submit control at all would not submit. --}}
+        <button type="submit" class="sr-only" tabindex="-1" aria-hidden="true">Search</button>
+
         <div class="field actions">
-            <button class="btn btn-primary"><i class="fas fa-filter"></i> Filter</button>
             <a href="{{ route('backend.success-stories.index') }}" class="btn btn-outline" data-live-search-reset
                @if ($term === '' && $status === 'all') aria-disabled="true" tabindex="-1" style="pointer-events:none;opacity:.5" @endif>
-                Reset
+                <i class="fas fa-rotate-left"></i> Reset
             </a>
         </div>
     </form>

@@ -133,6 +133,12 @@ class SuccessStoryController extends Controller
             }
 
             $data['photo_path'] = $request->file('photo')->store('stories', 'public');
+        } elseif ($request->boolean('remove_photo') && $story?->photo_path) {
+            /* The form offers a Remove control for the current cover. Unlinking
+               happens here rather than in the browser, so a pending removal can
+               still be undone by discarding the form. */
+            Storage::disk('public')->delete($story->photo_path);
+            $data['photo_path'] = null;
         }
 
         return $data;

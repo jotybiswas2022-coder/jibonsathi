@@ -111,6 +111,9 @@
                 </div>
                 <div class="set-card-body">
                     <div class="field">
+                        {{-- The flag is what the controller reads; the button only
+                             toggles it, so removal is still undone by a discard. --}}
+                        <input type="hidden" name="remove_photo" value="" data-remove-field="photo">
                         <input type="file" name="photo" id="photo" class="sr-only"
                                accept="image/jpeg,image/png,image/webp" data-preview="photoThumb">
                         <label class="uploader uploader-cover" for="photo" data-uploader="photo">
@@ -123,10 +126,17 @@
                             </span>
                             <span class="uploader-info">
                                 <span class="ui-name">{{ $photoUrl ? 'Replace photo' : 'Choose a photo' }}</span>
-                                <span class="ui-file" data-file-name="photo">{{ $photoUrl ? 'Current photo is saved' : 'No photo chosen yet' }}</span>
+                                <span class="ui-file" data-file-name="photo"
+                                      data-idle-name="{{ $photoUrl ? 'Current photo is saved' : 'No photo chosen yet' }}">{{ $photoUrl ? 'Current photo is saved' : 'No photo chosen yet' }}</span>
                             </span>
                         </label>
                         <span class="hint">JPG, PNG or WEBP. Without one the couple's initials are shown instead.</span>
+
+                        @if ($photoUrl)
+                            <button type="button" class="uploader-remove" data-remove="photo">
+                                <i class="fas fa-trash"></i> <span data-remove-label>Remove</span>
+                            </button>
+                        @endif
                     </div>
                 </div>
             </section>

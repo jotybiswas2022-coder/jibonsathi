@@ -46,14 +46,26 @@ class SettingController extends Controller
         }
 
         foreach (['logo' => 'logo_path', 'favicon' => 'favicon_path'] as $input => $key) {
-            if ($request->hasFile($input)) {
-                $existing = SiteSetting::get($key);
+            $existing = SiteSetting::get($key);
 
+            if ($request->hasFile($input)) {
                 if ($existing && Storage::disk('public')->exists($existing)) {
                     Storage::disk('public')->delete($existing);
                 }
 
                 SiteSetting::put($key, $request->file($input)->store('branding', 'public'), 'branding');
+
+                continue;
+            }
+
+            /* A freshly chosen file always wins over a pending removal, so only
+               clear the setting when nothing new was uploaded this time. */
+            if ($request->boolean('remove_'.$input) && $existing !== '') {
+                if ($existing && Storage::disk('public')->exists($existing)) {
+                    Storage::disk('public')->delete($existing);
+                }
+
+                SiteSetting::put($key, '', 'branding');
             }
         }
 

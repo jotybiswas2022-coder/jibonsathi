@@ -409,6 +409,26 @@ table.table { width: 100%; border-collapse: collapse; font-size: 13.5px; min-wid
 .uploader.has-file { border-style: solid; border-color: var(--success); background: var(--success-bg); }
 #logo:focus-visible + .uploader, #favicon:focus-visible + .uploader { outline: 3px solid rgba(139,30,63,.3); outline-offset: 2px; }
 
+/* Removing an existing image is a pending change, shown as a warning on the
+   picker itself rather than as a separate confirmation the visitor can miss. */
+.uploader.is-removing, .uploader.is-removing:hover {
+  border-style: solid; border-color: var(--danger); background: var(--danger-bg);
+}
+.uploader.is-removing .media-thumb { opacity: .4; }
+.uploader.is-removing .media-thumb img { filter: grayscale(1); }
+.uploader.is-removing .ui-file { color: var(--danger); font-weight: 600; }
+
+.uploader-remove {
+  display: inline-flex; align-items: center; gap: 7px; align-self: flex-start; min-height: 32px;
+  margin-top: 10px; padding: 0 12px; border-radius: 999px; cursor: pointer;
+  border: 1px solid var(--border-strong); background: #fff; color: var(--muted);
+  font: inherit; font-size: 12.5px; font-weight: 600;
+}
+.uploader-remove:hover { border-color: var(--danger); color: var(--danger); background: var(--danger-bg); }
+.uploader-remove.is-armed { border-color: var(--danger); color: var(--danger); background: var(--danger-bg); }
+.uploader-remove.is-armed:hover { background: #fff; }
+.uploader-remove:focus-visible { outline: 3px solid rgba(139,30,63,.3); outline-offset: 2px; }
+
 /* Sticky action bar: the form is long, so saving never requires a full scroll. */
 .save-bar {
   position: sticky; bottom: 0; z-index: 30; display: flex; align-items: center; justify-content: space-between; gap: 14px;
@@ -441,6 +461,13 @@ table.table { width: 100%; border-collapse: collapse; font-size: 13.5px; min-wid
   content: ''; position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
   box-shadow: inset 0 0 0 1px var(--brand);
 }
+
+/* The stack of icon, number, label and caption is 190px tall, which is a lot of
+   screen spent on a filter. Tightened here without touching .stat-tile, which
+   the dashboard shares. */
+.st-tiles .stat-tile { padding: 16px 18px; gap: 5px; }
+.st-tiles .stat-tile .st-ico { width: 38px; height: 38px; font-size: 16px; margin-bottom: 1px; }
+.st-tiles .stat-tile .st-num { font-size: 24px; }
 
 /* Toolbar with an instant-filter search box. */
 .st-toolbar { align-items: flex-start; margin-bottom: 14px; }
@@ -548,7 +575,19 @@ table.st-table { min-width: 0; }
   .st-toolbar .field.actions .btn { flex: 1; }
 }
 @media (max-width: 560px) {
-  .st-tiles { grid-template-columns: 1fr; }
+  /* One column made four 190px cards: 820px of the page for a set of filters.
+     Two compact tiles per row keeps the number and the label readable while
+     cutting that to about a sixth of the height. */
+  .st-tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  .st-tiles .stat-tile {
+    display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center;
+    column-gap: 11px; padding: 12px 13px;
+  }
+  .st-tiles .stat-tile .st-ico { grid-row: 1 / span 2; width: 34px; height: 34px; font-size: 14px; border-radius: 11px; margin-bottom: 0; }
+  .st-tiles .stat-tile .st-num { font-size: 20px; line-height: 1.15; }
+  .st-tiles .stat-tile .st-lbl { font-size: 11.5px; line-height: 1.3; }
+  /* The caption repeats what the label already says; not worth a line here. */
+  .st-tiles .stat-tile .st-sub { display: none; }
 }
 
 /* Below this the table becomes one card per row, driven by each cell's

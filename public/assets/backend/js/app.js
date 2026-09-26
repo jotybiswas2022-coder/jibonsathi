@@ -359,13 +359,47 @@
       const thumb = document.getElementById(input.dataset.preview);
       const label = $('[data-uploader="' + input.id + '"]', form);
       const name = $('[data-file-name="' + input.id + '"]', form);
+      const removeBtn = $('[data-remove="' + input.id + '"]', form);
+      const removeFlag = $('[data-remove-field="' + input.name + '"]', form);
+
+      /* Removing an existing image is a pending change, not an instant delete:
+         the file is only unlinked when the form is saved, so a mis-click can be
+         undone and nothing is lost if the visitor simply navigates away. */
+      const idleName = name ? (name.dataset.idleName || name.textContent) : '';
+
+      const paintRemoving = (on) => {
+        if (label) label.classList.toggle('is-removing', on);
+        if (name) name.textContent = on ? 'Will be removed when you save' : idleName;
+        if (removeBtn) {
+          removeBtn.classList.toggle('is-armed', on);
+          const text = $('[data-remove-label]', removeBtn);
+          if (text) text.textContent = on ? 'Keep it' : 'Remove';
+        }
+      };
+
+      const setRemoving = (on) => {
+        if (! removeFlag) return;
+        removeFlag.value = on ? '1' : '';
+        paintRemoving(on);
+      };
 
       input.addEventListener('change', () => {
         const file = input.files && input.files[0];
-        if (!file) return;
+        if (! file) return;
 
         if (name) name.textContent = file.name + ' · ' + Math.max(1, Math.round(file.size / 1024)) + ' KB';
-        if (label) label.classList.add('has-file');
+        if (label) {
+          label.classList.add('has-file');
+          label.classList.remove('is-removing');
+        }
+
+        /* A newly chosen file always wins over a pending removal. */
+        if (removeFlag) removeFlag.value = '';
+        if (removeBtn) {
+          removeBtn.classList.remove('is-armed');
+          const text = $('[data-remove-label]', removeBtn);
+          if (text) text.textContent = 'Remove';
+        }
 
         if (thumb && file.type.indexOf('image') === 0) {
           const reader = new FileReader();
@@ -373,6 +407,12 @@
           reader.readAsDataURL(file);
         }
       });
+
+      if (removeBtn) {
+        removeBtn.addEventListener('click', () => {
+          setRemoving(! (removeFlag && removeFlag.value === '1'));
+        });
+      }
     });
 
     /* Clear buttons on the social URL fields, shown only while there is a value. */
@@ -444,8 +484,16 @@
       paintBar();
       counters.forEach((pair) => updateCounter(pair.counter, pair.field));
       $$('[data-clearable]', form).forEach(paintClear);
-      $$('[data-uploader]', form).forEach((label) => label.classList.remove('has-file'));
-      $$('[data-file-name]', form).forEach((el) => { el.textContent = ''; });
+      $$('[data-uploader]', form).forEach((label) => label.classList.remove('has-file', 'is-removing'));
+      $$('[data-file-name]', form).forEach((el) => { el.textContent = el.dataset.idleName || ''; });
+      /* A pending image removal is an edit like any other, so discarding has to
+         drop it too, or the next save would delete the file anyway. */
+      $$('[data-remove-field]', form).forEach((el) => { el.value = ''; });
+      $$('[data-remove]', form).forEach((btn) => {
+        btn.classList.remove('is-armed');
+        const text = $('[data-remove-label]', btn);
+        if (text) text.textContent = 'Remove';
+      });
       if (typeof onReset === 'function') onReset();
     };
 

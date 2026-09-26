@@ -327,6 +327,7 @@
                         <div class="set-row">
                             <div class="field">
                                 <div class="field-top"><label for="logo">Site Logo</label></div>
+                                <input type="hidden" name="remove_logo" value="" data-remove-field="logo">
                                 <input type="file" name="logo" id="logo" class="sr-only" accept="image/png,image/jpeg,image/svg+xml,image/webp" data-preview="logoThumb">
                                 <label class="uploader" for="logo" data-uploader="logo">
                                     <span class="media-thumb" id="logoThumb">
@@ -338,15 +339,21 @@
                                     </span>
                                     <span class="uploader-info">
                                         <span class="ui-name">Site Logo</span>
-                                        <span class="ui-file" data-file-name="logo">{{ ! empty($settings['logo_path']) ? 'Current logo is saved' : 'No logo uploaded yet' }}</span>
+                                        <span class="ui-file" data-file-name="logo" data-idle-name="{{ ! empty($settings['logo_path']) ? 'Current logo is saved' : 'No logo uploaded yet' }}">{{ ! empty($settings['logo_path']) ? 'Current logo is saved' : 'No logo uploaded yet' }}</span>
                                         <span class="btn btn-outline btn-sm"><i class="fas fa-upload"></i> Choose file</span>
                                     </span>
                                 </label>
+                                @if (! empty($settings['logo_path']))
+                                    <button type="button" class="uploader-remove" data-remove="logo">
+                                        <i class="fas fa-trash"></i> <span data-remove-label>Remove</span>
+                                    </button>
+                                @endif
                                 <span class="hint">PNG, JPG, SVG or WEBP · up to 2 MB. Replaces the current logo.</span>
                             </div>
 
                             <div class="field">
                                 <div class="field-top"><label for="favicon">Favicon</label></div>
+                                <input type="hidden" name="remove_favicon" value="" data-remove-field="favicon">
                                 <input type="file" name="favicon" id="favicon" class="sr-only" accept="image/x-icon,image/png,image/svg+xml,image/jpeg" data-preview="faviconThumb">
                                 <label class="uploader" for="favicon" data-uploader="favicon">
                                     <span class="media-thumb" id="faviconThumb">
@@ -358,10 +365,15 @@
                                     </span>
                                     <span class="uploader-info">
                                         <span class="ui-name">Favicon</span>
-                                        <span class="ui-file" data-file-name="favicon">{{ ! empty($settings['favicon_path']) ? 'Current favicon is saved' : 'No favicon uploaded yet' }}</span>
+                                        <span class="ui-file" data-file-name="favicon" data-idle-name="{{ ! empty($settings['favicon_path']) ? 'Current favicon is saved' : 'No favicon uploaded yet' }}">{{ ! empty($settings['favicon_path']) ? 'Current favicon is saved' : 'No favicon uploaded yet' }}</span>
                                         <span class="btn btn-outline btn-sm"><i class="fas fa-upload"></i> Choose file</span>
                                     </span>
                                 </label>
+                                @if (! empty($settings['favicon_path']))
+                                    <button type="button" class="uploader-remove" data-remove="favicon">
+                                        <i class="fas fa-trash"></i> <span data-remove-label>Remove</span>
+                                    </button>
+                                @endif
                                 <span class="hint">PNG, ICO, SVG or JPG · up to 512 KB. Shown in the browser tab.</span>
                             </div>
                         </div>

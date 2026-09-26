@@ -421,6 +421,89 @@ table.table { width: 100%; border-collapse: collapse; font-size: 13.5px; min-wid
 .save-bar.is-dirty { border-color: var(--warning); }
 .save-bar .sb-actions { display: flex; gap: 10px; flex: none; }
 
+/* ==========================================================================
+   Listing pages: page header, filter tiles, and a searchable table that
+   collapses into stacked cards on small screens.
+   ========================================================================== */
+.page-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 20px; }
+.page-head-text h2 { font-size: 21px; margin: 0 0 4px; }
+.page-head-text p { margin: 0; color: var(--muted); font-size: 13.5px; max-width: 62ch; }
+.page-head-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+
+/* Status tiles that double as the filter, so the tab strip is not needed. */
+.st-tiles { margin-bottom: 20px; }
+.st-tile { text-decoration: none; color: inherit; transition: border-color .18s ease, box-shadow .18s ease, transform .18s ease; }
+.st-tile:hover { color: inherit; border-color: var(--brand); transform: translateY(-2px); box-shadow: var(--shadow-md); }
+.st-tile .st-sub { color: var(--muted-2); font-weight: 500; }
+.st-tile.is-active { border-color: var(--brand); box-shadow: 0 0 0 3px rgba(139,30,63,.12), var(--shadow-sm); }
+.st-tile.is-active .st-lbl { color: var(--brand); }
+.st-tile.is-active::after {
+  content: ''; position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
+  box-shadow: inset 0 0 0 1px var(--brand);
+}
+
+/* Toolbar with an instant-filter search box. */
+.st-toolbar { align-items: flex-start; margin-bottom: 14px; }
+.st-search-field { max-width: 420px; flex: 1 1 320px; }
+.st-search { position: relative; }
+.st-search > i { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: 14px; pointer-events: none; }
+.st-search .input { padding-left: 38px; height: 44px; }
+.st-search .input:has(+ .st-search-clear:not([hidden])) { padding-right: 42px; }
+.st-search-clear {
+  position: absolute; right: 6px; top: 50%; transform: translateY(-50%); width: 32px; height: 32px;
+  border: 0; border-radius: 50%; background: transparent; color: var(--muted); cursor: pointer; font-size: 13px;
+  display: inline-flex; align-items: center; justify-content: center;
+}
+.st-search-clear:hover { background: var(--brand-100); color: var(--brand); }
+.st-search-clear[hidden] { display: none; }
+.st-hint { margin: 2px 0 0; font-size: 12px; color: var(--muted); }
+
+.st-result-bar {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;
+  font-size: 12.5px; font-weight: 600; color: var(--text); margin-bottom: 10px;
+}
+
+/* Rows. `.st-title` is the only line that wraps the linked title. */
+.st-table-wrap { overflow-x: visible; }
+table.st-table { min-width: 0; }
+.st-table th:first-child, .st-table td:first-child { padding-left: 20px; }
+.st-table th:last-child, .st-table td:last-child { padding-right: 20px; }
+.st-cell { align-items: center; gap: 13px; }
+.st-cell-text { min-width: 0; }
+.st-thumb { width: 46px; height: 46px; border-radius: 13px; }
+.st-title { font-weight: 600; font-size: 14px; }
+.st-title a { color: var(--text); display: inline-flex; align-items: center; min-height: 32px; }
+.st-title a:hover { color: var(--brand); }
+.st-cell .cu-sub { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.st-meta { display: flex; flex-direction: column; gap: 3px; font-size: 12.5px; color: var(--muted); }
+.st-meta-row { display: flex; align-items: center; gap: 7px; }
+.st-meta-row i { width: 13px; text-align: center; color: var(--muted-2); flex: none; font-size: 11.5px; }
+
+/* Publish switch. It is a real submit button inside a confirmed form. */
+.st-toggle {
+  display: inline-flex; align-items: center; gap: 8px; height: 32px; padding: 0 13px 0 10px;
+  border-radius: 999px; border: 1px solid var(--border-strong); background: #fff; cursor: pointer;
+  font: inherit; font-size: 12.5px; font-weight: 600; color: var(--muted); white-space: nowrap;
+  transition: background .16s ease, border-color .16s ease, color .16s ease;
+}
+.st-toggle-dot { width: 8px; height: 8px; border-radius: 50%; background: currentColor; flex: none; }
+.st-toggle.is-on { background: var(--success-bg); border-color: rgba(22,163,74,.35); color: var(--success); }
+.st-toggle.is-off { background: var(--warning-bg); border-color: rgba(217,119,6,.32); color: var(--warning); }
+.st-toggle:hover { filter: brightness(.97); }
+
+.st-actions { display: flex; gap: 6px; justify-content: flex-end; }
+.st-actions form { display: inline; margin: 0; }
+.st-act {
+  width: 34px; height: 34px; border-radius: 10px; border: 1px solid var(--border-strong); background: #fff;
+  color: var(--muted); display: inline-flex; align-items: center; justify-content: center; font-size: 12.5px;
+}
+.st-act:hover { border-color: var(--brand); color: var(--brand); background: var(--brand-050); }
+.st-act.is-danger:hover { border-color: var(--danger); color: var(--danger); background: var(--danger-bg); }
+
+.st-table mark { background: #FDF0B8; color: inherit; border-radius: 3px; padding: 0 1px; font-weight: 700; }
+.st-live-empty { border-top: 1px solid var(--border); }
+
 @media (max-width: 1080px) {
   .settings-shell { grid-template-columns: 1fr; gap: 16px; }
   .set-nav {
@@ -446,6 +529,65 @@ table.table { width: 100%; border-collapse: collapse; font-size: 13.5px; min-wid
   .hero-pv { padding: 22px 18px; }
   .uploader { flex-direction: column; align-items: flex-start; }
   .media-thumb { width: 52px; height: 52px; }
+}
+
+/* Listing pages on phones: the header stacks and the filter tiles go to a
+   single column so the numbers stay readable. */
+@media (max-width: 860px) {
+  .page-head { align-items: flex-start; }
+  .page-head-actions { width: 100%; }
+  .page-head-actions .btn { flex: 1; }
+  .st-toolbar { flex-direction: column; align-items: stretch; }
+  .st-search-field { max-width: none; }
+  .st-toolbar .field.actions { width: 100%; }
+  /* .filter-bar sets flex:0 on the actions group, which is flex-basis:0 and
+     therefore becomes a zero HEIGHT once the toolbar is a column. It also
+     inherits flex-direction:column from .field, which stacks the two buttons
+     and squeezes them under flex:1. Both have to be undone here. */
+  .st-toolbar .field.actions { flex: 0 0 auto; flex-direction: row; align-items: center; }
+  .st-toolbar .field.actions .btn { flex: 1; }
+}
+@media (max-width: 560px) {
+  .st-tiles { grid-template-columns: 1fr; }
+}
+
+/* Below this the table becomes one card per row, driven by each cell's
+   data-label. Tablets get the stacked layout too, because five columns of
+   story data cannot fit without sideways scrolling. */
+@media (max-width: 900px) {
+  .st-table-wrap { border: 0; background: none; box-shadow: none; border-radius: 0; }
+  table.st-table { min-width: 0; display: block; }
+  .st-table thead { display: none; }
+  .st-table tbody { display: block; }
+  .st-table tbody tr {
+    display: block; background: #fff; border: 1px solid var(--border); border-radius: var(--radius);
+    box-shadow: var(--shadow-sm); margin-bottom: 12px; padding: 14px 15px;
+  }
+  .st-table tbody tr:hover { background: #fff; }
+  .st-table tbody td {
+    display: flex; align-items: center; justify-content: space-between; gap: 14px;
+    padding: 9px 0; border-bottom: 1px solid #F6F1ED; text-align: right;
+  }
+  .st-table tbody td:last-child { border-bottom: 0; padding-bottom: 0; }
+  .st-table tbody td:first-child { padding: 0 0 11px; display: block; text-align: left; }
+  .st-table tbody td::before {
+    content: attr(data-label); flex: none; font-size: 11px; font-weight: 700; letter-spacing: .05em;
+    text-transform: uppercase; color: var(--muted-2);
+  }
+  .st-table tbody td:first-child::before { content: none; }
+  .st-table tbody td[data-label="Story"] .st-cell { align-items: flex-start; }
+  .st-table tbody td[data-label="Details"] { display: block; }
+  .st-table tbody td[data-label="Details"]::before { display: block; margin-bottom: 6px; }
+  .st-cell { align-items: center; }
+  .st-cell .cu-sub { white-space: normal; }
+  .st-meta { text-align: left; }
+  .st-actions { justify-content: flex-end; }
+  .st-table tbody td[data-label="Actions"] { padding-top: 11px; }
+  .st-table tbody td[data-label="Actions"] .st-actions { width: 100%; justify-content: flex-end; }
+  /* The empty state lives in a colspan cell, so it should not be labelled. */
+  .st-table tbody td[colspan] { display: block; padding: 0; text-align: center; }
+  .st-table tbody td[colspan]::before { content: none; }
+  .st-live-empty { border: 1px solid var(--border); border-radius: var(--radius); background: #fff; }
 }
 @media (prefers-reduced-motion: reduce) {
   * { animation-duration: .01ms !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }

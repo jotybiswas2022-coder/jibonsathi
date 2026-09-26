@@ -17,6 +17,7 @@
     initCharts();
     initTabs();
     initSettings();
+    initLiveSearch();
   });
 
   function initToasts() {
@@ -560,5 +561,112 @@
 
   function config_app_name() {
     return document.body.dataset.appName || 'Jibon Sathi';
+  }
+
+  /* ------------------------------ live search ----------------------------- */
+  /* Filters the rows already on the page as you type, and marks the hits. The
+     surrounding form is a normal GET search, so Enter still runs the full
+     query across every page and the page works with this script disabled. */
+  function initLiveSearch() {
+    const form = $('[data-live-search]');
+    if (!form) return;
+
+    const input = $('[data-live-search-input]', form);
+    const clearBtn = $('[data-live-search-clear]', form);
+    const counter = $('[data-live-search-count]');
+    const hint = $('[data-live-search-hint]');
+    const blank = $('[data-live-search-empty]');
+    if (!input) return;
+
+    const rows = $$('[data-story-row]');
+    if (!rows.length) return;
+
+    const escapeRe = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+    /* Cache each highlightable cell's markup once, so repainting a term is a
+       plain string swap rather than a re-render of the row. */
+    const cells = rows.flatMap((row) => $$('[data-hl]', row).map((el) => ({ el, html: el.innerHTML })));
+
+    const paint = (el, html, re) => { el.innerHTML = re ? html.replace(re, '<mark>$1</mark>') : html; };
+
+    /* Seed from the field so a ?q= load is highlighted straight away, and so
+       init() recognises the list as already filtered by the server. */
+    let term = input.value.trim().toLowerCase();
+    let re = term.length > 1 ? new RegExp(`(${escapeRe(term)})`, 'gi') : null;
+
+    /* When the page was opened with ?q= the server already did the filtering,
+       so the row list is only the current page of an already-filtered result.
+       Track that value so init does not overwrite the server's wording. */
+    const serverTerm = term;
+    const serverTotal = parseInt(counter?.dataset.liveSearchTotal ?? '', 10);
+
+    const apply = () => {
+      let shown = 0;
+
+      rows.forEach((row) => {
+        const hit = ! term || row.dataset.search.includes(term);
+        row.hidden = ! hit;
+        if (hit) shown++;
+      });
+
+      cells.forEach((c) => paint(c.el, c.html, re));
+
+      const serverFiltered = term === serverTerm;
+
+      if (counter) {
+        if (serverFiltered) {
+          const n = Number.isFinite(serverTotal) ? serverTotal : rows.length;
+          const label = term ? `${n} ${n === 1 ? 'match' : 'matches'}` : `${n} ${n === 1 ? 'story' : 'stories'}`;
+          counter.textContent = term ? label : `${label} on this page`;
+        } else {
+          counter.textContent = `${shown} ${shown === 1 ? 'match' : 'matches'} on this page`;
+        }
+      }
+
+      if (hint) {
+        hint.textContent = serverFiltered
+          ? (term ? `Filtered on the server across all ${Number.isFinite(serverTotal) ? serverTotal : rows.length} ${term === '' ? 'stories' : 'matches'}.` : 'Type to filter the rows below, or press Enter to search every page.')
+          : (shown ? `Filtering the ${rows.length} ${rows.length === 1 ? 'row' : 'rows'} on this page.` : 'Nothing on this page matches.');
+      }
+
+      if (blank) blank.hidden = shown !== 0;
+
+      if (clearBtn) clearBtn.hidden = term === '';
+    };
+
+    const onInput = debounce(() => {
+      term = input.value.trim().toLowerCase();
+      re = term.length > 1 ? new RegExp(`(${escapeRe(term)})`, 'gi') : null;
+      apply();
+    }, 130);
+
+    input.addEventListener('input', onInput);
+
+    input.addEventListener('keydown', (e) => {
+      if (e.key !== 'Escape' || ! input.value) return;
+      e.preventDefault();
+      input.value = '';
+      onInput();
+    });
+
+    if (clearBtn) {
+      clearBtn.addEventListener('click', () => {
+        input.value = '';
+        onInput();
+        input.focus();
+      });
+    }
+
+    /* "/" jumps to the box from anywhere that is not already a text field. */
+    document.addEventListener('keydown', (e) => {
+      if (e.key !== '/' || e.metaKey || e.ctrlKey || e.altKey) return;
+      const el = document.activeElement;
+      if (el && (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' || el.tagName === 'SELECT' || el.isContentEditable)) return;
+      e.preventDefault();
+      input.focus();
+      input.select();
+    });
+
+    apply();
   }
 })();

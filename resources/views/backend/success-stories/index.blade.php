@@ -1,55 +1,156 @@
 @extends('backend.layouts.app')
 
+@php
+    $status = $status ?? 'all';
+    $filters = $filters ?? [];
+    $term = trim((string) ($filters['q'] ?? ''));
+    $onPage = $stories->count();
+    $totalRows = $stories->total();
+
+    /* The tiles double as the status filter, so each one links to the same
+       query the old tab strip used plus a featured view. */
+    $views = [
+        ['key' => 'all', 'label' => 'All stories', 'icon' => 'fa-layer-group', 'tone' => 'ic-brand',
+            'sub' => 'Everything in the library'],
+        ['key' => 'published', 'label' => 'Published', 'icon' => 'fa-circle-check', 'tone' => 'ic-success',
+            'sub' => 'Live on the website'],
+        ['key' => 'draft', 'label' => 'Drafts', 'icon' => 'fa-pen-ruler', 'tone' => 'ic-warning',
+            'sub' => 'Hidden from visitors'],
+        ['key' => 'featured', 'label' => 'Featured', 'icon' => 'fa-crown', 'tone' => 'ic-accent',
+            'sub' => 'Highlighted to visitors'],
+    ];
+@endphp
+
 @section('title', 'Success Stories')
 @section('crumb', 'Content · Couple stories on the site')
 
 @section('content')
-    <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:18px">
-        <div class="tabs" style="margin:0;border:none">
-            @foreach (['all' => 'All', 'published' => 'Published', 'draft' => 'Drafts'] as $key => $label)
-                <a class="tab {{ ($status ?? 'all') === $key ? 'active' : '' }}" href="{{ route('backend.success-stories.index', ['status' => $key]) }}">
-                    {{ $label }} <span class="tab-count">{{ $counts[$key] ?? 0 }}</span>
-                </a>
-            @endforeach
+    <div class="page-head">
+        <div class="page-head-text">
+            <h2>Success Stories</h2>
+            <p>Publish real couple journeys on the public success-stories page, and feature the best ones.</p>
         </div>
-        <a href="{{ route('backend.success-stories.create') }}" class="btn btn-primary"><i class="fas fa-plus"></i> New Story</a>
+        <div class="page-head-actions">
+            <a href="{{ route('success-stories.index') }}" target="_blank" rel="noopener" class="btn btn-outline">
+                <i class="fas fa-external-link"></i> View live page
+            </a>
+            <a href="{{ route('backend.success-stories.create') }}" class="btn btn-primary">
+                <i class="fas fa-plus"></i> New Story
+            </a>
+        </div>
     </div>
 
-    <form method="GET" action="{{ route('backend.success-stories.index') }}" class="filter-bar">
-        <input type="hidden" name="status" value="{{ $status ?? 'all' }}">
-        <div class="field">
-            <label>Search</label>
-            <input type="search" name="q" class="input" value="{{ $filters['q'] ?? '' }}" placeholder="Title or couple names">
+    {{-- Status tiles double as the filter, so the old tab strip is gone. --}}
+    <div class="stat-grid st-tiles">
+        @foreach ($views as $view)
+            @php $isActive = $status === $view['key']; @endphp
+            <a class="card stat-tile st-tile {{ $isActive ? 'is-active' : '' }}"
+               href="{{ route('backend.success-stories.index', array_filter(['status' => $view['key'] === 'all' ? null : $view['key'], 'q' => $term ?: null])) }}"
+               @if ($isActive) aria-current="page" @endif>
+                <span class="st-ico {{ $view['tone'] }}"><i class="fas {{ $view['icon'] }}"></i></span>
+                <span class="st-num" data-st-count>{{ $counts[$view['key']] ?? 0 }}</span>
+                <span class="st-lbl">{{ $view['label'] }}</span>
+                <span class="st-sub">{{ $view['sub'] }}</span>
+            </a>
+        @endforeach
+    </div>
+
+    {{-- The form is a real GET search, so it still works with JavaScript off and
+         keeps the query shareable. The JS layers instant filtering on top and
+         only searches this page; Enter runs the full search across every page. --}}
+    <form method="GET" action="{{ route('backend.success-stories.index') }}" class="filter-bar st-toolbar" data-live-search>
+        <input type="hidden" name="status" value="{{ $status === 'all' ? '' : $status }}">
+
+        <div class="field st-search-field">
+            <label for="stSearch">Search stories</label>
+            <div class="st-search">
+                <i class="fas fa-magnifying-glass"></i>
+                <input type="search" name="q" id="stSearch" class="input" value="{{ $term }}"
+                       placeholder="Title, couple or location" autocomplete="off"
+                       data-live-search-input aria-describedby="stSearchHint">
+                <button type="button" class="st-search-clear" data-live-search-clear
+                        aria-label="Clear the search box" @if ($term === '') hidden @endif>
+                    <i class="fas fa-xmark"></i>
+                </button>
+            </div>
+            <p class="hint st-hint" id="stSearchHint" data-live-search-hint>
+                @if ($term !== '')
+                    Showing {{ $totalRows }} {{ Str::plural('story', $totalRows) }} matching &ldquo;{{ $term }}&rdquo;.
+                @else
+                    Type to filter the rows below, or press Enter to search every page.
+                @endif
+            </p>
         </div>
+
         <div class="field actions">
             <button class="btn btn-primary"><i class="fas fa-filter"></i> Filter</button>
-            <a href="{{ route('backend.success-stories.index') }}" class="btn btn-outline">Reset</a>
+            <a href="{{ route('backend.success-stories.index') }}" class="btn btn-outline"
+               @if ($term === '' && $status === 'all') aria-disabled="true" tabindex="-1" style="pointer-events:none;opacity:.5" @endif>
+                Reset
+            </a>
         </div>
     </form>
 
-    <div class="table-wrap">
-        <table class="table">
+    <div class="st-result-bar">
+        <span data-live-search-count data-live-search-total="{{ $totalRows }}">
+            @if ($term !== '')
+                {{ $totalRows }} {{ Str::plural('match', $totalRows) }}
+            @else
+                {{ $totalRows }} {{ Str::plural('story', $totalRows) }}
+            @endif
+        </span>
+        @if ($stories->hasPages())
+            <span class="text-muted text-small">Page {{ $stories->currentPage() }} of {{ $stories->lastPage() }}</span>
+        @endif
+    </div>
+
+    <div class="table-wrap st-table-wrap">
+        <table class="table st-table">
             <thead>
                 <tr>
                     <th>Story</th>
-                    <th>Couple</th>
-                    <th>Location</th>
-                    <th>Status</th>
+                    <th>Details</th>
+                    <th>Visibility</th>
                     <th>Featured</th>
-                    <th>Married</th>
-                    <th style="text-align:right">Actions</th>
+                    <th class="st-actions-col">Actions</th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody data-live-search-rows>
                 @forelse ($stories as $story)
-                    <tr>
-                        <td style="max-width:260px">
-                            <div class="cu-name"><a href="{{ route('backend.success-stories.edit', $story) }}">{{ $story->title }}</a></div>
-                            <div class="cu-sub">Order {{ $story->sort_order }}</div>
+                    <tr data-story-row
+                        data-search="{{ mb_strtolower($story->title.' '.$story->groom_name.' '.$story->bride_name.' '.$story->location) }}">
+                        <td data-label="Story">
+                            <div class="cell-user st-cell">
+                                <span class="avatar st-thumb">
+                                    @if ($story->photoUrl())
+                                        <img src="{{ $story->photoUrl() }}" alt="" loading="lazy">
+                                    @else
+                                        <span class="initials">{{ $story->initials() }}</span>
+                                    @endif
+                                </span>
+                                <div class="st-cell-text">
+                                    <div class="cu-name st-title" data-hl>
+                                        <a href="{{ route('backend.success-stories.edit', $story) }}">{{ $story->title }}</a>
+                                    </div>
+                                    <div class="cu-sub" data-hl>{{ $story->coupleLabel() }}</div>
+                                </div>
+                            </div>
                         </td>
-                        <td><strong>{{ $story->groom_name }}</strong> &amp; <strong>{{ $story->bride_name }}</strong></td>
-                        <td class="text-muted">{{ $story->location }}</td>
-                        <td>
+                        <td data-label="Details">
+                            <div class="st-meta">
+                                <span class="st-meta-row" data-hl>
+                                    <i class="fas fa-location-dot"></i>{{ $story->location ?: '—' }}
+                                </span>
+                                <span class="st-meta-row">
+                                    <i class="fas fa-ring"></i>
+                                    {{ $story->married_on?->format('M Y') ?? 'Date not set' }}
+                                </span>
+                                <span class="st-meta-row">
+                                    <i class="fas fa-arrow-down-1-9"></i>Order {{ $story->sort_order }}
+                                </span>
+                            </div>
+                        </td>
+                        <td data-label="Visibility">
                             <form method="POST" action="{{ route('backend.success-stories.toggle-publish', $story) }}"
                                   data-confirm-title="{{ $story->is_published ? 'Unpublish this story?' : 'Publish this story?' }}"
                                   data-confirm="{{ $story->is_published ? 'It disappears from the public success-stories page.' : 'It goes live on the public success-stories page straight away.' }}"
@@ -58,39 +159,73 @@
                                   data-confirm-color="{{ $story->is_published ? '#6B7280' : '#16A34A' }}"
                                   data-confirm-focus-cancel>
                                 @csrf
-                                <button class="btn btn-{{ $story->is_published ? 'success-soft btn-sm' : 'warning-soft btn-sm' }}">
+                                <button class="st-toggle {{ $story->is_published ? 'is-on' : 'is-off' }}">
+                                    <span class="st-toggle-dot"></span>
                                     {{ $story->is_published ? 'Published' : 'Draft' }}
                                 </button>
                             </form>
                         </td>
-                        <td>@if ($story->is_featured)<span class="badge badge-accent"><i class="fas fa-crown"></i> Featured</span>@else<span class="badge badge-muted">No</span>@endif</td>
-                        <td class="text-muted">{{ $story->married_on?->format('M Y') ?? '—' }}</td>
-                        <td style="text-align:right">
-                            <a href="{{ route('success-stories.show', $story) }}" target="_blank" class="btn btn-ghost btn-sm"><i class="fas fa-external-link"></i></a>
-                            <a href="{{ route('backend.success-stories.edit', $story) }}" class="btn btn-outline btn-sm"><i class="fas fa-pen"></i> Edit</a>
-                            <form method="POST" action="{{ route('backend.success-stories.destroy', $story) }}"
-                                  data-confirm-title="Delete this success story?"
-                                  data-confirm="{{ $story->groom_name }} &amp; {{ $story->bride_name }} will be removed permanently."
-                                  data-confirm-ok="Delete story" data-confirm-icon="error"
-                                  data-confirm-color="#DC2626" style="display:inline">
-                                @csrf @method('DELETE')
-                                <button class="btn btn-danger-soft btn-sm"><i class="fas fa-trash"></i></button>
-                            </form>
+                        <td data-label="Featured">
+                            @if ($story->is_featured)
+                                <span class="badge badge-accent"><i class="fas fa-crown"></i> Featured</span>
+                            @else
+                                <span class="badge badge-muted">No</span>
+                            @endif
+                        </td>
+                        <td data-label="Actions" class="st-actions-col">
+                            <div class="st-actions">
+                                <a href="{{ route('success-stories.show', $story) }}" target="_blank" rel="noopener"
+                                   class="st-act" title="View on the website" aria-label="View {{ $story->title }} on the website">
+                                    <i class="fas fa-external-link"></i>
+                                </a>
+                                <a href="{{ route('backend.success-stories.edit', $story) }}" class="st-act"
+                                   title="Edit story" aria-label="Edit {{ $story->title }}">
+                                    <i class="fas fa-pen"></i>
+                                </a>
+                                <form method="POST" action="{{ route('backend.success-stories.destroy', $story) }}"
+                                      data-confirm-title="Delete this success story?"
+                                      data-confirm="{{ $story->coupleLabel() }} will be removed permanently."
+                                      data-confirm-ok="Delete story" data-confirm-icon="error"
+                                      data-confirm-color="#DC2626">
+                                    @csrf @method('DELETE')
+                                    <button class="st-act is-danger" title="Delete story"
+                                            aria-label="Delete {{ $story->title }}">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </form>
+                            </div>
                         </td>
                     </tr>
                 @empty
-                    <tr>
-                        <td colspan="7">
+                    <tr data-story-empty>
+                        <td colspan="5">
                             <div class="empty-state">
                                 <i class="fas fa-heart"></i>
-                                <h3>No stories yet</h3>
-                                <p>Create your first success story to share a real couple's journey.</p>
+                                @if ($term !== '')
+                                    <h3>No story matches &ldquo;{{ $term }}&rdquo;</h3>
+                                    <p>Try a different title, couple name or location, or reset the search.</p>
+                                    <a href="{{ route('backend.success-stories.index', ['status' => $status === 'all' ? null : $status]) }}"
+                                       class="btn btn-outline">Clear search</a>
+                                @else
+                                    <h3>No stories here yet</h3>
+                                    <p>{{ $status === 'featured' ? 'Mark a story as featured and it will show up here.' : 'Create your first success story to share a real couple\'s journey.' }}</p>
+                                    <a href="{{ route('backend.success-stories.create') }}" class="btn btn-primary">
+                                        <i class="fas fa-plus"></i> New Story
+                                    </a>
+                                @endif
                             </div>
                         </td>
                     </tr>
                 @endforelse
             </tbody>
         </table>
+
+        {{-- Shown by the live search when a term hides every row on the page. --}}
+        <div class="empty-state st-live-empty" data-live-search-empty hidden>
+            <i class="fas fa-magnifying-glass"></i>
+            <h3>Nothing on this page matches</h3>
+            <p>The stories on other pages may still match. Press Enter to search every page.</p>
+        </div>
     </div>
 
     {{ $stories->links('backend.components.pagination') }}

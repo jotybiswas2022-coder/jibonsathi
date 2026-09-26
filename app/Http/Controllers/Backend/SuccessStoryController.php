@@ -19,7 +19,7 @@ class SuccessStoryController extends Controller
         Gate::authorize('manage', User::class);
 
         $filters = $request->validate([
-            'status' => ['nullable', 'in:published,draft,all'],
+            'status' => ['nullable', 'in:published,draft,featured,all'],
             'q' => ['nullable', 'string', 'max:80'],
         ]);
 
@@ -28,10 +28,13 @@ class SuccessStoryController extends Controller
         $stories = SuccessStory::query()
             ->when($status === 'published', fn ($q) => $q->where('is_published', true))
             ->when($status === 'draft', fn ($q) => $q->where('is_published', false))
+            ->when($status === 'featured', fn ($q) => $q->where('is_featured', true))
             ->when(filled($filters['q'] ?? null), fn ($q) => $q->where(function ($inner) use ($filters) {
-                $inner->where('title', 'like', '%'.$filters['q'].'%')
-                    ->orWhere('groom_name', 'like', '%'.$filters['q'].'%')
-                    ->orWhere('bride_name', 'like', '%'.$filters['q'].'%');
+                $term = $filters['q'];
+                $inner->where('title', 'like', '%'.$term.'%')
+                    ->orWhere('groom_name', 'like', '%'.$term.'%')
+                    ->orWhere('bride_name', 'like', '%'.$term.'%')
+                    ->orWhere('location', 'like', '%'.$term.'%');
             }))
             ->orderBy('sort_order')
             ->latest()
@@ -46,6 +49,7 @@ class SuccessStoryController extends Controller
                 'all' => SuccessStory::query()->count(),
                 'published' => SuccessStory::query()->where('is_published', true)->count(),
                 'draft' => SuccessStory::query()->where('is_published', false)->count(),
+                'featured' => SuccessStory::query()->where('is_featured', true)->count(),
             ],
         ]);
     }

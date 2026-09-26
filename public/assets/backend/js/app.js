@@ -887,151 +887,281 @@
     }
   }
 
-  /* ============================== messages list ============================== */
-  /* A smaller sibling of initLiveSearch for pages that filter a plain list by
-     one term and one scope. It is deliberately separate rather than a mode of
-     the story search, which is tied to status tiles and featured flags. */
+  /* ================================= list filter ================================ */
+  /* One filter shared by every plain admin list. A page declares:
+       - rows:   [data-lf-row], each carrying data-search plus one attribute per facet
+       - facets: [data-lf-tile] chips or tiles, grouped by data-lf-group
+       - the box:[data-lf] form with a [data-lf-input] search and a [data-lf-field]
+                 hidden input per group
+
+     A tile matches a row by comparing row.dataset[tile.col] with tile.val, so a
+     page with two facets (a status and a reason, say) needs no new code. A tile
+     without data-lf-col matches everything, which is how the "All" chip of a
+     group opts out. Tiles keep real hrefs so the page still works with this
+     script disabled, and the hidden fields are what Enter submits. */
   function initListFilter() {
-    const form = $('[data-ms-filter]');
+    const form = $('[data-lf]');
     if (! form) return;
 
-    const input = $('[data-ms-filter-input]', form);
-    const clearBtn = $('[data-ms-filter-clear]', form);
-    const counter = $('[data-ms-filter-count]');
-    const hint = $('[data-ms-filter-hint]');
-    const blank = $('[data-ms-filter-empty]');
-    const blankLink = $('[data-ms-empty-link]');
-    const scopeInput = $('[data-ms-scope-input]', form);
+    const input = $('[data-lf-input]', form);
+    const clearBtn = $('[data-lf-clear]', form);
+    const counter = $('[data-lf-count]');
+    const hint = $('[data-lf-hint]', form);
+    const resetBtn = $('[data-lf-reset]', form);
+    const blank = $('[data-lf-empty]');
+    const blankTitle = $('[data-lf-empty-title]');
+    const blankText = $('[data-lf-empty-text]');
+    const blankIcon = $('[data-lf-empty-icon]');
+    const blankLink = $('[data-lf-empty-link]');
     if (! input) return;
 
-    const rows = $$('[data-ms-row]');
+    const rows = $$('[data-lf-row]');
     if (! rows.length) return;
 
-    const tiles = $$('[data-ms-scope]').map((el) => ({
-      el: el,
-      key: el.dataset.msScope,
-      count: parseInt($('[data-ms-count]', el)?.textContent ?? '', 10) || 0,
-    }));
+    /* Copy is derived from a noun, so one implementation reads correctly on every
+       list instead of carrying a phrase table per page. */
+    const noun = form.dataset.lfNoun || 'result';
+    const plural = form.dataset.lfNounPlural || noun + 's';
+    const counted = (n) => `${n} ${n === 1 ? noun : plural}`;
+
+    const groups = {};
+    $$('[data-lf-tile]').forEach((el) => {
+      const g = el.dataset.lfGroup;
+      if (! g) return;
+      (groups[g] = groups[g] || []).push({
+        el: el,
+        key: el.dataset.lfKey,
+        /* No column means "everything in this group", i.e. its All chip. */
+        col: el.dataset.lfCol || null,
+        val: el.dataset.lfVal !== undefined ? el.dataset.lfVal : el.dataset.lfKey,
+        label: el.dataset.lfLabel || el.dataset.lfKey,
+        field: el.dataset.lfField || el.dataset.lfKey,
+        count: parseInt($('[data-lf-tile-count]', el)?.textContent ?? '', 10) || 0,
+      });
+    });
+
+    const groupNames = Object.keys(groups);
+    if (! groupNames.length) return;
+
+    const tileIn = (g, key) => groups[g].find((t) => t.key === key) || null;
+
+    /* Seed from the server, so a filtered load highlights straight away and the
+       copy can tell "the server already did this" from "the visitor just did it".
+       Reset puts every group back to exactly this. */
+    const active = {};
+    groupNames.forEach((g) => {
+      const on = groups[g].find((t) => t.el.classList.contains('is-active'));
+      active[g] = on ? on.key : (groups[g].find((t) => ! t.col) || {}).key || null;
+    });
+    const serverActive = JSON.stringify(active);
 
     const escapeRe = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     const cells = rows.flatMap((row) => $$('[data-hl]', row).map((el) => ({ el: el, html: el.innerHTML })));
-    const paint = (el, html, re) => { el.innerHTML = re ? html.replace(re, '<mark>$1</mark>') : html; };
+    const paint = (el, html, rx) => { el.innerHTML = rx ? html.replace(rx, '<mark>$1</mark>') : html; };
+    const setText = (el, value) => { if (el) el.textContent = value; };
 
-    const activeTile = tiles.find((t) => t.el.classList.contains('is-active'));
-    let scope = activeTile ? activeTile.key : 'all';
     let term = input.value.trim().toLowerCase();
     let re = term.length > 1 ? new RegExp(`(${escapeRe(term)})`, 'gi') : null;
-
-    const pageTotal = parseInt(counter?.dataset.msFilterTotal ?? '', 10) || 0;
-    /* Values the server used, so a ?q=/?scope= load keeps the server's wording
-       until the visitor actually changes something. */
     const serverTerm = term;
-    const serverScope = scope;
+    const pageTotal = parseInt(counter?.dataset.lfTotal ?? '', 10) || 0;
 
-    /* A row matches the scope when it is a flagged thread, or when the active
-       scope is a property it simply has or has not got. */
-    const inScope = (row) => {
-      if (scope === 'all') return true;
-      if (scope === 'flagged') return row.dataset.scope === 'flagged';
-      if (scope === 'empty') return row.dataset.empty === '1';
-      if (scope === 'week') return row.dataset.week === '1';
-      return true;
+    const matchesFacets = (row) => groupNames.every((g) => {
+      const t = tileIn(g, active[g]);
+      return ! t || ! t.col || row.dataset[t.col] === t.val;
+    });
+
+    /* "pending reports · harassment": what the current tiles narrow down to. */
+    const narrowed = () => groupNames.map((g) => tileIn(g, active[g])).filter((t) => t && t.col);
+    const phrase = () => narrowed().map((t) => t.label).join(' · ');
+
+    /* The hidden fields are the submitted query, so the address bar and Enter are
+       both built from them instead of from a second copy of the state. */
+    const currentUrl = () => {
+      const url = new URL(form.getAttribute('action') || location.pathname, location.href);
+      url.search = '';
+      $$('[data-lf-field]', form).forEach((f) => { if (f.value) url.searchParams.set(f.name, f.value); });
+      if (term) url.searchParams.set('q', term);
+      return url;
+    };
+
+    const syncUrl = () => {
+      if (! window.history || typeof history.replaceState !== 'function') return;
+      const url = currentUrl();
+      if (url.href !== location.href) history.replaceState(null, '', url.href);
     };
 
     const apply = () => {
       let shown = 0;
-
       rows.forEach((row) => {
-        const hit = (! term || row.dataset.search.includes(term)) && inScope(row);
+        const hit = (! term || row.dataset.search.includes(term)) && matchesFacets(row);
         row.hidden = ! hit;
         if (hit) shown++;
       });
 
       cells.forEach((c) => paint(c.el, c.html, re));
 
-      /* Still showing exactly what the server returned? Then its count is the
-         real total and the wording stays. Otherwise count the visible rows and
-         say so, rather than claiming a page holds every match. */
-      const untouched = term === serverTerm && scope === serverScope;
+      /* Still showing exactly what the server sent? Then its count is the real
+         total. Once a tile or the term moves, only the local count is known, so
+         say "on this page" rather than implying the page holds every match. */
+      const untouched = term === serverTerm && JSON.stringify(active) === serverActive;
+      const what = phrase();
+
       if (counter) {
-        if (untouched) {
-          counter.textContent = pageTotal + ' ' + (pageTotal === 1 ? 'thread' : 'threads');
-        } else {
-          counter.textContent = shown + ' on this page'
-            + (shown === 1 ? ' match' : ' matches');
-        }
+        counter.textContent = untouched
+          ? counted(pageTotal || shown)
+          : `${shown} on this page ${shown === 1 ? 'match' : 'matches'}`;
       }
 
       if (hint) {
-        if (untouched && ! term) {
-          hint.textContent = 'Type to filter the rows below, or press Enter to search every page.';
-        } else if (term) {
-          hint.textContent = 'Filtering the ' + shown + ' ' + (shown === 1 ? 'thread' : 'threads')
-            + ' on this page. Press Enter to search every page.';
+        if (untouched) {
+          hint.textContent = what
+            ? `Showing ${what}. Type to filter the rows below, or press Enter to search every page.`
+            : 'Type to filter the rows below, or press Enter to search every page.';
+        } else if (! shown) {
+          hint.textContent = 'Nothing on this page matches.';
         } else {
-          hint.textContent = 'Showing ' + shown + ' ' + (shown === 1 ? 'thread' : 'threads') + ' on this page.';
+          hint.textContent = `Filtering the ${shown} ${shown === 1 ? 'row' : 'rows'} on this page`
+            + (term ? ` by “${term}”` : '')
+            + (what ? ` (${what})` : '') + '.';
         }
       }
 
-      if (blank) {
-        blank.hidden = shown > 0;
-        if (blankLink) blankLink.hidden = shown > 0;
+      if (clearBtn) clearBtn.hidden = term === '';
+      if (blank) blank.hidden = shown > 0;
+      if (shown > 0) return;
+
+      /* An in-page filter only ever sees this page. When it empties out, say what
+         is really going on instead of implying the whole queue is empty. Only one
+         narrowed group has a total the server printed, so with two narrowed the
+         honest answer is that other pages may still match. */
+      const picks = narrowed();
+      const only = picks.length === 1 ? picks[0] : null;
+
+      if (term) {
+        setText(blankTitle, `No ${what || plural} on this page match “${term}”`);
+        setText(blankText, 'Other pages may still match — press Enter to search every page.');
+      } else if (only && only.count > 0) {
+        setText(blankTitle, `No ${what} on this page`);
+        setText(blankText, `All ${counted(only.count)} are on other pages. Use the link below to see them.`);
+      } else if (only) {
+        setText(blankTitle, `No ${what} to show`);
+        setText(blankText, 'There is nothing in that filter right now.');
+      } else if (picks.length > 1) {
+        /* Two facets narrowed and the chip numbers say there are matches
+           somewhere, so this page simply does not hold the combination. */
+        setText(blankTitle, `No ${what} on this page`);
+        setText(blankText, 'That combination may still exist on another page. Use the link below to search the whole queue.');
+      } else {
+        setText(blankTitle, `No ${plural} to show`);
+        setText(blankText, 'Nothing matches the filters on this page.');
+      }
+
+      if (blankIcon) blankIcon.className = term ? 'fas fa-magnifying-glass' : 'fas fa-filter';
+      if (blankLink) {
+        blankLink.hidden = !(term || (only ? only.count > 0 : picks.length > 1));
+        if (! blankLink.hidden) blankLink.href = currentUrl().href;
       }
     };
 
-    const setScope = (key) => {
-      scope = key;
-      tiles.forEach((t) => t.el.classList.toggle('is-active', t.key === key));
-      if (scopeInput) scopeInput.value = key === 'all' ? '' : key;
+    /* Some facets depend on another: the reason chips on the reports page count
+       the reports inside whichever status is on show. When that group changes,
+       the counts the server printed for the loaded status are stale, so repaint
+       them from the map the blade carried on each chip. A tile opts in with
+       data-lf-counts-for="<group>", so nothing else pays for this. */
+    const repaintDependentCounts = (g, key) => {
+      $$('[data-lf-tile]').forEach((el) => {
+        if (el.dataset.lfCountsFor !== g || ! el.dataset.lfCounts) return;
+
+        let map;
+        try { map = JSON.parse(el.dataset.lfCounts); } catch { return; }
+        if (! Object.prototype.hasOwnProperty.call(map, key)) return;
+
+        const n = parseInt(map[key], 10) || 0;
+        const target = $('[data-lf-tile-count]', el);
+        if (target) target.textContent = n;
+
+        const tile = groups[el.dataset.lfGroup]?.find((t) => t.el === el);
+        if (tile) tile.count = n;
+      });
     };
 
-    let timer;
-    input.addEventListener('input', () => {
-      clearTimeout(timer);
-      timer = setTimeout(() => {
-        term = input.value.trim().toLowerCase();
-        re = term.length > 1 ? new RegExp(`(${escapeRe(term)})`, 'gi') : null;
-        if (clearBtn) clearBtn.hidden = input.value === '';
-        apply();
-      }, 140);
+    const setTile = (g, key, sync) => {
+      const t = tileIn(g, key);
+      if (! t) return;
+
+      active[g] = key;
+      groups[g].forEach((x) => {
+        const on = x.key === key;
+        x.el.classList.toggle('is-active', on);
+        if (on) x.el.setAttribute('aria-current', 'true');
+        else x.el.removeAttribute('aria-current');
+      });
+
+      /* Written verbatim so the link stays explicit and shareable; the server
+         treats the "all" value as no filter. */
+      const field = $$('[data-lf-field]', form).find((f) => f.name === t.field);
+      if (field) field.value = key;
+
+      /* Chips whose counts depend on the group that just moved are now stale. */
+      repaintDependentCounts(g, key);
+      if (sync) syncUrl();
+      apply();
+    };
+
+    const onInput = debounce(() => {
+      term = input.value.trim().toLowerCase();
+      re = term.length > 1 ? new RegExp(`(${escapeRe(term)})`, 'gi') : null;
+      syncUrl();
+      apply();
+    }, 130);
+
+    input.addEventListener('input', onInput);
+
+    input.addEventListener('keydown', (e) => {
+      if (e.key !== 'Escape' || ! input.value) return;
+      e.preventDefault();
+      input.value = '';
+      onInput();
     });
 
     if (clearBtn) {
       clearBtn.addEventListener('click', () => {
         input.value = '';
-        term = '';
-        re = null;
-        clearBtn.hidden = true;
-        apply();
+        onInput();
         input.focus();
       });
     }
 
-    tiles.forEach((t) => {
-      t.el.addEventListener('click', (e) => {
+    /* Modified clicks and middle clicks still open the real href, so the chips
+       keep behaving like links for anyone who wants a new tab. */
+    $$('[data-lf-tile]').forEach((el) => {
+      el.addEventListener('click', (e) => {
         if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
         e.preventDefault();
-        setScope(t.key);
-        apply();
+        setTile(el.dataset.lfGroup, el.dataset.lfKey, true);
       });
     });
 
-    const reset = $('[data-ms-filter-reset]', form);
-    if (reset) {
-      reset.addEventListener('click', (e) => {
+    /* Reset drops the term and every facet together, back to what the server was
+       serving when the page loaded. */
+    if (resetBtn) {
+      resetBtn.addEventListener('click', (e) => {
         if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
-        if (! input.value && scope === 'all') return;
+        const seeded = JSON.parse(serverActive);
+        if (! input.value && groupNames.every((g) => active[g] === seeded[g])) return;
         e.preventDefault();
         input.value = '';
         term = '';
         re = null;
         if (clearBtn) clearBtn.hidden = true;
-        setScope('all');
+        groupNames.forEach((g) => setTile(g, seeded[g], false));
+        syncUrl();
         apply();
         input.focus();
       });
     }
 
+    /* "/" jumps to the box from anywhere that is not already a text field. */
     document.addEventListener('keydown', (e) => {
       if (e.key !== '/' || e.metaKey || e.ctrlKey || e.altKey) return;
       const el = document.activeElement;

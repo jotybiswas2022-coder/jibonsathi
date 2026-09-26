@@ -5,16 +5,18 @@
     $totalRows = $conversations->total();
 
     /* The tiles double as the scope filter, which is what the old "Only
-       flagged" dropdown used to do on its own. */
+       flagged" dropdown used to do on its own. "col"/"val" say which row
+       attribute the shared filter matches that tile on, and are left off for
+       the tile that means "no narrowing". */
     $scopes = [
         ['key' => 'all', 'label' => 'All threads', 'icon' => 'fa-layer-group', 'tone' => 'ic-brand',
-            'sub' => 'Every conversation on file'],
+            'sub' => 'Every conversation on file', 'col' => null, 'val' => null],
         ['key' => 'flagged', 'label' => 'Flagged', 'icon' => 'fa-flag', 'tone' => 'ic-danger',
-            'sub' => 'A member has an open report'],
+            'sub' => 'A member has an open report', 'col' => 'scope', 'val' => 'flagged'],
         ['key' => 'week', 'label' => 'Active this week', 'icon' => 'fa-clock-rotate-left', 'tone' => 'ic-success',
-            'sub' => 'Replied in the last 7 days'],
+            'sub' => 'Replied in the last 7 days', 'col' => 'week', 'val' => '1'],
         ['key' => 'empty', 'label' => 'No messages', 'icon' => 'fa-comment-slash', 'tone' => 'ic-warning',
-            'sub' => 'Threads that never started'],
+            'sub' => 'Threads that never started', 'col' => 'empty', 'val' => '1'],
     ];
 
     /* One string per row, so the box can filter without another request. */
@@ -44,16 +46,21 @@
     </div>
 
     {{-- The tiles are the filter, so the old "Only flagged" dropdown is gone.
-         Each href is a real query, so the tiles still work with JavaScript off. --}}
+         Each href is a real query, so the tiles still work with JavaScript off.
+         data-lf-col says which row attribute the tile matches on, which is how
+         one shared filter drives four different scopes. --}}
     <div class="stat-grid st-tiles ms-tiles">
         @foreach ($scopes as $tile)
             @php $isActive = $scope === $tile['key']; @endphp
             <a class="card stat-tile st-tile {{ $isActive ? 'is-active' : '' }}"
                href="{{ route('backend.messages.index', array_filter(['scope' => $tile['key'] === 'all' ? null : $tile['key'], 'q' => $term ?: null])) }}"
-               data-ms-scope="{{ $tile['key'] }}"
+               data-lf-tile data-lf-group="scope"
+               data-lf-key="{{ $tile['key'] }}" data-lf-field="scope"
+               data-lf-label="{{ mb_strtolower($tile['label']) }}"
+               @if ($tile['col']) data-lf-col="{{ $tile['col'] }}" data-lf-val="{{ $tile['val'] }}" @endif
                @if ($isActive) aria-current="true" @endif>
                 <span class="st-ico {{ $tile['tone'] }}"><i class="fas {{ $tile['icon'] }}"></i></span>
-                <span class="st-num" data-ms-count>{{ $counts[$tile['key']] ?? 0 }}</span>
+                <span class="st-num" data-lf-tile-count>{{ $counts[$tile['key']] ?? 0 }}</span>
                 <span class="st-lbl">{{ $tile['label'] }}</span>
                 <span class="st-sub">{{ $tile['sub'] }}</span>
             </a>
@@ -62,8 +69,9 @@
 
     {{-- A real GET form, so search works with JavaScript off and the query
          stays shareable. The JS layers instant filtering on top. --}}
-    <form method="GET" action="{{ route('backend.messages.index') }}" class="filter-bar st-toolbar ms-toolbar" data-ms-filter>
-        <input type="hidden" name="scope" value="{{ $scope === 'all' ? '' : $scope }}" data-ms-scope-input>
+    <form method="GET" action="{{ route('backend.messages.index') }}" class="filter-bar st-toolbar ms-toolbar"
+          data-lf data-lf-noun="thread" data-lf-noun-plural="threads">
+        <input type="hidden" name="scope" value="{{ $scope }}" data-lf-field>
 
         <div class="field st-search-field">
             <label for="msSearch">Search conversations</label>
@@ -71,13 +79,13 @@
                 <i class="fas fa-magnifying-glass"></i>
                 <input type="search" name="q" id="msSearch" class="input" value="{{ $term }}"
                        placeholder="Member name, email or message" autocomplete="off"
-                       data-ms-filter-input aria-describedby="msSearchHint">
-                <button type="button" class="st-search-clear" data-ms-filter-clear
+                       data-lf-input aria-describedby="msSearchHint">
+                <button type="button" class="st-search-clear" data-lf-clear
                         aria-label="Clear the search box" @if ($term === '') hidden @endif>
                     <i class="fas fa-xmark"></i>
                 </button>
             </div>
-            <p class="hint st-hint" id="msSearchHint" data-ms-filter-hint>
+            <p class="hint st-hint" id="msSearchHint" data-lf-hint>
                 @if ($term !== '')
                     Showing {{ $totalRows }} {{ Str::plural('thread', $totalRows) }} matching &ldquo;{{ $term }}&rdquo;.
                 @else
@@ -92,7 +100,7 @@
         <button type="submit" class="sr-only" tabindex="-1" aria-hidden="true">Search</button>
 
         <div class="field actions">
-            <a href="{{ route('backend.messages.index') }}" class="btn btn-outline" data-ms-filter-reset
+            <a href="{{ route('backend.messages.index') }}" class="btn btn-outline" data-lf-reset
                @if ($term === '' && $scope === 'all') aria-disabled="true" tabindex="-1" style="pointer-events:none;opacity:.5" @endif>
                 <i class="fas fa-rotate-left"></i> Reset
             </a>
@@ -100,7 +108,7 @@
     </form>
 
     <div class="st-result-bar">
-        <span data-ms-filter-count data-ms-filter-total="{{ $totalRows }}">
+        <span data-lf-count data-lf-total="{{ $totalRows }}">
             @if ($term !== '')
                 {{ $totalRows }} {{ Str::plural('match', $totalRows) }}
             @else
@@ -123,7 +131,7 @@
                     <th class="st-actions-col">Actions</th>
                 </tr>
             </thead>
-            <tbody data-ms-filter-rows>
+            <tbody>
                 @forelse ($conversations as $c)
                     @php
                         $reports = $c->openReportCounts();
@@ -131,7 +139,7 @@
                         $two = $c->userTwo;
                         $last = $c->latestMessage;
                     @endphp
-                    <tr data-ms-row
+                    <tr data-lf-row
                         data-scope="{{ $c->hasOpenReports() ? 'flagged' : 'all' }}"
                         data-empty="{{ $c->messages_count === 0 ? '1' : '0' }}"
                         data-week="{{ $c->last_message_at && $c->last_message_at->gte(now()->subDays(7)) ? '1' : '0' }}"
@@ -212,7 +220,7 @@
                         </td>
                     </tr>
                 @empty
-                    <tr data-ms-empty-row>
+                    <tr>
                         <td colspan="5">
                             <div class="empty-state">
                                 <i class="fas fa-comments"></i>
@@ -235,11 +243,11 @@
 
         {{-- Shown by the filter when the current term and scope hide every row
              on this page. Other pages may still hold matches. --}}
-        <div class="empty-state st-live-empty ms-live-empty" data-ms-filter-empty hidden>
-            <i class="fas fa-magnifying-glass"></i>
-            <h3>Nothing on this page matches</h3>
-            <p>Conversations on other pages may still match. Press Enter to search every page.</p>
-            <a href="{{ route('backend.messages.index') }}" class="btn btn-outline" data-ms-empty-link hidden>
+        <div class="empty-state st-live-empty ms-live-empty" data-lf-empty hidden>
+            <i class="fas fa-magnifying-glass" data-lf-empty-icon></i>
+            <h3 data-lf-empty-title>Nothing on this page matches</h3>
+            <p data-lf-empty-text>Conversations on other pages may still match. Press Enter to search every page.</p>
+            <a href="{{ route('backend.messages.index') }}" class="btn btn-outline" data-lf-empty-link hidden>
                 Search every page
             </a>
         </div>

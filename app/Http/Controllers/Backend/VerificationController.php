@@ -6,12 +6,12 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Backend\VerificationDecisionRequest;
 use App\Models\Verification;
 use App\Services\VerificationService;
-use App\Support\Reference;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\Rule;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class VerificationController extends Controller
@@ -23,16 +23,34 @@ class VerificationController extends Controller
     public function index(Request $request): View
     {
         $filters = $request->validate([
-            'status' => ['nullable', 'string'],
-            'type' => ['nullable', 'string'],
+            'status' => ['nullable', Rule::in([
+                Verification::STATUS_PENDING,
+                Verification::STATUS_APPROVED,
+                Verification::STATUS_REJECTED,
+                'all',
+            ])],
+            'type' => ['nullable', Rule::in(array_keys(Verification::TYPES))],
+            'q' => ['nullable', 'string', 'max:80'],
         ]);
 
-        $status = $filters['status'] ?? 'pending';
+        $status = $filters['status'] ?? Verification::STATUS_PENDING;
+        $type = $filters['type'] ?? null;
+        $term = trim((string) ($filters['q'] ?? ''));
 
         $verifications = Verification::query()
-            ->with(['user.profile', 'user.primaryPhoto', 'reviewer'])
+            ->with(['user', 'user.primaryPhoto', 'reviewer'])
             ->when($status !== 'all', fn ($q) => $q->where('status', $status))
-            ->when(filled($filters['type'] ?? null), fn ($q) => $q->where('type', $filters['type']))
+            ->when($type, fn ($q) => $q->where('type', $type))
+            ->when($term !== '', function ($q) use ($term) {
+                $like = "%{$term}%";
+                $q->where(function ($inner) use ($like) {
+                    $inner->where('type', 'like', $like)
+                        ->orWhere('document_type', 'like', $like)
+                        ->orWhere('note', 'like', $like)
+                        ->orWhere('admin_note', 'like', $like)
+                        ->orWhereHas('user', fn ($u) => $u->where('name', 'like', $like)->orWhere('email', 'like', $like));
+                });
+            })
             ->latest()
             ->paginate(15)
             ->withQueryString();
@@ -40,12 +58,12 @@ class VerificationController extends Controller
         return view('backend.verification.index', [
             'verifications' => $verifications,
             'status' => $status,
-            'type' => $filters['type'] ?? null,
-            'counts' => [
-                'pending' => Verification::query()->where('status', 'pending')->count(),
-                'approved' => Verification::query()->where('status', 'approved')->count(),
-                'rejected' => Verification::query()->where('status', 'rejected')->count(),
-            ],
+            'type' => $type,
+            'term' => $term,
+            'types' => Verification::TYPES,
+            'counts' => $this->statusCounts(),
+            'typeCounts' => $this->typeCounts($status),
+            'typeCountsByStatus' => $this->typeCountsByStatus(),
         ]);
     }
 
@@ -53,12 +71,20 @@ class VerificationController extends Controller
     {
         Gate::authorize('manage', \App\Models\User::class);
 
-        $verification->load(['user.profile', 'user.education', 'user.occupation', 'reviewer']);
+        // The other attempts are rendered as a list, so they are loaded up front
+        // rather than counted per row: a member who has been refused twice is the
+        // strongest signal on this page.
+        $verification->load(['user.primaryPhoto', 'user.education', 'user.occupation', 'reviewer']);
 
         return view('backend.verification.show', [
             'verification' => $verification,
             'user' => $verification->user,
-            'statuses' => Reference::verificationStatuses(),
+            'others' => Verification::query()
+                ->where('user_id', $verification->user_id)
+                ->whereKeyNot($verification->id)
+                ->latest()
+                ->limit(5)
+                ->get(),
         ]);
     }
 
@@ -103,5 +129,72 @@ class VerificationController extends Controller
         $verification->delete();
 
         return back()->with('success', 'Verification record deleted.');
+    }
+
+    /**
+     * Per-status totals for the filter tiles, in one query rather than three.
+     *
+     * @return array<string, int>
+     */
+    private function statusCounts(): array
+    {
+        $counts = array_fill_keys([
+            Verification::STATUS_PENDING,
+            Verification::STATUS_APPROVED,
+            Verification::STATUS_REJECTED,
+        ], 0);
+
+        Verification::query()
+            ->selectRaw('status, COUNT(*) AS total')
+            ->groupBy('status')
+            ->get()
+            ->each(function ($row) use (&$counts) {
+                $counts[$row->status] = (int) $row->total;
+            });
+
+        $counts['all'] = array_sum($counts);
+
+        return $counts;
+    }
+
+    /**
+     * How many verifications sit under each type inside the status currently
+     * being viewed, so a chip never promises more rows than the active status
+     * holds. One query rather than one per type.
+     *
+     * @return array<string, int>
+     */
+    private function typeCounts(string $status): array
+    {
+        return Verification::query()
+            ->when($status !== 'all', fn ($q) => $q->where('status', $status))
+            ->selectRaw('type, COUNT(*) AS total')
+            ->groupBy('type')
+            ->pluck('total', 'type')
+            ->map(fn ($n) => (int) $n)
+            ->all();
+    }
+
+    /**
+     * The same numbers for every status at once, so the chips can be repainted
+     * when the status tile is clicked without another round trip. Keyed by status
+     * with an "all" column, since the queue is read one status at a time.
+     *
+     * @return array<string, array<string, int>>
+     */
+    private function typeCountsByStatus(): array
+    {
+        $matrix = [];
+
+        Verification::query()
+            ->selectRaw('status, type, COUNT(*) AS total')
+            ->groupBy('status', 'type')
+            ->get()
+            ->each(function ($row) use (&$matrix) {
+                $matrix[$row->status][$row->type] = (int) $row->total;
+                $matrix['all'][$row->type] = ($matrix['all'][$row->type] ?? 0) + (int) $row->total;
+            });
+
+        return $matrix;
     }
 }

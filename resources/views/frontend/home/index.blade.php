@@ -27,6 +27,24 @@
                         </a>
                     </div>
 
+                    @if ($heroUsers->isNotEmpty())
+                        <div class="hero-social reveal">
+                            <div class="hs-avatars">
+                                @foreach ($heroUsers as $member)
+                                    <span class="avatar avatar-sm"><img src="{{ $member->photoUrl() }}" alt="{{ $member->name }}"></span>
+                                @endforeach
+                                <span class="hs-avatars-more">+{{ number_format(max($stats['members'] - $heroUsers->count(), 0)) }}</span>
+                            </div>
+                            <div class="hs-copy">
+                                <span class="hs-stars">
+                                    <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                                    <span>4.9/5</span>
+                                </span>
+                                <span class="hs-label">Loved by <strong>{{ number_format($stats['members']) }}+</strong> members</span>
+                            </div>
+                        </div>
+                    @endif
+
                     <div class="hero-trust-row">
                         <span><i class="fas fa-circle-check"></i> Manually reviewed profiles</span>
                         <span><i class="fas fa-lock"></i> Private by default</span>
@@ -176,6 +194,42 @@
         </form>
     </div>
 
+    {{-- ============================ TRUST STRIP ============================ --}}
+    <section class="trust-strip">
+        <div class="container">
+            <div class="trust-grid reveal">
+                <div class="trust-item">
+                    <span class="trust-ico" style="background:var(--success-bg);color:var(--success)"><i class="fas fa-user-shield"></i></span>
+                    <div>
+                        <div class="ti-title">Verified Members</div>
+                        <div class="ti-sub">Identity checked before you meet</div>
+                    </div>
+                </div>
+                <div class="trust-item">
+                    <span class="trust-ico" style="background:var(--brand-100);color:var(--brand)"><i class="fas fa-lock"></i></span>
+                    <div>
+                        <div class="ti-title">Privacy First</div>
+                        <div class="ti-sub">You control who sees your details</div>
+                    </div>
+                </div>
+                <div class="trust-item">
+                    <span class="trust-ico" style="background:var(--accent-050);color:var(--accent-600)"><i class="fas fa-bangladeshi-taka-sign"></i></span>
+                    <div>
+                        <div class="ti-title">100% Free Forever</div>
+                        <div class="ti-sub">No premium tiers, no hidden cost</div>
+                    </div>
+                </div>
+                <div class="trust-item">
+                    <span class="trust-ico" style="background:var(--info-bg);color:var(--info)"><i class="fas fa-clipboard-check"></i></span>
+                    <div>
+                        <div class="ti-title">Manual Review</div>
+                        <div class="ti-sub">Every profile is human-approved</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
     {{-- ============================ BROWSE BY ============================ --}}
     <section class="section section-browse">
         <div class="container">
@@ -286,7 +340,7 @@
 
     {{-- ========================== NEW MEMBERS (marquee) ========================== --}}
     @if ($newest->isNotEmpty())
-        <section class="section-tight section-new">
+        <section class="section-tight section-new mobile-hide">
             <div class="container">
                 <div class="section-head reveal">
                     <span class="section-eyebrow"><i class="fas fa-user-plus"></i> Just Joined</span>
@@ -484,7 +538,7 @@
     @endif
 
     {{-- ============================== STATS BAND ============================== --}}
-    <section class="section-tight" style="padding-bottom:0">
+    <section class="section-tight mobile-hide" style="padding-bottom:0">
         <div class="container">
             <div class="stats-band reveal">
                 <div class="sb-cell">
@@ -507,6 +561,44 @@
         </div>
     </section>
 
+    {{-- ================================ FAQ ================================ --}}
+    <section class="section faq-section">
+        <div class="container">
+            <div class="section-head reveal">
+                <span class="section-eyebrow"><i class="fas fa-circle-question"></i> Questions</span>
+                <h2>Everything You Need To Know</h2>
+                <p>Quick answers about safety, privacy and how Jibon Sathi helps you find the one.</p>
+            </div>
+
+            <div class="faq-wrap">
+                <details class="faq-item reveal">
+                    <summary><span>Is Jibon Sathi really free?</span></summary>
+                    <div class="faq-body">Yes — completely free, forever. Every feature, from unlimited messaging to profile visibility, is available to all members. There are no premium tiers, paywalls or hidden charges.</div>
+                </details>
+                <details class="faq-item reveal" style="--reveal-delay:60ms">
+                    <summary><span>How are profiles verified?</span></summary>
+                    <div class="faq-body">Every new profile passes a manual review, and members can complete additional phone and identity verification. Verified members carry a badge so you always know who you are talking to.</div>
+                </details>
+                <details class="faq-item reveal" style="--reveal-delay:120ms">
+                    <summary><span>Who can see my photo and phone number?</span></summary>
+                    <div class="faq-body">You decide. Privacy settings let you control whether your contact details are visible to everyone, to accepted matches only, or to nobody until you choose to share them.</div>
+                </details>
+                <details class="faq-item reveal" style="--reveal-delay:180ms">
+                    <summary><span>How does the matching engine work?</span></summary>
+                    <div class="faq-body">Our engine weighs what genuinely matters — age, lifestyle, education, family values and location — to surface compatible profiles and explain why each match is a good fit.</div>
+                </details>
+                <details class="faq-item reveal" style="--reveal-delay:240ms">
+                    <summary><span>How do you keep conversations safe?</span></summary>
+                    <div class="faq-body">Messaging only opens after a mutual interest, so nobody can message you out of the blue. Every conversation includes one-tap blocking and reporting, reviewed by our moderation team.</div>
+                </details>
+                <details class="faq-item reveal" style="--reveal-delay:300ms">
+                    <summary><span>Can I search by division, education and religion?</span></summary>
+                    <div class="faq-body">Absolutely. Use the search panel above or browse by religion, education and all eight divisions to find profiles that fit your family's preferences.</div>
+                </details>
+            </div>
+        </div>
+    </section>
+
     {{-- ============================== FINAL CTA ============================== --}}
     <section class="section">
         <div class="container">
@@ -519,4 +611,12 @@
             </div>
         </div>
     </section>
+
+    @guest
+        {{-- Mobile-only sticky action bar so the main CTA is always one tap away. --}}
+        <div class="mobile-cta">
+            <a href="{{ route('login') }}" class="btn btn-brand-outline">Login</a>
+            <a href="{{ route('register') }}" class="btn btn-primary btn-shine">Create Free Profile</a>
+        </div>
+    @endguest
 @endsection

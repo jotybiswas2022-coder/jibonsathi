@@ -2651,3 +2651,137 @@ input[type="date"] { min-height: 48px; }
   .bottom-nav { grid-template-columns: repeat(5, minmax(0, 1fr)); }
   .bottom-nav a { min-width: 0; padding-inline: 0; font-size: 9.5px; }
 }
+
+/* ==========================================================================
+   32. Homepage v4 — social proof, trust strip, FAQ & mobile focus
+   Adds reassurance near the hero, a trust strip under the search panel and an
+   FAQ accordion, then trims the page back to essentials on phones: decorative
+   hero clutter and the duplicated stat/marquee bands are removed, while a
+   sticky action bar keeps the primary CTA one tap away.
+   ========================================================================== */
+
+/* `.mobile-hide` marks blocks that are purely decorative or duplicated on a
+   phone — they stay in the DOM on larger screens only. */
+@media (max-width: 640px) {
+  .mobile-hide { display: none !important; }
+}
+
+/* --------------------------- 32.1 Hero social proof --------------------------- */
+.hero-social {
+  display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+  margin-top: 26px;
+}
+.hs-avatars { display: flex; align-items: center; }
+.hs-avatars .avatar {
+  width: 40px; height: 40px; margin-left: -13px;
+  border: 2.5px solid #fff; box-shadow: var(--shadow-xs);
+}
+.hs-avatars .avatar:first-child { margin-left: 0; }
+.hs-avatars-more {
+  margin-left: -13px; width: 40px; height: 40px; border-radius: 50%;
+  display: inline-flex; align-items: center; justify-content: center;
+  background: linear-gradient(135deg, var(--brand), var(--brand-700));
+  color: #fff; font-size: 11px; font-weight: 700; border: 2.5px solid #fff;
+}
+.hs-copy { display: flex; flex-direction: column; line-height: 1.35; }
+.hs-stars { display: inline-flex; align-items: center; gap: 2px; color: var(--accent); font-size: 12px; }
+.hs-stars span { color: var(--text); font-weight: 700; font-size: 12.5px; margin-left: 6px; }
+.hs-label { font-size: 12.5px; color: var(--muted); }
+.hs-label strong { color: var(--text); }
+
+/* --------------------------- 32.2 Trust strip --------------------------- */
+.trust-strip { position: relative; z-index: 11; padding-top: 20px; }
+.trust-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px;
+  background: #fff; border: 1px solid var(--border);
+  border-radius: var(--radius-lg); padding: 16px;
+  box-shadow: var(--shadow-sm);
+}
+.trust-item { display: flex; align-items: center; gap: 12px; padding: 6px 12px; }
+.trust-item + .trust-item { border-left: 1px solid var(--border); }
+.trust-ico {
+  flex: none; width: 42px; height: 42px; border-radius: 13px;
+  display: inline-flex; align-items: center; justify-content: center; font-size: 17px;
+}
+.ti-title { font-family: var(--font-display); font-weight: 700; font-size: 14px; line-height: 1.3; }
+.ti-sub { font-size: 12px; color: var(--muted); line-height: 1.4; }
+@media (max-width: 991px) {
+  .trust-grid { grid-template-columns: repeat(2, 1fr); gap: 2px; }
+  .trust-item:nth-child(3) { border-left: 0; }
+  .trust-item:nth-child(n+3) { border-top: 1px solid var(--border); }
+}
+@media (max-width: 480px) {
+  .trust-grid { padding: 10px; }
+  .trust-item { padding: 8px 6px; gap: 10px; }
+  .trust-ico { width: 36px; height: 36px; border-radius: 11px; font-size: 15px; }
+  .ti-title { font-size: 13px; }
+  .ti-sub { font-size: 11px; }
+}
+
+/* --------------------------- 32.3 FAQ accordion --------------------------- */
+.faq-section { background: linear-gradient(180deg, var(--bg), #FFF3EC); }
+.faq-wrap { max-width: 820px; margin-inline: auto; display: flex; flex-direction: column; gap: 12px; }
+.faq-item {
+  background: #fff; border: 1px solid var(--border); border-radius: 16px;
+  overflow: hidden; transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.faq-item[open] { border-color: rgba(139, 30, 63, 0.28); box-shadow: var(--shadow-sm); }
+.faq-item > summary {
+  list-style: none; cursor: pointer;
+  display: flex; align-items: center; gap: 14px;
+  padding: 18px 22px;
+  font-family: var(--font-display); font-weight: 700; font-size: 15.5px; color: var(--text);
+}
+.faq-item > summary::-webkit-details-marker { display: none; }
+.faq-item > summary::after {
+  content: '\f078'; font-family: 'Font Awesome 6 Free'; font-weight: 900;
+  margin-left: auto; flex: none; font-size: 12px; color: var(--brand);
+  transition: transform 0.25s ease;
+}
+.faq-item[open] > summary::after { transform: rotate(180deg); }
+.faq-item > summary:hover { color: var(--brand); }
+.faq-body {
+  padding: 0 22px 20px; color: var(--muted);
+  font-size: 14.5px; line-height: 1.72;
+}
+@media (max-width: 600px) {
+  .faq-item > summary { padding: 15px 16px; font-size: 14.5px; gap: 10px; }
+  .faq-body { padding: 0 16px 16px; font-size: 13.5px; }
+}
+
+/* --------------------------- 32.4 Section eyebrow polish --------------------------- */
+.section-eyebrow {
+  background: linear-gradient(120deg, var(--brand-050), var(--accent-050));
+  border-color: rgba(212, 175, 55, 0.4);
+}
+
+/* --------------------------- 32.5 Mobile: trim decorative hero --------------------------- */
+/* The mandala, glow blobs, petals, floating avatars and chips were sized for a
+   desktop canvas and read as noise on a phone — the arch stays as the anchor. */
+@media (max-width: 640px) {
+  .hero-mandala,
+  .hero-deco-blob,
+  .hero-petal,
+  .hero-orb,
+  .hero-float-chip { display: none; }
+  .hero-visual { min-height: 300px; }
+  .hero-arch { width: min(226px, 70%); }
+  .hero-social { margin-top: 20px; gap: 10px; }
+  .hs-avatars .avatar,
+  .hs-avatars-more { width: 36px; height: 36px; }
+}
+
+/* --------------------------- 32.6 Sticky mobile CTA (guests) --------------------------- */
+.mobile-cta {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 44;
+  display: none; align-items: center; gap: 10px;
+  padding: 10px 14px calc(10px + env(safe-area-inset-bottom));
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  border-top: 1px solid var(--border);
+  box-shadow: 0 -8px 26px rgba(31, 41, 55, 0.1);
+}
+.mobile-cta .btn { flex: 1; height: 46px; }
+.mobile-cta .btn-brand-outline { flex: 0 0 auto; }
+@media (max-width: 991px) { .mobile-cta { display: flex; } }
+body:has(.mobile-cta) { padding-bottom: calc(74px + env(safe-area-inset-bottom)); }

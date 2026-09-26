@@ -45,7 +45,34 @@ class UserController extends Controller
             ->paginate(15)
             ->withQueryString();
 
-        return view('backend.users.index', compact('users', 'filters'));
+        return view('backend.users.index', [
+            'users' => $users,
+            'filters' => $filters,
+            'status' => $filters['status'] ?? null,
+            'counts' => $this->statusCounts(),
+        ]);
+    }
+
+    /**
+     * Per-status totals for the filter tiles, in one query rather than five.
+     *
+     * @return array<string, int>
+     */
+    private function statusCounts(): array
+    {
+        $counts = array_fill_keys(array_keys(Reference::userStatuses()), 0);
+
+        User::query()
+            ->selectRaw('status, COUNT(*) AS total')
+            ->groupBy('status')
+            ->get()
+            ->each(function ($row) use (&$counts) {
+                $counts[$row->status] = (int) $row->total;
+            });
+
+        $counts['all'] = array_sum($counts);
+
+        return $counts;
     }
 
     public function show(User $user): View

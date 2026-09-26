@@ -70,13 +70,15 @@
     @endif
 
     {{-- The tiles are the status filter, so the old tab strip is gone. Each href
-         is a real query, so the tiles still work with JavaScript off. --}}
+         is a real query, so the tiles still work with JavaScript off. They also
+         carry data-lf-nav: the status decides which rows the server returns, so
+         it cannot be filtered in place the way the completion chips can. --}}
     <div class="stat-grid st-tiles pf-tiles">
         @foreach ($queues as $queue)
             @php $isActive = $status === $queue['key']; @endphp
             <a class="card stat-tile st-tile {{ $isActive ? 'is-active' : '' }}"
                href="{{ route('backend.profiles.index', $withStatus(['status' => $queue['key'], 'completion' => $band, 'q' => $term ?: null])) }}"
-               data-lf-tile data-lf-group="status"
+               data-lf-tile data-lf-group="status" data-lf-nav
                data-lf-key="{{ $queue['key'] }}" data-lf-field="status"
                data-lf-label="{{ mb_strtolower($queue['label']) }} {{ Str::plural('profile', 2) }}"
                data-lf-col="status" data-lf-val="{{ $queue['key'] }}"

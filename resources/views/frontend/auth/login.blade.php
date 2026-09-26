@@ -3,8 +3,15 @@
 @section('title', 'Login')
 
 @section('auth-content')
+    <span class="auth-eyebrow"><i class="fas fa-heart"></i> Member sign in</span>
     <h1>Welcome back</h1>
     <p class="auth-sub">Sign in to continue your journey on Jibon Sathi.</p>
+
+    <div class="auth-trust">
+        <span><i class="fas fa-lock"></i> Private by default</span>
+        <span><i class="fas fa-circle-check"></i> Verified members</span>
+        <span><i class="fas fa-gift"></i> 100% free</span>
+    </div>
 
     <form method="POST" action="{{ route('login.store') }}">
         @csrf

@@ -985,10 +985,31 @@
     };
 
     const syncUrl = () => {
+      syncNavHrefs();
       if (! window.history || typeof history.replaceState !== 'function') return;
       const url = currentUrl();
       if (url.href !== location.href) history.replaceState(null, '', url.href);
     };
+
+    /* A tile that changes which rows the server would return cannot be filtered
+       in place: the page only holds the rows it was given, so hiding the ones
+       that miss can never produce the ones that hit. Those tiles carry
+       data-lf-nav, their click is left alone, and the browser follows the href.
+       Their href is rebuilt from the same hidden fields everything else uses, so
+       a term typed into the box survives the switch of queue. */
+    function syncNavHrefs() {
+      $$('[data-lf-tile][data-lf-nav]').forEach((el) => {
+        const key = el.dataset.lfKey;
+        const field = el.dataset.lfField || key;
+        const group = groups[el.dataset.lfGroup] || [];
+        /* No data-lf-col means the group matches everything, i.e. its All chip. */
+        const isAll = ! group.some((t) => t.key === key && t.col);
+        const url = currentUrl();
+        if (isAll) url.searchParams.delete(field);
+        else url.searchParams.set(field, key);
+        el.href = url.href;
+      });
+    }
 
     const apply = () => {
       let shown = 0;
@@ -1137,6 +1158,8 @@
     $$('[data-lf-tile]').forEach((el) => {
       el.addEventListener('click', (e) => {
         if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
+        /* A nav tile needs the server, so it is a plain link and is left alone. */
+        if (el.dataset.lfNav !== undefined) return;
         e.preventDefault();
         setTile(el.dataset.lfGroup, el.dataset.lfKey, true);
       });

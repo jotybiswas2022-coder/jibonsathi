@@ -14,11 +14,53 @@
     $eduLabel = \App\Support\Reference::educationLevels()[$profile->education?->level] ?? null;
 @endphp
 
-<div class="container profile-page">
-    <nav class="crumbs" aria-label="Breadcrumb">
-        <a href="{{ route('discover.index') }}"><i class="fas fa-arrow-left"></i> Back to Discover</a>
-    </nav>
+{{-- Profile header band: the identity, at a glance, before the two columns. --}}
+<div class="profile-band">
+    <div class="container">
+        <nav class="crumbs" aria-label="Breadcrumb">
+            <a href="{{ route('discover.index') }}"><i class="fas fa-arrow-left"></i> Back to Discover</a>
+        </nav>
 
+        <div class="profile-band-inner">
+            <div class="pb-id">
+                <span class="avatar pb-avatar">
+                    @if ($isAvatar)
+                        <span class="initials">{{ $profile->initials }}</span>
+                    @else
+                        <img src="{{ $photoSrc }}" alt="{{ $profile->name }}">
+                    @endif
+                </span>
+                <div class="pb-text">
+                    <h1 class="profile-name pb-name">
+                        {{ $profile->name }}
+                        @if ($profile->isVerifiedProfile())
+                            <i class="fas fa-circle-check pb-verified" title="Verified" aria-label="Verified profile"></i>
+                        @endif
+                        @if ($profile->isOnline())
+                            <span class="badge badge-success pb-online"><i class="fas fa-circle"></i> Online</span>
+                        @endif
+                    </h1>
+                    @if ($p?->headline)
+                        <p class="pb-headline">{{ $p->headline }}</p>
+                    @endif
+                    @if ($p)
+                        <div class="pb-meta">
+                            <span><i class="fas fa-cake-candles"></i> {{ $p->ageGroup() }}</span>
+                            <span><i class="fas fa-ruler-vertical"></i> {{ $p->heightLabel() }}</span>
+                            <span><i class="fas fa-location-dot"></i> {{ $p->locationLabel() }}</span>
+                            <span><i class="fas fa-eye"></i> {{ $viewCount }} profile views</span>
+                        </div>
+                    @endif
+                </div>
+            </div>
+            <div class="pb-side text-tiny text-muted">
+                {{ $profile->isOnline() ? 'Online now' : 'Last seen '.$profile->lastSeenLabel() }}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container profile-page">
     <div class="profile-layout">
         {{-- Left / main column --}}
         <div class="profile-main">
@@ -33,13 +75,6 @@
                         <img src="{{ $photoSrc }}" alt="{{ $profile->name }}" data-photo-main>
                     @endif
 
-                    @if ($p?->verification_status === 'verified')
-                        <span class="gallery-badge"><span class="badge badge-info"><i class="fas fa-circle-check"></i> Verified Profile</span></span>
-                    @endif
-
-                    @if ($profile->isOnline())
-                        <span class="gallery-badge" style="right:auto;left:16px"><span class="badge badge-success"><i class="fas fa-circle" style="font-size:8px"></i> Online now</span></span>
-                    @endif
                 </div>
 
                 @if ($photos->count() > 1)
@@ -55,34 +90,6 @@
                 @endif
             </div>
 
-            {{-- Header --}}
-            <div class="card card-pad profile-head">
-                <div class="flex items-center gap-4" style="gap:16px;flex-wrap:wrap">
-                    <div style="flex:1;min-width:0">
-                        <h1 class="profile-name">
-                            {{ $profile->name }}
-                            @if ($profile->isVerifiedProfile()) <i class="fas fa-circle-check" style="color:#2563eb;font-size:17px" title="Verified"></i> @endif
-                        </h1>
-                        @if ($p?->headline)
-                            <p class="text-muted" style="margin:2px 0 8px">{{ $p->headline }}</p>
-                        @endif
-                        <div class="pcard-meta" style="gap:14px">
-                            @if ($p)
-                                <span><i class="fas fa-cake-candles"></i> {{ $p->ageGroup() }}</span>
-                                <span><i class="fas fa-ruler-vertical"></i> {{ $p->heightLabel() }}</span>
-                                <span><i class="fas fa-location-dot"></i> {{ $p->locationLabel() }}</span>
-                                <span><i class="fas fa-eye"></i> {{ $viewCount }} profile views</span>
-                            @endif
-                        </div>
-                    </div>
-                    @if ($profile->isOnline())
-                        <div class="text-tiny text-muted" style="text-align:right">Online now</div>
-                    @else
-                        <div class="text-tiny text-muted" style="text-align:right">Last seen {{ $profile->lastSeenLabel() }}</div>
-                    @endif
-                </div>
-            </div>
-
             {{-- About --}}
             @if ($p?->about_me)
                 <div class="card card-pad">
@@ -96,7 +103,7 @@
 
             {{-- Similar rail --}}
             @if ($similar->isNotEmpty())
-                <div style="margin-top:26px">
+                <div class="profile-similar" style="margin-top:26px">
                     <div class="flex items-center justify-between" style="margin-bottom:14px;gap:10px;flex-wrap:wrap">
                         <h3 class="card-title" style="margin:0"><i class="fas fa-people-arrows"></i> Similar Profiles</h3>
                         <a href="{{ route('discover.index') }}" class="text-small" style="color:var(--brand);font-weight:600">See all</a>

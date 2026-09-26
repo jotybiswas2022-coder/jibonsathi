@@ -40,6 +40,7 @@
                 {{ $siteName }}
             </a>
             <div style="margin-top:auto">
+                <span class="auth-brand-eyebrow"><i class="fas fa-heart"></i> Free matrimony · Bangladesh</span>
                 <h2>{{ $settings['hero_headline'] ?? 'Find Someone Who Complements Your Life' }}</h2>
                 <p>{{ $settings['hero_subheading'] ?? 'Meaningful connections, genuine profiles, and a better way to find your life partner.' }}</p>
                 <div class="auth-brand-stats">

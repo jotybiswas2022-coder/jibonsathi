@@ -67,7 +67,7 @@
             @php $isActive = $status === $queue['key']; @endphp
             <a class="card stat-tile st-tile {{ $isActive ? 'is-active' : '' }}"
                href="{{ route('backend.verification.index', $withStatus(['status' => $queue['key'], 'type' => $type, 'q' => $term ?: null])) }}"
-               data-lf-tile data-lf-group="status"
+               data-lf-tile data-lf-group="status" data-lf-nav
                data-lf-key="{{ $queue['key'] }}" data-lf-field="status"
                data-lf-label="{{ $queue['label'] }} {{ Str::plural('verification', 2) }}"
                data-lf-col="status" data-lf-val="{{ $queue['key'] }}"
@@ -83,7 +83,7 @@
              grid keeps to four columns instead of leaving a hole. --}}
         <a class="card stat-tile st-tile {{ $status === 'all' ? 'is-active' : '' }}"
            href="{{ route('backend.verification.index', array_filter(['status' => null, 'type' => $type, 'q' => $term ?: null])) }}"
-           data-lf-tile data-lf-group="status"
+           data-lf-tile data-lf-group="status" data-lf-nav
            data-lf-key="all" data-lf-field="status" data-lf-label="every status"
            @if ($status === 'all') aria-current="true" @endif>
             <span class="st-ico ic-brand"><i class="fas fa-layer-group"></i></span>

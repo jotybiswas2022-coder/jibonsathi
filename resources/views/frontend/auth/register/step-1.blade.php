@@ -3,8 +3,15 @@
 @section('title', 'Create Free Profile')
 
 @section('auth-content')
+    <span class="auth-eyebrow"><i class="fas fa-gift"></i> Free forever · No hidden charges</span>
     <h1>Create your free profile</h1>
     <p class="auth-sub">Your account is 100% free. It takes about two minutes to get started.</p>
+
+    <div class="auth-trust">
+        <span><i class="fas fa-shield-halved"></i> Manually reviewed</span>
+        <span><i class="fas fa-lock"></i> Private by default</span>
+        <span><i class="fas fa-user-plus"></i> No payment ever</span>
+    </div>
 
     <form method="POST" action="{{ route('register.store') }}">
         @csrf

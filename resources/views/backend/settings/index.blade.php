@@ -14,7 +14,7 @@
        the section to count as ready, which drives the green dot in the rail. */
     $sections = [
         ['id' => 'general', 'icon' => 'fa-building', 'title' => 'General', 'desc' => 'Site name and the contact details visitors see.', 'required' => ['site_name', 'contact_email']],
-        ['id' => 'social', 'icon' => 'fa-brands', 'title' => 'Social Links', 'desc' => 'Profile links shown in the header and footer.', 'required' => []],
+        ['id' => 'social', 'icon' => 'fa-share-nodes', 'title' => 'Social Links', 'desc' => 'Profile links shown in the header and footer.', 'required' => []],
         ['id' => 'seo', 'icon' => 'fa-magnifying-glass', 'title' => 'SEO', 'desc' => 'How the site appears in Google search results.', 'required' => []],
         ['id' => 'homepage', 'icon' => 'fa-house', 'title' => 'Homepage', 'desc' => 'The hero banner at the top of the landing page.', 'required' => []],
         ['id' => 'legal', 'icon' => 'fa-scale-balanced', 'title' => 'Legal', 'desc' => 'Privacy policy and terms, shown as plain text.', 'required' => []],
@@ -39,7 +39,7 @@
     {{-- novalidate: the form is long and saved from a sticky bar, so a silently
          blocked submit would look like nothing happened. Server-side validation
          repopulates the old input and renders the error summary below. --}}
-    <form id="settingsForm" method="POST" action="{{ route('backend.settings.update') }}" enctype="multipart/form-data" novalidate
+    <form id="settingsForm" class="settings-form" method="POST" action="{{ route('backend.settings.update') }}" enctype="multipart/form-data" novalidate
           data-confirm-title="Save these settings?"
           data-confirm="The changes go live for every visitor immediately."
           data-confirm-ok="Save settings" data-confirm-icon="question"
@@ -151,7 +151,7 @@
                 {{-- ---------------------------- Social links ---------------------------- --}}
                 <section class="card set-card" id="set-social">
                     <div class="set-card-head">
-                        <span class="set-card-ico ic-info"><i class="fas fa-brands"></i></span>
+                        <span class="set-card-ico ic-info"><i class="fas fa-share-nodes"></i></span>
                         <div class="sch-text">
                             <h3>Social Links</h3>
                             <p>Profile links shown in the header and footer.</p>

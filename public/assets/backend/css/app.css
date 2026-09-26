@@ -357,16 +357,23 @@ table.table { width: 100%; border-collapse: collapse; font-size: 13.5px; min-wid
 
 /* Prefix icon inside a text input, used for the social URL fields. */
 .field-icon { position: relative; }
-.field-icon > i { position: absolute; left: 13px; top: 50%; transform: translateY(-50%); font-size: 14px; color: var(--muted-2); pointer-events: none; }
+.field-icon > i { position: absolute; left: 13px; top: 50%; transform: translateY(-50%); font-size: 15px; color: var(--muted); pointer-events: none; }
 .field-icon .input { padding-left: 38px; }
 .field-icon .input:has(+ .clear-x:not([hidden])) { padding-right: 40px; }
 .field-icon .clear-x {
   position: absolute; right: 5px; top: 50%; transform: translateY(-50%); width: 32px; height: 32px;
-  border: 0; border-radius: 50%; background: transparent; color: var(--muted-2); cursor: pointer; font-size: 13px;
+  border: 0; border-radius: 50%; background: transparent; color: var(--muted); cursor: pointer; font-size: 13px;
   display: inline-flex; align-items: center; justify-content: center;
 }
 .field-icon .clear-x:hover { background: var(--brand-100); color: var(--brand); }
 .field-icon .clear-x[hidden] { display: none; }
+
+/* Brand colours for the social prefix icons. These need to out-specify
+   `.field-icon > i` above, so the base rule cannot strip their colour. */
+.field-icon > i.social-ic-facebook { color: #1877F2; }
+.field-icon > i.social-ic-instagram { color: #C13584; }
+.field-icon > i.social-ic-twitter { color: #0A66C2; }
+.field-icon > i.social-ic-linkedin { color: #0A66C2; }
 .social-ic-facebook { color: #1877F2; }
 .social-ic-instagram { color: #C13584; }
 .social-ic-twitter { color: #1D9BF0; }

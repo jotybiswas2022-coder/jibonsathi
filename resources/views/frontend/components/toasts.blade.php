@@ -1,3 +1,4 @@
+<div class="toast-wrap">
 @if (session('success'))
     <div class="toast success" data-toast="4200">
         <i class="fas fa-circle-check"></i>
@@ -27,3 +28,4 @@
         </div>
     @endforeach
 @endif
+</div>

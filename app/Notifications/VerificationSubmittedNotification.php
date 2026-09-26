@@ -17,7 +17,7 @@ class VerificationSubmittedNotification extends BaseNotification
         return [
             'title' => 'New verification request',
             'message' => "{$user?->name} submitted a {$this->verification->typeLabel()} verification request.",
-            'url' => route('backend.verifications.show', $this->verification, absolute: false),
+            'url' => route('backend.verification.show', $this->verification, absolute: false),
             'tone' => 'accent',
             'icon' => 'shield',
         ];

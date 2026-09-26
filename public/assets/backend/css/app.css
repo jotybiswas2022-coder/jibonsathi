@@ -125,6 +125,8 @@ textarea.input { height: auto; padding: 11px 14px; resize: vertical; min-height:
 select.input { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%236B7280' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 14px center; padding-right: 38px; }
 .field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 15px; }
 .field > label { font-size: 12.5px; font-weight: 600; font-family: var(--font-display); }
+.input.error { border-color: var(--danger); }
+.input.error:focus { box-shadow: 0 0 0 4px rgba(220, 38, 38, .10); }
 .form-error { font-size: 12px; color: var(--danger); font-weight: 500; }
 .field-group { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; }
 
@@ -233,7 +235,8 @@ table.table { width: 100%; border-collapse: collapse; font-size: 13.5px; min-wid
 .empty-state h3 { font-size: 17px; margin-bottom: 4px; }
 .empty-state p { color: var(--muted); font-size: 13.5px; max-width: 360px; margin: 0 auto 16px; }
 
-.toast-wrap { position: fixed; top: 20px; right: 20px; z-index: 120; display: flex; flex-direction: column; gap: 10px; max-width: 360px; }
+.toast-wrap { position: fixed; top: 20px; right: 20px; z-index: 120; display: flex; flex-direction: column; gap: 10px; max-width: min(360px, calc(100vw - 40px)); pointer-events: none; }
+.toast-wrap .toast { pointer-events: auto; }
 .toast { display: flex; gap: 11px; align-items: flex-start; background: #fff; border: 1px solid var(--border); border-left: 4px solid var(--brand); border-radius: 13px; padding: 12px 15px; box-shadow: var(--shadow-md); font-size: 13.5px; animation: slideIn .28s ease; }
 .toast.success { border-left-color: var(--success); } .toast.success i { color: var(--success); }
 .toast.error { border-left-color: var(--danger); } .toast.error i { color: var(--danger); }

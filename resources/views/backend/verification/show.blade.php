@@ -59,8 +59,12 @@
                     @csrf
                     <div class="field">
                         <label for="note">Note (sent to member)</label>
-                        <textarea name="note" id="note" class="input" rows="3" maxlength="500"
-                                  placeholder="Optional note for the member">{{ old('note') }}</textarea>
+                        <textarea name="note" id="note" class="input @error('note') error @enderror" rows="3" maxlength="500"
+                                  placeholder="What is wrong with the document?">{{ old('note') }}</textarea>
+                        <p class="text-tiny text-muted" style="margin:0">Required when rejecting, so the member knows what to fix.</p>
+                        @error('note')
+                            <p class="form-error">{{ $message }}</p>
+                        @enderror
                     </div>
                     <div class="decision-grid" style="grid-template-columns:1fr">
                         <button name="decision" value="approved" class="btn btn-success"
@@ -72,7 +76,7 @@
                         </button>
                         <button name="decision" value="rejected" class="btn btn-danger-soft"
                                 data-confirm-title="Reject this verification?"
-                                data-confirm="The member is told the document was not accepted and can submit a new one."
+                                data-confirm="The member is told the document was not accepted and can submit a new one. A note is required so they know what to fix."
                                 data-confirm-ok="Reject verification" data-confirm-icon="error"
                                 data-confirm-color="#DC2626">
                             <i class="fas fa-xmark"></i> Reject

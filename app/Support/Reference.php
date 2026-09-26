@@ -134,17 +134,6 @@ class Reference
     }
 
     /** @return array<string, string> */
-    public static function profileStatuses(): array
-    {
-        return [
-            'pending' => 'Pending Review',
-            'approved' => 'Approved',
-            'rejected' => 'Rejected',
-            'suspended' => 'Suspended',
-        ];
-    }
-
-    /** @return array<string, string> */
     public static function userStatuses(): array
     {
         return [

@@ -18,6 +18,28 @@ class Profile extends Model
     public const VISIBILITY_MEMBERS = 'members';
     public const VISIBILITY_PRIVATE = 'private';
 
+    public const STATUS_PENDING = 'pending';
+    public const STATUS_APPROVED = 'approved';
+    public const STATUS_REJECTED = 'rejected';
+    public const STATUS_SUSPENDED = 'suspended';
+
+    public const STATUSES = [
+        self::STATUS_PENDING => 'Pending',
+        self::STATUS_APPROVED => 'Approved',
+        self::STATUS_REJECTED => 'Rejected',
+        self::STATUS_SUSPENDED => 'Suspended',
+    ];
+
+    /** The completion bands the queue is filtered by, weakest first. */
+    public const COMPLETION_LOW = 60;
+
+    public const COMPLETION_HIGH = 90;
+
+    public const COMPLETION_BANDS = [
+        'low' => 'Under 60%',
+        'high' => '90% and over',
+    ];
+
     protected $fillable = [
         'user_id',
         'gender',
@@ -122,6 +144,109 @@ class Profile extends Model
     public function isVerified(): bool
     {
         return $this->verification_status === 'verified';
+    }
+
+    public function statusLabel(): string
+    {
+        return self::STATUSES[$this->profile_status] ?? ucfirst((string) $this->profile_status);
+    }
+
+    public function statusTone(): string
+    {
+        return match ($this->profile_status) {
+            self::STATUS_APPROVED => 'success',
+            self::STATUS_REJECTED => 'danger',
+            self::STATUS_SUSPENDED => 'danger',
+            default => 'warning',
+        };
+    }
+
+    public function statusIcon(): string
+    {
+        return match ($this->profile_status) {
+            self::STATUS_APPROVED => 'fa-circle-check',
+            self::STATUS_REJECTED => 'fa-xmark',
+            self::STATUS_SUSPENDED => 'fa-ban',
+            default => 'fa-hourglass-half',
+        };
+    }
+
+    /**
+     * Whether the profile is still waiting on a decision. Both the queue copy and
+     * the case page key off this, so "open" means the same thing everywhere.
+     */
+    public function isOpen(): bool
+    {
+        return $this->profile_status === self::STATUS_PENDING;
+    }
+
+    public function verificationLabel(): string
+    {
+        return match ($this->verification_status) {
+            'verified' => 'Verified',
+            'pending' => 'In review',
+            'rejected' => 'Refused',
+            default => 'Not checked',
+        };
+    }
+
+    public function verificationTone(): string
+    {
+        return match ($this->verification_status) {
+            'verified' => 'success',
+            'rejected' => 'danger',
+            'pending' => 'warning',
+            default => 'muted',
+        };
+    }
+
+    /**
+     * A thin profile is the strongest signal in a moderation queue, because a
+     * member who has not filled anything in has nothing to judge. The tone
+     * follows the same bands the filter chips use.
+     */
+    public function completionTone(): string
+    {
+        $pct = (int) $this->profile_completion;
+
+        return match (true) {
+            $pct < self::COMPLETION_LOW => 'danger',
+            $pct < self::COMPLETION_HIGH => 'warning',
+            default => 'success',
+        };
+    }
+
+    /**
+     * Which completion chip, if any, this profile sits under. The rows carry it
+     * so the shared filter can narrow on it without a server round trip.
+     */
+    public function completionBand(): ?string
+    {
+        $pct = (int) $this->profile_completion;
+
+        return match (true) {
+            $pct < self::COMPLETION_LOW => 'low',
+            $pct >= self::COMPLETION_HIGH => 'high',
+            default => null,
+        };
+    }
+
+    /**
+     * Who can see this profile. The three values are the ones the privacy form
+     * accepts, and a member who has never set one gets the private default.
+     */
+    public function visibilityLabel(): string
+    {
+        return match ($this->profile_visibility) {
+            self::VISIBILITY_PUBLIC => 'Everyone, including search engines',
+            self::VISIBILITY_MEMBERS => 'Signed-in members only',
+            default => 'Nobody but the member',
+        };
+    }
+
+    public function isThin(): bool
+    {
+        return (int) $this->profile_completion < self::COMPLETION_LOW;
     }
 
     public function scopeApproved(Builder $query): Builder

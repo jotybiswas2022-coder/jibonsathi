@@ -1078,3 +1078,179 @@ table.st-table { min-width: 0; }
      than left to push the decision panel two screens down. */
   .vf-doc-frame iframe { height: 300px; }
 }
+
+/* ============================ profile moderation ========================= */
+/* Built on the shared listing pieces, so the status tiles, the search box and
+   the stacked-card table already work. Only the moderation specific rows and
+   the case page need rules of their own. */
+.pf-toolbar { margin-bottom: 14px; }
+
+/* No status tile covers the mixed view, so the page head link is what marks it
+   as the current one. It looks like the selected chip, and cannot be re-clicked. */
+.page-head-actions .btn-outline.is-active {
+  border-color: var(--brand); background: var(--brand-100); color: var(--brand); pointer-events: none;
+}
+
+/* Six columns of member data will not fit a tablet by shrinking alone: the
+   shared .cu-sub rule is nowrap, so one long email pushes the table past the
+   viewport. Fixed layout hands the widths to the header, and the email
+   ellipsises inside its own cell. */
+.pf-table { table-layout: fixed; }
+.pf-table th:nth-child(1) { width: 30%; }
+.pf-table th:nth-child(2) { width: 14%; }
+.pf-table th:nth-child(3) { width: 19%; }
+.pf-table th:nth-child(4) { width: 12%; }
+.pf-table th:nth-child(5) { width: 13%; }
+.pf-table th:nth-child(6) { width: 12%; }
+
+.pf-nudge { align-items: flex-start; }
+.pf-nudge strong { display: block; }
+.pf-nudge a { color: inherit; font-weight: 700; text-decoration: underline; }
+
+.pf-decided { font-size: 11.5px; color: var(--muted-2); margin-top: 4px; }
+
+/* Completion is the triage signal in this queue, so the bar is tinted by band
+   instead of the neutral brand gradient the shared .progress uses. The number
+   sits beside the bar rather than under it, so a row stays one line tall.
+   flex:1 matters on the stacked card: there the cell is a flex container whose
+   other child is the label, so without it the bar collapses to the width of the
+   number. It is inert on a real table cell, which is a block container. */
+.pf-meter { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0; }
+.pf-meter-bar { flex: 1; min-width: 0; height: 7px; background: #F3F4F6; }
+.pf-meter-bar > span { background: currentColor; }
+.pf-danger { color: var(--danger); }
+.pf-warning { color: var(--warning); }
+.pf-success { color: var(--success); }
+.pf-meter-n { font-size: 12.5px; font-weight: 700; color: var(--text); font-variant-numeric: tabular-nums; flex: none; }
+
+/* A profile under the low band has nothing to moderate, so the row says so
+   rather than leaving the number to be interpreted. */
+.pf-thin {
+  display: inline-flex; align-items: center; gap: 5px; margin-top: 5px;
+  font-size: 11.5px; font-weight: 700; color: var(--danger);
+}
+.pf-thin i { font-size: 11px; }
+.pf-thin-alert { align-items: flex-start; }
+.pf-thin-alert strong { display: block; }
+
+/* ================================= case page ================================ */
+/* The old layout asked for "300px 1fr" inline with a sticky rail, which pinned
+   a narrow column beside a wide one and could not be collapsed at all. The two
+   columns are declared here so they can be, and the rail is a normal column so
+   a long decision panel is not pinned halfway down the page. */
+.pf-case { display: grid; gap: 20px; grid-template-columns: minmax(0, 1fr) 330px; align-items: start; }
+.pf-case-main, .pf-case-side { display: flex; flex-direction: column; gap: 20px; min-width: 0; }
+
+.pf-case-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.pf-case-title { display: flex; align-items: center; gap: 10px; margin: 0; font-size: 17px; min-width: 0; }
+.pf-case-title .pf-case-ico {
+  width: 34px; height: 34px; border-radius: 11px; display: flex; align-items: center;
+  justify-content: center; font-size: 14px; background: var(--brand-100); color: var(--brand); flex: none;
+}
+.pf-case-meta { display: flex; flex-wrap: wrap; gap: 6px 16px; margin: 14px 0 0; padding: 0; list-style: none; }
+.pf-case-meta li { display: flex; align-items: center; gap: 6px; font-size: 12.5px; color: var(--muted); }
+.pf-case-meta i { color: var(--muted-2); font-size: 11.5px; width: 13px; text-align: center; }
+
+/* The case page version of the meter, with the number above the bar because
+   here it is the headline of the card rather than a column value. */
+.pf-meter-lg { display: block; margin-top: 16px; }
+.pf-meter-head { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; margin-bottom: 6px; font-size: 12.5px; color: var(--muted); }
+.pf-meter-head strong { font-size: 16px; font-family: var(--font-display); }
+.pf-meter-lg .pf-meter-bar { height: 9px; }
+
+/* A label and a value per cell, two to a row, so twelve facts read as a list
+   rather than as a wall of key/value text. */
+.pf-facts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 13px 20px; margin: 0; }
+.pf-facts dt {
+  font-size: 10.5px; letter-spacing: .09em; text-transform: uppercase;
+  color: var(--muted-2); font-weight: 700; margin-bottom: 3px;
+}
+.pf-facts dd { margin: 0; font-size: 13.5px; color: var(--text); overflow-wrap: anywhere; }
+
+.pf-headline { margin: 0 0 10px; font-size: 15px; font-weight: 700; color: var(--text); }
+.pf-quote-body {
+  margin: 0; font-size: 13.5px; line-height: 1.65; color: var(--text);
+  white-space: pre-wrap; overflow-wrap: anywhere;
+}
+
+.pf-verif-row { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-top: 1px solid var(--border); }
+.pf-verif-row:first-of-type { border-top: 0; }
+.pf-verif-ico {
+  width: 34px; height: 34px; border-radius: 11px; flex: none; display: flex;
+  align-items: center; justify-content: center; font-size: 13px;
+  background: var(--info-bg); color: var(--info);
+}
+.pf-verif-main { min-width: 0; flex: 1; }
+.pf-verif-val { font-size: 13.5px; font-weight: 600; display: flex; align-items: center; gap: 7px; flex-wrap: wrap; }
+.pf-verif-sub { font-size: 12px; color: var(--muted-2); margin-top: 2px; }
+
+.pf-subject { text-align: center; }
+.pf-subject-avatar { width: 76px; height: 76px; border-radius: 20px; margin: 0 auto 12px; display: block; }
+.pf-subject-name { margin: 0 0 2px; font-size: 16px; }
+.pf-subject-mail { margin: 0; overflow-wrap: anywhere; }
+.pf-subject-loc { margin: 0 0 14px; }
+
+.pf-decide .btn { justify-content: center; }
+.pf-decide-hint { margin: 0 0 12px; font-size: 12px; color: var(--muted); }
+
+/* Photos the member can see, each with a remove control that only appears on
+   hover or when focused, so the grid reads as a gallery rather than as a wall
+   of delete buttons. The control stays reachable by keyboard. */
+.pf-gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
+.pf-shot { position: relative; border-radius: 11px; overflow: hidden; }
+.pf-shot > a { display: block; }
+.pf-shot img { display: block; width: 100%; aspect-ratio: 1; object-fit: cover; }
+.pf-shot form { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,.5); opacity: 0; transition: opacity .15s ease; }
+.pf-shot:hover form, .pf-shot:focus-within form { opacity: 1; }
+.pf-shot-x {
+  width: 30px; height: 30px; border-radius: 9px; border: 0; cursor: pointer;
+  background: #fff; color: var(--danger); font-size: 12px;
+  display: inline-flex; align-items: center; justify-content: center;
+}
+.pf-shot-x:hover { background: var(--danger); color: #fff; }
+
+.pf-closed { margin-top: 18px; }
+
+@media (max-width: 1080px) {
+  /* The rail moves under the facts instead of squeezing them. At 1024 the main
+     column was down to 374px, which is too narrow to read a profile in. */
+  .pf-case { grid-template-columns: minmax(0, 1fr); }
+}
+
+@media (max-width: 900px) {
+  .pf-table th:nth-child(1) { width: auto; }
+  /* The completion cell stacks. As a flex row it shared the card's width three
+     ways — label, bar, and the "too thin to judge" note — which squeezed the
+     bar to 87px on a 360px screen, too little to read a completion level from. */
+  .pf-table tbody td[data-label="Completion"] { display: block; }
+  .pf-table tbody td[data-label="Completion"]::before { display: block; margin-bottom: 7px; }
+}
+
+@media (max-width: 700px) {
+  .pf-chips { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 4px; margin-inline: -2px; }
+  .pf-chips::-webkit-scrollbar { height: 0; }
+  .pf-chips .rp-chips-label { display: none; }
+  .pf-chips .rp-chip { flex: none; }
+  .pf-case-title { font-size: 15px; }
+  .pf-facts { grid-template-columns: 1fr; gap: 11px; }
+}
+
+@media (max-width: 560px) {
+  /* Two columns, never three: below 560 a third column would put the photo
+     under 100px, which is too small to judge whether it should come off. */
+  .pf-gallery-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  /* Reuse the same two column compact tiles as the story filters. */
+  .pf-tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  .pf-tiles .stat-tile {
+    display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center;
+    column-gap: 11px; padding: 12px 13px;
+  }
+  .pf-tiles .stat-tile .st-ico { grid-row: 1 / span 2; width: 34px; height: 34px; font-size: 14px; border-radius: 11px; margin-bottom: 0; }
+  .pf-tiles .stat-tile .st-num { font-size: 20px; line-height: 1.15; }
+  .pf-tiles .stat-tile .st-lbl { font-size: 11.5px; line-height: 1.3; }
+  .pf-tiles .stat-tile .st-sub { display: none; }
+  /* The remove control has no hover on a touch screen, so it is always shown
+     and the caption underneath is what the overlay dims. */
+  .pf-shot form { opacity: 1; background: linear-gradient(0deg, rgba(0,0,0,.55), rgba(0,0,0,.12)); align-items: flex-end; padding: 6px; }
+  .pf-shot-x { width: 28px; height: 28px; }
+}

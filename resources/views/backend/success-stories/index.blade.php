@@ -90,13 +90,6 @@
              submit button keeps Enter working in every browser and with JavaScript
              off, since a form with no submit control at all would not submit. --}}
         <button type="submit" class="sr-only" tabindex="-1" aria-hidden="true">Search</button>
-
-        <div class="field actions">
-            <a href="{{ route('backend.success-stories.index') }}" class="btn btn-outline" data-live-search-reset
-               @if ($term === '' && $status === 'all') aria-disabled="true" tabindex="-1" style="pointer-events:none;opacity:.5" @endif>
-                <i class="fas fa-rotate-left"></i> Reset
-            </a>
-        </div>
     </form>
 
     <div class="st-result-bar">

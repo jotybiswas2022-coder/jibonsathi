@@ -31,11 +31,20 @@ class UserPolicy
             return $viewer?->is_admin ?? false;
         }
 
+        // A guest is welcome on the profile page itself: the view renders its own
+        // "login to continue" prompts, and every action behind it (interest,
+        // shortlist, message, report) still needs an account through the auth
+        // middleware. A profile that has not been approved is a different story —
+        // a draft, rejected or suspended profile is never browsable by anyone but
+        // the admin, which is also what scopeDiscoverable() filters on.
+        if (! $viewer?->is_admin && $profile->profile_status !== 'approved') {
+            return false;
+        }
+
         return match ($profile->profile_visibility) {
-            'public' => true,
-            'members' => $viewer !== null,
+            'public', 'members' => true,
             'private' => (bool) $viewer?->is_admin,
-            default => $viewer !== null,
+            default => true,
         };
     }
 

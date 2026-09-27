@@ -22,7 +22,9 @@ class VerificationController extends Controller
 
         return view('frontend.verification.index', [
             'statuses' => $this->verifications->statusFor($user),
-            'requests' => $user->verifications()->limit(10)->get(),
+            // Newest first: the history reads as a log, and without the order the
+            // database was free to hand back the ten oldest rows.
+            'requests' => $user->verifications()->latest()->limit(10)->get(),
             'pending' => $user->verifications()->where('status', 'pending')->exists(),
         ]);
     }

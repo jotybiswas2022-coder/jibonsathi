@@ -138,14 +138,11 @@ Route::middleware(['auth', 'active', 'visible'])->group(function () {
     Route::post('/notifications/delete/{notification}', [NotificationController::class, 'destroy'])->name('notifications.destroy');
     Route::post('/notifications/delete-all', [NotificationController::class, 'destroyAll'])->name('notifications.destroy-all');
 
-    // Verification centre
+    // Identity verification. The page is one check: upload a document and wait
+    // for the moderation team. There is no phone code and no email step here.
     Route::get('/verification', [VerificationController::class, 'index'])->name('verification.index');
     Route::post('/verification/profile', [VerificationController::class, 'submitProfile'])
         ->middleware('throttle:5,10')->name('verification.submit-profile');
-    Route::post('/verification/phone', [VerificationController::class, 'sendPhone'])
-        ->middleware('throttle:3,30')->name('verification.send-phone');
-    Route::post('/verification/phone/confirm', [VerificationController::class, 'confirmPhone'])
-        ->middleware('throttle:5,10')->name('verification.confirm-phone');
 
     // My reports
     Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');

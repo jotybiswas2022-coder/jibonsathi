@@ -4,13 +4,11 @@ namespace App\Services;
 
 use App\Models\User;
 use App\Models\Verification;
-use App\Notifications\PhoneVerificationCodeNotification;
 use App\Notifications\VerificationApprovedNotification;
 use App\Notifications\VerificationRejectedNotification;
 use App\Notifications\VerificationSubmittedNotification;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 
 class VerificationService
@@ -28,7 +26,7 @@ class VerificationService
             throw ValidationException::withMessages(['document' => 'Your profile is already verified.']);
         }
 
-        // Documents are stored on the private disk — never publicly reachable.
+        // Documents are stored on the private disk â€” never publicly reachable.
         $path = $document->store('verifications/'.$user->id, 'local');
 
         $verification = DB::transaction(function () use ($user, $path, $documentType, $note) {
@@ -59,65 +57,21 @@ class VerificationService
     }
 
     /**
-     * Issue a one-time phone code (delivered by notification/SMS gateway later).
+     * The one check this page offers: whether a government ID was confirmed.
+     *
+     * @return array<string, mixed>
      */
-    public function sendPhoneCode(User $user): string
+    public function identityStatus(User $user): array
     {
-        if (! $user->phone) {
-            throw ValidationException::withMessages(['phone' => 'Add a phone number to your profile first.']);
-        }
-
-        $code = (string) random_int(100000, 999999);
-
-        DB::transaction(function () use ($user, $code) {
-            $user->verifications()
-                ->where('type', Verification::TYPE_PHONE)
-                ->where('status', Verification::STATUS_PENDING)
-                ->update(['status' => Verification::STATUS_REJECTED, 'admin_note' => 'Superseded by a newer code.']);
-
-            Verification::create([
-                'user_id' => $user->id,
-                'type' => Verification::TYPE_PHONE,
-                'status' => Verification::STATUS_PENDING,
-                'note' => Hash::make($code),
-            ]);
-        });
-
-        $user->notify(new PhoneVerificationCodeNotification($code));
-
-        return $code;
+        return [
+            'label' => 'Profile identity',
+            'value' => 'Government ID or passport check',
+            'status' => $user->profile?->verification_status ?? 'unverified',
+        ];
     }
 
     /**
-     * Confirm the phone code a member received.
-     */
-    public function confirmPhoneCode(User $user, string $code): Verification
-    {
-        $verification = $user->verifications()
-            ->where('type', Verification::TYPE_PHONE)
-            ->where('status', Verification::STATUS_PENDING)
-            ->latest()
-            ->first();
-
-        if (! $verification || ! $verification->note || ! Hash::check($code, $verification->note)) {
-            throw ValidationException::withMessages(['code' => 'That verification code is not valid.']);
-        }
-
-        DB::transaction(function () use ($user, $verification) {
-            $verification->update([
-                'status' => Verification::STATUS_APPROVED,
-                'reviewed_at' => now(),
-                'note' => 'Self-verified via one time code.',
-            ]);
-
-            $user->forceFill(['phone_verified_at' => now()])->save();
-        });
-
-        return $verification->refresh();
-    }
-
-    /**
-     * Admin approval — updates the owning profile where relevant.
+     * Admin approval â€” updates the owning profile where relevant.
      */
     public function approve(Verification $verification, ?User $admin = null, ?string $note = null): Verification
     {
@@ -163,31 +117,5 @@ class VerificationService
         $verification->user->notify(new VerificationRejectedNotification($verification->type, $note));
 
         return $verification->refresh();
-    }
-
-    /**
-     * Summary row for the member's verification page.
-     *
-     * @return array<string, mixed>
-     */
-    public function statusFor(User $user): array
-    {
-        return [
-            'email' => [
-                'label' => 'Email address',
-                'value' => $user->email,
-                'status' => $user->hasVerifiedEmail() ? 'verified' : 'unverified',
-            ],
-            'phone' => [
-                'label' => 'Phone number',
-                'value' => $user->phone ?: 'Not provided',
-                'status' => $user->phone_verified_at ? 'verified' : 'unverified',
-            ],
-            'profile' => [
-                'label' => 'Profile identity',
-                'value' => 'Government ID / passport check',
-                'status' => $user->profile?->verification_status ?? 'unverified',
-            ],
-        ];
     }
 }

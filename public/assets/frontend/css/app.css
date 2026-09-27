@@ -3397,136 +3397,88 @@ body:has(.mobile-cta) { padding-bottom: calc(74px + env(safe-area-inset-bottom))
   body:has(.bottom-nav) .footer-bottom { padding-bottom: calc(22px + 65px + env(safe-area-inset-bottom)); }
 }
 
+
 /* ==========================================================================
-   40. Verification centre
-   Three checks, two ways to act on them and a log of what was sent. The page is
-   a phone page first: a member opens it on a phone to find out whether there is
-   anything left for them to do, and the two action cards stack under a single
-   column of status rows rather than sharing a row on a narrow screen.
+   40. Identity verification
+   One check, three states and one form, so the page is built as a single
+   column of decisions rather than a dashboard. A member opens it on a phone
+   to find out whether they have to do anything, so the state is the first
+   thing on the page and the form is the only control on it.
    ========================================================================== */
 
-/* --------------------------- 40.1 Head and progress --------------------------- */
-.ver-head { align-items: center; }
-.ver-head .page-head-text { min-width: 0; }
-
-.ver-progress { flex: none; min-width: 216px; }
-.ver-progress-top { display: flex; align-items: baseline; gap: 9px; margin-bottom: 9px; }
-.ver-progress-num {
-  font-family: var(--font-display); font-size: 30px; font-weight: 800;
-  letter-spacing: -0.03em; line-height: 1; color: var(--brand);
-}
-.ver-progress-num .of { font-size: 17px; color: var(--muted-2); font-weight: 700; }
-.ver-progress-label { font-size: 12.5px; font-weight: 600; color: var(--muted); }
-.ver-bar { height: 8px; border-radius: 999px; background: var(--brand-100); overflow: hidden; }
-.ver-bar span {
-  display: block; height: 100%; border-radius: 999px;
-  background: linear-gradient(90deg, var(--brand), var(--accent));
-  transition: width 0.5s ease;
-}
-
-/* --------------------------- 40.2 The three checks --------------------------- */
-.ver-status {
-  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 14px; margin-bottom: 18px;
-}
-.ver-status-item {
-  display: flex; align-items: center; gap: 12px; min-width: 0;
-  padding: 15px 16px;
+/* --------------------------- 40.1 Step track --------------------------- */
+.ver-track {
+  list-style: none; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px; margin: 0 0 20px; padding: 16px 18px;
   background: #fff; border: 1px solid var(--border); border-radius: var(--radius-lg);
-  position: relative; overflow: hidden;
 }
-/* A hairline in the state colour, so the row still reads as done at a glance
-   once the badge scrolls out of view on a phone. */
-.ver-status-item::before {
-  content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px;
-  background: var(--border);
+.ver-track-step { display: flex; align-items: center; gap: 10px; min-width: 0; position: relative; }
+/* The connector between two dots, drawn behind the labels. */
+.ver-track-step:not(:last-child)::after {
+  content: ''; position: absolute; left: calc(100% + 5px); right: -5px; top: 17px;
+  height: 2px; background: var(--border); border-radius: 2px;
 }
-.ver-status-item.is-verified::before { background: var(--success); }
-.ver-status-item.is-pending::before { background: var(--warning); }
-.ver-status-item.is-rejected::before { background: var(--danger); }
+.ver-track-step.is-done:not(:last-child)::after { background: var(--success); }
 
-.ver-status-ico {
-  width: 40px; height: 40px; border-radius: 13px; flex: none;
-  display: flex; align-items: center; justify-content: center; font-size: 17px;
-  background: #F3F4F6; color: var(--muted-2);
-}
-.ver-status-item.is-verified .ver-status-ico { background: var(--success-bg); color: var(--success); }
-.ver-status-item.is-pending .ver-status-ico { background: var(--warning-bg); color: var(--warning); }
-.ver-status-item.is-rejected .ver-status-ico { background: var(--danger-bg); color: var(--danger); }
-
-.ver-status-body { display: flex; flex-direction: column; gap: 2px; min-width: 0; flex: 1; }
-.ver-status-label { font-size: 14px; font-weight: 700; color: var(--text); font-family: var(--font-display); }
-.ver-status-value {
-  font-size: 12.5px; color: var(--muted); line-height: 1.45;
-  /* An address is one long unbreakable token. Three of these across a member
-     column leaves about 95px each, so it wraps to a second line rather than
-     being cut off mid-word. */
-  overflow-wrap: anywhere;
-}
-
-/* --------------------------- 40.3 Action cards --------------------------- */
-.ver-cards { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; align-items: start; }
-.ver-card { margin: 0; }
-.ver-card-head {
-  display: flex; align-items: flex-start; gap: 12px;
-  padding-bottom: 16px; margin-bottom: 16px; border-bottom: 1px solid var(--border);
-}
-.ver-card-head > div { flex: 1; min-width: 0; }
-.ver-card-ico {
-  width: 42px; height: 42px; border-radius: 14px; flex: none;
-  display: flex; align-items: center; justify-content: center; font-size: 18px;
-  background: var(--brand-050); color: var(--brand);
-}
-.ver-card-title { font-family: var(--font-display); font-weight: 700; font-size: 17px; margin: 0 0 4px; }
-.ver-card-sub { color: var(--muted); font-size: 13.5px; margin: 0; line-height: 1.55; }
-.ver-card-head .badge { flex: none; margin-top: 2px; }
-
-/* One row per action, with the number the copy talks about. */
-.ver-step { display: flex; gap: 12px; padding: 14px 0; border-bottom: 1px dashed var(--border); }
-.ver-step:last-of-type { border-bottom: 0; padding-bottom: 0; }
-.ver-step-num {
-  width: 26px; height: 26px; border-radius: 50%; flex: none;
+.ver-track-dot {
+  width: 34px; height: 34px; border-radius: 50%; flex: none;
   display: flex; align-items: center; justify-content: center;
-  font-size: 12.5px; font-weight: 800;
+  font-size: 14px; position: relative; z-index: 1;
+  background: #F3F4F6; color: var(--muted-2);
+  border: 1px solid var(--border);
+}
+.ver-track-label {
+  font-size: 13.5px; font-weight: 600; color: var(--muted); min-width: 0;
+}
+.ver-track-step.is-done .ver-track-dot { background: var(--success); border-color: var(--success); color: #fff; }
+.ver-track-step.is-done .ver-track-label { color: var(--text); }
+.ver-track-step.is-current .ver-track-dot {
+  background: var(--brand); border-color: var(--brand); color: #fff;
+  box-shadow: 0 0 0 4px var(--brand-050);
+}
+.ver-track-step.is-current .ver-track-label { color: var(--text); font-weight: 700; }
+
+/* --------------------------- 40.2 The form beside its reason --------------------------- */
+.ver-layout {
+  display: grid; grid-template-columns: minmax(0, 1fr) 296px;
+  gap: 18px; align-items: start;
+}
+.ver-card { margin: 0; }
+
+.ver-state { display: flex; gap: 14px; padding-bottom: 20px; margin-bottom: 20px; border-bottom: 1px solid var(--border); }
+.ver-state-ico {
+  width: 52px; height: 52px; border-radius: 17px; flex: none;
+  display: flex; align-items: center; justify-content: center; font-size: 22px;
   background: var(--brand-050); color: var(--brand);
 }
-.ver-step-body { flex: 1; min-width: 0; }
-.ver-step-text { display: flex; flex-direction: column; gap: 2px; margin-bottom: 11px; }
-.ver-step-text strong { font-size: 14.5px; }
-.ver-step-text span { font-size: 13px; color: var(--muted); }
-
-/* The code is six digits and nothing else, so it gets six wide slots. */
-.ver-code { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
-.ver-code-input {
-  flex: 1 1 150px; width: 100%; max-width: 190px;
-  font-family: var(--font-display); font-size: 19px; font-weight: 700;
-  letter-spacing: 0.34em; text-align: center;
-}
-.ver-code .form-error { flex: 1 0 100%; }
-
-.ver-done, .ver-empty {
-  display: flex; align-items: flex-start; gap: 12px;
-  padding: 15px 16px; border-radius: var(--radius-md);
-  background: var(--success-bg);
-}
-.ver-done > i, .ver-empty > i { font-size: 19px; color: var(--success); margin-top: 2px; }
-.ver-done > div, .ver-empty > div { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
-.ver-done strong, .ver-empty strong { font-size: 14.5px; color: #166534; }
-.ver-done span, .ver-empty span { font-size: 13px; color: #166534; opacity: 0.85; }
-.ver-done.is-pending { background: var(--warning-bg); }
-.ver-done.is-pending > i { color: var(--warning); }
-.ver-done.is-pending strong, .ver-done.is-pending span { color: #92400E; }
-
-.ver-empty { background: #F8FAFC; flex-wrap: wrap; }
-.ver-empty > i { color: var(--muted-2); }
-.ver-empty strong, .ver-empty span { color: var(--text); }
-.ver-empty span { color: var(--muted); }
-.ver-empty .btn { flex: none; }
+.ver-state.is-verified .ver-state-ico { background: var(--success-bg); color: var(--success); }
+.ver-state.is-pending .ver-state-ico { background: var(--warning-bg); color: var(--warning); }
+.ver-state-body { min-width: 0; }
+.ver-state-title { font-family: var(--font-display); font-weight: 700; font-size: 18px; margin: 2px 0 6px; }
+.ver-state-text { color: var(--muted); font-size: 14px; margin: 0; line-height: 1.6; max-width: 58ch; }
 
 .ver-form .field:last-of-type { margin-bottom: 14px; }
+
+.ver-perks {
+  padding: 20px 22px; background: #fff;
+  border: 1px solid var(--border); border-radius: var(--radius-lg);
+}
+.ver-perks-title { font-family: var(--font-display); font-weight: 700; font-size: 15px; margin: 0 0 14px; }
+.ver-perks-list { list-style: none; margin: 0 0 16px; padding: 0; }
+.ver-perks-list li { display: flex; gap: 12px; padding: 11px 0; border-bottom: 1px dashed var(--border); }
+.ver-perks-list li:last-child { border-bottom: 0; padding-bottom: 0; }
+.ver-perks-list li > i {
+  width: 34px; height: 34px; border-radius: 11px; flex: none;
+  display: flex; align-items: center; justify-content: center; font-size: 14px;
+  background: var(--brand-050); color: var(--brand);
+}
+.ver-perks-list li > div { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.ver-perks-list strong { font-size: 14px; }
+.ver-perks-list span { font-size: 12.5px; color: var(--muted); line-height: 1.5; }
+
 .ver-hint {
-  list-style: none; margin: 0 0 18px; padding: 13px 15px;
-  display: flex; flex-wrap: wrap; gap: 8px 20px;
+  list-style: none; margin: 0; padding: 13px 15px;
+  display: flex; flex-wrap: wrap; gap: 8px 18px;
   background: var(--bg); border-radius: var(--radius-md);
   font-size: 12.5px; color: var(--muted);
 }
@@ -3546,16 +3498,10 @@ body:has(.mobile-cta) { padding-bottom: calc(74px + env(safe-area-inset-bottom))
   padding: 8px 14px; margin-right: 12px; cursor: pointer;
 }
 
-/* --------------------------- 40.4 Request history --------------------------- */
+/* --------------------------- 40.3 Submission log --------------------------- */
 .ver-history { margin-top: 18px; }
-.ver-history-title {
-  font-family: var(--font-display); font-weight: 700; font-size: 16px;
-  margin: 0 0 4px;
-}
-.ver-row {
-  display: flex; gap: 13px; padding: 15px 0;
-  border-bottom: 1px solid var(--border);
-}
+.ver-history-title { font-family: var(--font-display); font-weight: 700; font-size: 16px; margin: 0 0 4px; }
+.ver-row { display: flex; gap: 13px; padding: 15px 0; border-bottom: 1px solid var(--border); }
 .ver-row:last-of-type { border-bottom: 0; padding-bottom: 0; }
 .ver-row-ico {
   width: 38px; height: 38px; border-radius: 12px; flex: none;
@@ -3565,52 +3511,42 @@ body:has(.mobile-cta) { padding-bottom: calc(74px + env(safe-area-inset-bottom))
 .ver-row-body { flex: 1; min-width: 0; }
 .ver-row-top { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
 .ver-row-top strong { font-size: 14.5px; font-family: var(--font-display); }
-.ver-row-meta {
-  display: flex; flex-wrap: wrap; gap: 5px 16px; margin-top: 5px;
-  font-size: 12.5px; color: var(--muted);
-}
+.ver-row-meta { display: flex; flex-wrap: wrap; gap: 5px 16px; margin-top: 5px; font-size: 12.5px; color: var(--muted); }
 .ver-row-meta span { display: inline-flex; align-items: center; gap: 6px; }
 .ver-row-meta i { color: var(--muted-2); font-size: 11px; }
 .ver-row-note {
   margin: 9px 0 0; padding: 9px 12px;
-  background: var(--bg); border-left: 3px solid var(--brand-200, var(--brand-100));
+  background: var(--bg); border-left: 3px solid var(--brand-100);
   border-radius: 0 10px 10px 0;
   font-size: 13px; color: var(--text);
 }
 .ver-row-note i { color: var(--muted-2); font-size: 11px; margin-right: 3px; }
 .ver-history-foot { margin: 14px 0 0; }
 
-/* --------------------------- 40.5 Phone --------------------------- */
-@media (max-width: 1100px) {
-  /* Two cards side by side need about 380px each, which a tablet in portrait
-     does not have once the sidebar is gone. */
-  .ver-cards { grid-template-columns: minmax(0, 1fr); }
+/* --------------------------- 40.4 Phone --------------------------- */
+@media (max-width: 1000px) {
+  /* The perks column needs about 300px. Below this the form and the reasons to
+     fill it in share one column, reasons last. */
+  .ver-layout { grid-template-columns: minmax(0, 1fr); }
 }
-@media (max-width: 860px) {
-  /* Three status rows across would leave each one 200px, too narrow for an
-     email address and its badge. */
-  .ver-status { grid-template-columns: minmax(0, 1fr); gap: 10px; }
-  .ver-status-item { padding: 13px 14px; }
-
-  .ver-head { align-items: flex-start; }
-  /* The progress bar takes the full width under the title, so it reads as the
-     page's headline number rather than a widget floating beside it. */
-  .ver-progress { flex: 1 0 100%; min-width: 0; margin-top: 4px; }
-}
-@media (max-width: 560px) {
-  .ver-card-head { flex-wrap: wrap; }
-  .ver-card-head .badge { margin-top: 0; }
-  .ver-step { padding: 13px 0; }
-  .ver-code { flex-direction: column; align-items: stretch; }
-  /* flex-basis is the main axis, so the 150px from the row above would become a
-     150px tall input here. */
-  .ver-code-input { flex: none; max-width: none; text-align: left; letter-spacing: 0.3em; }
-  .ver-code .btn { width: 100%; }
-  .ver-step-body > form .btn,
-  .ver-form > .btn { width: 100%; }
-  .ver-empty .btn { width: 100%; }
+@media (max-width: 700px) {
+  /* Three steps side by side need about 200px each for a label that is not
+     wrapped to three lines, so the track becomes a row of dots with the labels
+     underneath. */
+  .ver-track { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; padding: 14px 12px; }
+  .ver-track-step { flex-direction: column; align-items: center; gap: 7px; text-align: center; }
+  .ver-track-step::after { left: 50%; right: auto; top: 17px; width: 100%; transform: translateX(-50%); }
+  .ver-track-label { font-size: 12px; }
+  .ver-state { gap: 12px; }
+  .ver-state-ico { width: 44px; height: 44px; font-size: 19px; border-radius: 15px; }
+  .ver-state-title { font-size: 16.5px; }
   .ver-hint { flex-direction: column; gap: 7px; }
   .ver-row { padding: 13px 0; }
   /* 16px keeps iOS Safari from zooming the moment the field is focused. */
   .ver-file, .ver-file::file-selector-button { font-size: 16px; }
+}
+@media (max-width: 480px) {
+  .ver-form .btn { width: 100%; }
+  .ver-track { padding: 13px 10px; }
+  .ver-track-label { font-size: 11.5px; }
 }

@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Frontend;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Frontend\Verification\PhoneVerificationRequest;
 use App\Http\Requests\Frontend\Verification\ProfileVerificationRequest;
+use App\Models\Verification;
 use App\Services\VerificationService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
@@ -21,11 +21,20 @@ class VerificationController extends Controller
         $user = $request->user();
 
         return view('frontend.verification.index', [
-            'statuses' => $this->verifications->statusFor($user),
-            // Newest first: the history reads as a log, and without the order the
-            // database was free to hand back the ten oldest rows.
-            'requests' => $user->verifications()->latest()->limit(10)->get(),
-            'pending' => $user->verifications()->where('status', 'pending')->exists(),
+            'identity' => $this->verifications->identityStatus($user),
+            // Document checks only. This page never offered a phone code, and a
+            // phone row here would be history the member cannot act on.
+            // Newest first: without the order the database was free to hand back
+            // the ten oldest rows.
+            'requests' => $user->verifications()
+                ->where('type', Verification::TYPE_PROFILE)
+                ->latest()
+                ->limit(10)
+                ->get(),
+            'pending' => $user->verifications()
+                ->where('type', Verification::TYPE_PROFILE)
+                ->where('status', Verification::STATUS_PENDING)
+                ->exists(),
         ]);
     }
 
@@ -41,24 +50,5 @@ class VerificationController extends Controller
         return redirect()
             ->route('verification.index')
             ->with('success', 'Your document was submitted for review. We usually respond within 24 hours.');
-    }
-
-    public function sendPhone(Request $request): RedirectResponse
-    {
-        $code = $this->verifications->sendPhoneCode($request->user());
-
-        return redirect()
-            ->route('verification.index')
-            ->with('success', 'A 6 digit code was sent to '.$request->user()->phone.'.')
-            ->with('debug_code', app()->isLocal() ? $code : null);
-    }
-
-    public function confirmPhone(PhoneVerificationRequest $request): RedirectResponse
-    {
-        $this->verifications->confirmPhoneCode($request->user(), $request->validated('code'));
-
-        return redirect()
-            ->route('verification.index')
-            ->with('success', 'Phone number verified. Thank you!');
     }
 }

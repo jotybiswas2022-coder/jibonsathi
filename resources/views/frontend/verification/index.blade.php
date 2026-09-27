@@ -17,9 +17,9 @@
     $verStage = $verState['stage'];
 
     $verSteps = [
-        ['label' => 'Upload your ID', 'icon' => 'fa-cloud-arrow-up'],
-        ['label' => 'Team review', 'icon' => 'fa-magnifying-glass'],
-        ['label' => 'Verified', 'icon' => 'fa-certificate'],
+        ['label' => 'Upload your ID', 'short' => 'Upload', 'icon' => 'fa-cloud-arrow-up'],
+        ['label' => 'Team review', 'short' => 'Review', 'icon' => 'fa-magnifying-glass'],
+        ['label' => 'Verified', 'short' => 'Verified', 'icon' => 'fa-certificate'],
     ];
 
     $verDocTypes = [
@@ -64,7 +64,13 @@
                         <i class="fas {{ $step['icon'] }}" aria-hidden="true"></i>
                     @endif
                 </span>
-                <span class="ver-track-label">{{ $step['label'] }}</span>
+                <span class="ver-track-label">
+                    {{-- "Upload your ID" is three words wide enough to wrap to two
+                         lines at 320px, which pushed this step's dot up out of
+                         line with the other two. --}}
+                    <span class="ver-label-long">{{ $step['label'] }}</span>
+                    <span class="ver-label-short">{{ $step['short'] }}</span>
+                </span>
             </li>
         @endforeach
     </ol>

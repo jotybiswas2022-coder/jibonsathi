@@ -3413,9 +3413,10 @@ body:has(.mobile-cta) { padding-bottom: calc(74px + env(safe-area-inset-bottom))
   background: #fff; border: 1px solid var(--border); border-radius: var(--radius-lg);
 }
 .ver-track-step { display: flex; align-items: center; gap: 10px; min-width: 0; position: relative; }
-/* The connector between two dots, drawn behind the labels. */
+/* The connector runs from this step's centre to the next one's. It deliberately
+   crosses the step boundary, and the dots sit above it. */
 .ver-track-step:not(:last-child)::after {
-  content: ''; position: absolute; left: calc(100% + 5px); right: -5px; top: 17px;
+  content: ''; position: absolute; left: 50%; right: -50%; top: 17px;
   height: 2px; background: var(--border); border-radius: 2px;
 }
 .ver-track-step.is-done:not(:last-child)::after { background: var(--success); }
@@ -3430,6 +3431,7 @@ body:has(.mobile-cta) { padding-bottom: calc(74px + env(safe-area-inset-bottom))
 .ver-track-label {
   font-size: 13.5px; font-weight: 600; color: var(--muted); min-width: 0;
 }
+.ver-label-short { display: none; }
 .ver-track-step.is-done .ver-track-dot { background: var(--success); border-color: var(--success); color: #fff; }
 .ver-track-step.is-done .ver-track-label { color: var(--text); }
 .ver-track-step.is-current .ver-track-dot {
@@ -3535,11 +3537,29 @@ body:has(.mobile-cta) { padding-bottom: calc(74px + env(safe-area-inset-bottom))
      underneath. */
   .ver-track { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; padding: 14px 12px; }
   .ver-track-step { flex-direction: column; align-items: center; gap: 7px; text-align: center; }
-  .ver-track-step::after { left: 50%; right: auto; top: 17px; width: 100%; transform: translateX(-50%); }
+  .ver-track-step::after { left: 50%; right: -50%; top: 17px; width: auto; transform: none; }
   .ver-track-label { font-size: 12px; }
   .ver-state { gap: 12px; }
   .ver-state-ico { width: 44px; height: 44px; font-size: 19px; border-radius: 15px; }
   .ver-state-title { font-size: 16.5px; }
+
+  /* Stacked, the three reasons to bother were 255px of copy between the form
+     and the log, which pushed the submit button a screen further down. On a
+     phone they read as three tiles instead, and the page subtitle already says
+     what verification is worth. */
+  .ver-perks { padding: 16px 18px; }
+  .ver-perks-title { margin-bottom: 11px; }
+  .ver-perks-list { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin-bottom: 13px; }
+  .ver-perks-list li {
+    flex-direction: column; align-items: center; text-align: center; gap: 7px;
+    padding: 12px 6px; border-bottom: 0;
+    background: var(--bg); border-radius: var(--radius-md);
+  }
+  .ver-perks-list li > i { width: 30px; height: 30px; font-size: 13px; }
+  .ver-perks-list li > div { gap: 0; }
+  .ver-perks-list strong { font-size: 12.5px; line-height: 1.35; }
+  .ver-perks-list span { display: none; }
+
   .ver-hint { flex-direction: column; gap: 7px; }
   .ver-row { padding: 13px 0; }
   /* 16px keeps iOS Safari from zooming the moment the field is focused. */
@@ -3548,5 +3568,8 @@ body:has(.mobile-cta) { padding-bottom: calc(74px + env(safe-area-inset-bottom))
 @media (max-width: 480px) {
   .ver-form .btn { width: 100%; }
   .ver-track { padding: 13px 10px; }
-  .ver-track-label { font-size: 11.5px; }
+  /* "Upload your ID" needs two lines at 320px, and the extra line pushed this
+     step's dot above the other two. */
+  .ver-label-long { display: none; }
+  .ver-label-short { display: inline; }
 }

@@ -338,6 +338,43 @@
         </div>
     </section>
 
+    {{-- ============================ HOW IT WORKS ============================ --}}
+    <section class="section" style="background:linear-gradient(180deg,#FFF3EC,#FFF9F5)">
+        <div class="container">
+            <div class="section-head reveal">
+                <span class="section-eyebrow"><i class="fas fa-compass"></i> How It Works</span>
+                <h2>Four Simple Steps To Forever</h2>
+                <p>Getting started with Jibon Sathi takes only a few minutes — the rest is up to chemistry.</p>
+            </div>
+            <div class="steps">
+                <div class="card step-card reveal">
+                    <span class="step-ico"><i class="fas fa-user-pen"></i></span>
+                    <div class="step-num">01</div>
+                    <h3>Create Your Profile</h3>
+                    <p>Tell us about yourself, your family, career and what matters most to you — all free.</p>
+                </div>
+                <div class="card step-card reveal" style="--reveal-delay:100ms">
+                    <span class="step-ico"><i class="fas fa-wand-magic-sparkles"></i></span>
+                    <div class="step-num">02</div>
+                    <h3>Discover Matches</h3>
+                    <p>Our smart matching engine finds compatible profiles based on your preferences.</p>
+                </div>
+                <div class="card step-card reveal" style="--reveal-delay:200ms">
+                    <span class="step-ico"><i class="fas fa-comments"></i></span>
+                    <div class="step-num">03</div>
+                    <h3>Connect</h3>
+                    <p>Send an interest, get matched, and start chatting securely once you both connect.</p>
+                </div>
+                <div class="card step-card reveal" style="--reveal-delay:300ms">
+                    <span class="step-ico"><i class="fas fa-heart"></i></span>
+                    <div class="step-num">04</div>
+                    <h3>Find Your Life Partner</h3>
+                    <p>Take it from a conversation to a lifelong bond — and join our success stories.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
     {{-- ========================== NEW MEMBERS (marquee) ========================== --}}
     @if ($newest->isNotEmpty())
         <section class="section-tight section-new">
@@ -392,45 +429,8 @@
         </section>
     @endif
 
-    {{-- ============================ HOW IT WORKS ============================ --}}
-    <section class="section" style="background:linear-gradient(180deg,#FFF3EC,#FFF9F5)">
-        <div class="container">
-            <div class="section-head reveal">
-                <span class="section-eyebrow"><i class="fas fa-compass"></i> How It Works</span>
-                <h2>Four Simple Steps To Forever</h2>
-                <p>Getting started with Jibon Sathi takes only a few minutes — the rest is up to chemistry.</p>
-            </div>
-            <div class="steps">
-                <div class="card step-card reveal">
-                    <span class="step-ico"><i class="fas fa-user-pen"></i></span>
-                    <div class="step-num">01</div>
-                    <h3>Create Your Profile</h3>
-                    <p>Tell us about yourself, your family, career and what matters most to you — all free.</p>
-                </div>
-                <div class="card step-card reveal" style="--reveal-delay:100ms">
-                    <span class="step-ico"><i class="fas fa-wand-magic-sparkles"></i></span>
-                    <div class="step-num">02</div>
-                    <h3>Discover Matches</h3>
-                    <p>Our smart matching engine finds compatible profiles based on your preferences.</p>
-                </div>
-                <div class="card step-card reveal" style="--reveal-delay:200ms">
-                    <span class="step-ico"><i class="fas fa-comments"></i></span>
-                    <div class="step-num">03</div>
-                    <h3>Connect</h3>
-                    <p>Send an interest, get matched, and start chatting securely once you both connect.</p>
-                </div>
-                <div class="card step-card reveal" style="--reveal-delay:300ms">
-                    <span class="step-ico"><i class="fas fa-heart"></i></span>
-                    <div class="step-num">04</div>
-                    <h3>Find Your Life Partner</h3>
-                    <p>Take it from a conversation to a lifelong bond — and join our success stories.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
     {{-- =========================== WHY CHOOSE JIBON SATHI =========================== --}}
-    <section class="section">
+    <section class="section mobile-hide">
         <div class="container">
             <div class="section-head reveal">
                 <span class="section-eyebrow"><i class="fas fa-heart"></i> Why Choose Jibon Sathi</span>

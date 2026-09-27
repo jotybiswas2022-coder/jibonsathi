@@ -17,6 +17,7 @@
     initTabs();
     initPasswordToggles();
     initPhotoThumbs();
+    initPhotoUploader();
     initChat();
     initDiscoverFilters();
     initFilterDrawer();
@@ -253,6 +254,129 @@
           e.preventDefault();
         }
       });
+    });
+  }
+
+  /* ------------------------- photo uploader preview ------------------------- */
+  /* A photo is the one upload a member gets wrong most often, and a wrong one
+     only comes back as a validation message after a full page reload. The rules
+     the server checks are mirrored here so the thumbnail, the file's size and
+     any problem show up before the form is ever submitted. */
+  const PHOTO_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
+  const PHOTO_MAX_KB = 4096;
+  const PHOTO_MIN_EDGE = 200;
+  const PHOTO_MAX_EDGE = 6000;
+
+  function initPhotoUploader() {
+    const drop = $('[data-photo-drop]');
+    if (!drop) return;
+
+    const input = $('input[type="file"]', drop.form || drop);
+    const preview = $('[data-photo-preview]', drop.form);
+    if (!input || !preview) return;
+
+    const thumb = $('[data-photo-img]', preview);
+    const name = $('[data-photo-name]', preview);
+    const note = $('[data-photo-note]', preview);
+    const clear = $('[data-photo-clear]', preview);
+    const submit = $('[data-photo-submit]', drop.form);
+    let objectUrl = null;
+
+    const showBytes = (bytes) => (bytes >= 1048576 ? (bytes / 1048576).toFixed(1) + ' MB' : Math.round(bytes / 1024) + ' KB');
+
+    const fail = (message) => {
+      note.textContent = message;
+      note.classList.remove('is-warn');
+      note.classList.add('is-bad');
+      if (submit) submit.disabled = true;
+    };
+
+    const reset = () => {
+      input.value = '';
+      preview.hidden = true;
+      note.classList.remove('is-warn', 'is-bad');
+      if (submit) submit.disabled = false;
+      if (objectUrl) {
+        URL.revokeObjectURL(objectUrl);
+        objectUrl = null;
+      }
+      thumb.removeAttribute('src');
+    };
+
+    const show = (file) => {
+      if (!file) return reset();
+
+      preview.hidden = false;
+      if (name) name.textContent = file.name;
+      if (submit) submit.disabled = false;
+
+      if (window.URL && URL.createObjectURL) {
+        if (objectUrl) URL.revokeObjectURL(objectUrl);
+        objectUrl = URL.createObjectURL(file);
+        thumb.src = objectUrl;
+      }
+
+      if (PHOTO_TYPES.indexOf(file.type) === -1) {
+        return fail('That file is not a JPG, PNG or WebP image.');
+      }
+      if (file.size > PHOTO_MAX_KB * 1024) {
+        return fail('That photo is ' + showBytes(file.size) + '. It has to be under 4 MB.');
+      }
+
+      note.classList.remove('is-bad');
+      note.classList.add('is-warn');
+      note.textContent = showBytes(file.size) + ' · checking dimensions…';
+
+      // The pixel rules need the image itself, so they land after it decodes.
+      const probe = new Image();
+      probe.onload = () => {
+        const w = probe.naturalWidth;
+        const h = probe.naturalHeight;
+        if (Math.min(w, h) < PHOTO_MIN_EDGE) {
+          return fail('That photo is only ' + w + '×' + h + '. It needs to be at least 200×200.');
+        }
+        if (Math.max(w, h) > PHOTO_MAX_EDGE) {
+          return fail('That photo is ' + w + '×' + h + '. The largest we accept is 6000×6000.');
+        }
+        note.classList.remove('is-warn');
+        note.textContent = showBytes(file.size) + ' · ' + w + ' × ' + h + ' · ready to upload';
+      };
+      probe.onerror = () => {
+        note.classList.remove('is-warn');
+        note.textContent = showBytes(file.size) + ' · ready to upload';
+      };
+      probe.src = objectUrl || probe.src;
+    };
+
+    input.addEventListener('change', () => show(input.files[0]));
+    if (clear) clear.addEventListener('click', reset);
+
+    // A drop on the label has to reach the input, which a browser will not do
+    // on its own once the input is visually hidden.
+    ['dragenter', 'dragover'].forEach((type) => {
+      drop.addEventListener(type, (e) => {
+        e.preventDefault();
+        drop.classList.add('is-over');
+      });
+    });
+    ['dragleave', 'dragend'].forEach((type) => {
+      drop.addEventListener(type, () => drop.classList.remove('is-over'));
+    });
+    drop.addEventListener('drop', (e) => {
+      e.preventDefault();
+      drop.classList.remove('is-over');
+      const file = e.dataTransfer && e.dataTransfer.files[0];
+      if (!file) return;
+      try {
+        input.files = e.dataTransfer.files;
+      } catch (err) {
+        // Older Safari refuses a dropped file, so the picker is the way in.
+        reset();
+        note.textContent = 'Your browser will not accept a dropped file. Choose one instead.';
+        note.classList.add('is-warn');
+        return;
+      }
+      show(file);
     });
   }
 

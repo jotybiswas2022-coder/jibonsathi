@@ -3578,3 +3578,203 @@ body:has(.mobile-cta) { padding-bottom: calc(74px + env(safe-area-inset-bottom))
   .ver-label-long { display: none; }
   .ver-label-short { display: inline; }
 }
+
+/* ==========================================================================
+   41. Photo manager
+   The one settings page whose markup had no styles at all: the gallery, its
+   tiles, the "Primary" tag and the action buttons were all undefined classes,
+   so eight photos rendered as full-size images in one column with the buttons
+   inline underneath them. It is built as a gallery and an upload target now,
+   with the reason a photo works standing beside it rather than under it.
+   ========================================================================== */
+
+/* --------------------------- 41.1 The gallery --------------------------- */
+/* Square tiles because a portrait crop is what a card on the profile and in
+   search can actually show. */
+.pm-grid {
+  list-style: none; margin: 0; padding: 0;
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(132px, 1fr)); gap: 12px;
+}
+.pm-tile {
+  position: relative; aspect-ratio: 1; overflow: hidden;
+  border-radius: var(--radius); border: 1px solid var(--border);
+  background: var(--bg); box-shadow: var(--shadow-xs);
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+.pm-tile:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
+.pm-tile img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+/* The primary photo gets a brand ring rather than a heavy border, so it reads
+   as chosen without making the tile look like it is selected in a form. */
+.pm-tile.is-primary {
+  border-color: transparent;
+  box-shadow: 0 0 0 3px var(--brand-100), var(--shadow-sm);
+}
+.pm-tile-badge {
+  position: absolute; top: 9px; left: 9px;
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 4px 9px; border-radius: 999px;
+  background: var(--brand); color: #fff;
+  font-size: 11px; font-weight: 700; line-height: 1.4;
+  box-shadow: var(--shadow-sm);
+}
+.pm-tile-badge i { font-size: 9.5px; }
+
+/* The scrim exists so the two buttons stay legible over a pale photo, which is
+   most of them. It carries the controls only: a date beside two 30px buttons
+   needs about 160px, and a tile is 160px wide at the widest. */
+.pm-tile-bar {
+  position: absolute; inset-inline: 0; bottom: 0;
+  display: flex; align-items: center; justify-content: flex-end; gap: 8px;
+  padding: 20px 9px 9px;
+  background: linear-gradient(180deg, rgba(31, 41, 55, 0) 0%, rgba(31, 41, 55, 0.76) 68%);
+  color: #fff;
+}
+.pm-tile-actions { display: flex; gap: 6px; }
+
+.pm-act {
+  width: 30px; height: 30px; flex: none;
+  display: inline-flex; align-items: center; justify-content: center;
+  border: 0; border-radius: 50%; cursor: pointer;
+  background: rgba(255, 255, 255, 0.92); color: var(--brand);
+  font-size: 12px; box-shadow: var(--shadow-sm);
+  transition: transform 0.16s ease, background 0.16s ease;
+}
+.pm-act:hover { transform: scale(1.09); background: #fff; }
+.pm-act:focus-visible { outline: 3px solid rgba(139, 30, 63, 0.42); outline-offset: 2px; }
+.pm-act-danger { color: var(--danger); }
+.pm-act-plain { background: #F3F4F6; color: var(--muted); box-shadow: none; }
+.pm-act-plain:hover { background: #F3F4F6; color: var(--text); }
+
+/* --------------------------- 41.2 Head and progress --------------------------- */
+.pm-counter {
+  display: flex; flex-direction: column; align-items: flex-end; gap: 2px;
+  padding: 10px 18px; background: #fff;
+  border: 1px solid var(--border); border-radius: var(--radius);
+  box-shadow: var(--shadow-xs);
+}
+.pm-counter-num { font-family: var(--font-display); font-size: 22px; font-weight: 800; color: var(--brand); line-height: 1.1; }
+.pm-counter-of { font-size: 14px; color: var(--muted-2); font-weight: 700; }
+.pm-counter-label { font-size: 11px; color: var(--muted); letter-spacing: 0.06em; text-transform: uppercase; font-weight: 700; }
+
+.pm-head { display: flex; align-items: baseline; justify-content: space-between; gap: 10px 16px; flex-wrap: wrap; }
+.pm-head .card-title { margin-bottom: 0; }
+.pm-head-note { font-size: 12.5px; color: var(--muted); }
+.pm-progress { margin: 14px 0 20px; }
+.pm-progress-fill {
+  display: block; height: 100%; border-radius: 999px;
+  background: linear-gradient(90deg, var(--brand), var(--brand-700));
+  transition: width 0.3s ease;
+}
+
+/* --------------------------- 41.3 Upload target --------------------------- */
+.pm-upload { margin-top: 22px; padding-top: 20px; border-top: 1px solid var(--border); }
+
+.pm-drop {
+  display: block; padding: 28px 20px; text-align: center; cursor: pointer;
+  background: var(--bg); border: 2px dashed var(--border-strong);
+  border-radius: var(--radius-lg);
+  transition: border-color 0.16s ease, background 0.16s ease;
+}
+.pm-drop:hover, .pm-drop.is-over { border-color: var(--brand); background: var(--brand-050); }
+.pm-drop:focus-within { outline: 3px solid rgba(139, 30, 63, 0.32); outline-offset: 2px; }
+
+/* The input is the label's click target, so it is kept in the accessibility
+   tree and off the page rather than display:none. */
+.pm-file { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+.pm-drop-ico {
+  width: 52px; height: 52px; margin: 0 auto 12px; border-radius: 17px;
+  display: flex; align-items: center; justify-content: center; font-size: 22px;
+  background: var(--brand-050); color: var(--brand);
+  border: 1px solid var(--border);
+}
+.pm-drop-title { display: block; font-family: var(--font-display); font-weight: 700; font-size: 15px; color: var(--text); }
+.pm-drop-sub { display: block; margin-top: 3px; font-size: 12.5px; color: var(--muted); }
+
+/* hidden has to beat display:flex, otherwise the preview is never hidden. */
+.pm-preview {
+  display: flex; align-items: center; gap: 13px; margin-top: 12px; padding: 12px;
+  background: #fff; border: 1px solid var(--border);
+  border-radius: var(--radius); box-shadow: var(--shadow-xs);
+}
+.pm-preview[hidden] { display: none; }
+.pm-preview-img { width: 54px; height: 54px; flex: none; border-radius: 12px; object-fit: cover; background: var(--bg); }
+.pm-preview-body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+.pm-preview-name { font-size: 14px; word-break: break-all; }
+.pm-preview-note { font-size: 12.5px; color: var(--muted); }
+.pm-preview-note.is-warn { color: var(--warning); font-weight: 600; }
+.pm-preview-note.is-bad { color: var(--danger); font-weight: 600; }
+
+.pm-primary-switch {
+  margin-top: 14px; padding: 13px 15px;
+  background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius);
+}
+.pm-upload-actions { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-top: 18px; }
+.pm-upload-note { display: inline-flex; align-items: center; gap: 7px; font-size: 12.5px; color: var(--muted); }
+.pm-upload-note i { color: var(--muted-2); }
+
+.pm-alert { margin: 14px 0 0; }
+.pm-full {
+  display: flex; align-items: center; gap: 10px; margin: 20px 0 0; padding: 14px 16px;
+  background: var(--brand-050); color: var(--brand-700);
+  border-radius: var(--radius); font-size: 13.5px; font-weight: 600;
+}
+
+/* --------------------------- 41.4 Why a photo works --------------------------- */
+.pm-layout {
+  display: grid; grid-template-columns: minmax(0, 1fr) 296px; gap: 18px; align-items: start;
+}
+.pm-tips { padding: 20px 22px; background: #fff; border: 1px solid var(--border); border-radius: var(--radius-lg); }
+.pm-tips-title {
+  display: flex; align-items: center; gap: 10px; margin: 0 0 14px;
+  font-family: var(--font-display); font-weight: 700; font-size: 15px;
+}
+.pm-tips-title i {
+  width: 32px; height: 32px; border-radius: 11px; flex: none;
+  display: flex; align-items: center; justify-content: center; font-size: 14px;
+  background: var(--brand-050); color: var(--brand);
+}
+.pm-tips-list { list-style: none; margin: 0; padding: 0; }
+.pm-tips-list li { display: flex; gap: 11px; padding: 11px 0; border-bottom: 1px dashed var(--border); }
+.pm-tips-list li:last-child { border-bottom: 0; padding-bottom: 0; }
+.pm-tips-list li > i {
+  width: 26px; height: 26px; border-radius: 9px; flex: none; margin-top: 1px;
+  display: flex; align-items: center; justify-content: center; font-size: 12px;
+  background: var(--success-bg); color: var(--success);
+}
+.pm-tips-list li.is-no > i { background: var(--danger-bg); color: var(--danger); }
+.pm-tips-list li > div { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.pm-tips-list strong { font-size: 13.5px; }
+.pm-tips-list span { font-size: 12.5px; color: var(--muted); line-height: 1.5; }
+.pm-tips-foot {
+  margin: 14px 0 0; padding: 12px 14px;
+  background: var(--bg); border-radius: var(--radius-sm);
+  font-size: 12.5px; color: var(--muted); line-height: 1.55;
+}
+.pm-card .empty-state { padding: 40px 24px; }
+
+/* --------------------------- 41.5 Phone --------------------------- */
+@media (max-width: 1000px) {
+  /* The tips column needs about 300px, and under the member sidebar the
+     gallery is the wider of the two, so the reasons move below it. */
+  .pm-layout { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 700px) {
+  /* Three columns of 132px need 420px of card. Two keeps a tile big enough to
+     recognise a face in, and leaves the buttons a comfortable target. */
+  .pm-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  .pm-act { width: 34px; height: 34px; font-size: 13px; }
+  .pm-tile-badge { font-size: 10.5px; padding: 3px 8px; }
+  .pm-drop { padding: 22px 16px; }
+  .pm-tips { padding: 17px 18px; }
+  .pm-tips-list li { padding: 10px 0; }
+}
+@media (max-width: 560px) {
+  /* The count sits beside the title once the head wraps, so it turns on its
+     side rather than stacking into a second line of its own. */
+  .pm-counter { flex-direction: row; align-items: center; gap: 8px; padding: 8px 14px; }
+  .pm-counter-num { font-size: 18px; }
+  .pm-upload-actions { flex-direction: column; align-items: stretch; gap: 10px; }
+  .pm-upload-actions .btn { width: 100%; }
+  .pm-upload-note { justify-content: center; }
+}

@@ -353,7 +353,7 @@
                 <div class="marquee-track">
                     @foreach ($newest as $member)
                         <a href="{{ route('profiles.show', $member) }}" class="member-pill">
-                            <span class="avatar avatar-md"><img src="{{ $member->photoUrl() }}" alt="{{ $member->name }}" loading="lazy"></span>
+                            <span class="avatar avatar-md"><img src="{{ $member->photoUrl() }}" alt="{{ $member->name }}" decoding="async"></span>
                             <span class="mp-info">
                                 <span class="mp-name">
                                     {{ $member->name }}
@@ -369,7 +369,7 @@
                 <div class="marquee-track" aria-hidden="true">
                     @foreach ($newest as $member)
                         <a href="{{ route('profiles.show', $member) }}" class="member-pill" tabindex="-1">
-                            <span class="avatar avatar-md"><img src="{{ $member->photoUrl() }}" alt="" loading="lazy"></span>
+                            <span class="avatar avatar-md"><img src="{{ $member->photoUrl() }}" alt="" decoding="async"></span>
                             <span class="mp-info">
                                 <span class="mp-name">
                                     {{ $member->name }}

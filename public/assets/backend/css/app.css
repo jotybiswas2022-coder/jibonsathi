@@ -1274,3 +1274,141 @@ table.st-table { min-width: 0; }
 .dash-cols { display: grid; grid-template-columns: 1.4fr 1fr 1fr; gap: 20px; }
 @media (max-width: 1080px) { .dash-cols { grid-template-columns: 1fr 1fr; } }
 @media (max-width: 760px) { .dash-cols { grid-template-columns: 1fr; } }
+
+/* ============================== member profile ============================== */
+/* The admin view of one member. Built on the shared cards, tiles and badges,
+   but the hero band, the two column body and the fact lists need rules of their
+   own. The page used to hold "320px 1fr" and "repeat(4,1fr)" inline, which
+   never collapsed, so on a phone the identity rail ate the screen and the
+   tables ran off the edge. Everything below is declared so it can stack. */
+
+.ud-hero {
+  position: relative; overflow: hidden; margin-bottom: 20px; padding: 24px;
+  border-radius: var(--radius-lg); border: 1px solid var(--brand-800);
+  background:
+    radial-gradient(130% 150% at 100% 0%, rgba(212,175,55,.16), transparent 55%),
+    linear-gradient(135deg, var(--brand-800), var(--brand));
+  color: #fff; box-shadow: var(--shadow-md);
+}
+.ud-hero::after {
+  content: ''; position: absolute; right: -70px; top: -90px; width: 260px; height: 260px;
+  border-radius: 50%; background: radial-gradient(circle, rgba(212,175,55,.36), transparent 68%);
+  pointer-events: none;
+}
+.ud-hero-inner {
+  position: relative; display: grid; gap: 22px; align-items: center;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+}
+.ud-avatar {
+  width: 104px; height: 104px; border-radius: 28px; overflow: hidden; flex: none; position: relative;
+  background: rgba(255,255,255,.14); border: 3px solid rgba(255,255,255,.34);
+  display: flex; align-items: center; justify-content: center;
+}
+.ud-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.ud-avatar .initials { font-family: var(--font-display); font-weight: 800; font-size: 36px; color: #fff; }
+.ud-hero-body { min-width: 0; }
+.ud-hero-name { margin: 0 0 4px; font-size: 24px; line-height: 1.2; color: #fff; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.ud-hero-sub { margin: 0 0 12px; font-size: 12.5px; color: rgba(255,255,255,.74); overflow-wrap: anywhere; }
+.ud-hero-sub .dot { opacity: .45; margin: 0 7px; }
+.ud-hero-badges { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 13px; }
+.ud-hero-meta { display: flex; flex-wrap: wrap; gap: 8px 20px; margin: 0; padding: 0; list-style: none; }
+.ud-hero-meta li { display: flex; align-items: center; gap: 8px; font-size: 12.5px; color: rgba(255,255,255,.82); min-width: 0; }
+.ud-hero-meta li i { color: var(--accent); font-size: 12px; width: 14px; text-align: center; flex: none; }
+.ud-hero-meta li a { color: inherit; }
+
+.ud-hero-side { display: flex; flex-direction: column; gap: 15px; min-width: 224px; }
+.ud-meter-head { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; margin-bottom: 6px; font-size: 12px; color: rgba(255,255,255,.78); }
+.ud-meter-head strong { font-family: var(--font-display); font-weight: 800; font-size: 19px; color: #fff; }
+.ud-meter-bar { height: 9px; border-radius: 999px; background: rgba(255,255,255,.2); overflow: hidden; }
+.ud-meter-bar > span { display: block; height: 100%; border-radius: 999px; background: linear-gradient(90deg, var(--accent), #F1D989); }
+.ud-hero-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.ud-hero-actions .btn { flex: 1 1 auto; }
+/* The shared outline/ghost buttons are drawn for a light card; on the brand
+   band they need to invert so they stay readable. */
+.ud-hero .btn-outline { background: rgba(255,255,255,.13); border-color: rgba(255,255,255,.34); color: #fff; }
+.ud-hero .btn-outline:hover { background: #fff; border-color: #fff; color: var(--brand); }
+.ud-hero .btn-ghost { color: rgba(255,255,255,.82); }
+.ud-hero .btn-ghost:hover { background: rgba(255,255,255,.14); color: #fff; }
+
+/* Four activity tiles under the hero. Reuses .stat-tile, only the grid is
+   declared here so it can drop to two columns and then to compact tiles. */
+.ud-stats { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+
+.ud-grid { display: grid; gap: 20px; grid-template-columns: minmax(0, 1fr) 336px; align-items: start; }
+.ud-main, .ud-side { display: flex; flex-direction: column; gap: 20px; min-width: 0; }
+
+/* Section cards in the main column: an icon chip, a title, and an edit link
+   that jumps to that block on the long details form. */
+.ud-card-head { display: flex; align-items: center; gap: 12px; padding: 15px 22px; border-bottom: 1px solid var(--border); }
+.ud-card-ico { width: 36px; height: 36px; border-radius: 11px; flex: none; display: flex; align-items: center; justify-content: center; font-size: 15px; }
+.ud-card-head h3 { margin: 0; font-size: 15px; }
+.ud-card-head .ud-edit { margin-left: auto; flex: none; }
+.ud-card-body { padding: 18px 22px 20px; }
+.ud-card-body > :last-child { margin-bottom: 0; }
+.ud-about { margin: 0; font-size: 13.5px; line-height: 1.65; color: var(--text); white-space: pre-wrap; overflow-wrap: anywhere; }
+
+/* Photo grid. The primary shot is ringed in the accent gold so the profile
+   picture is obvious without a caption competing for space. */
+.ud-gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(84px, 1fr)); gap: 10px; }
+.ud-shot { position: relative; border-radius: 12px; overflow: hidden; border: 1px solid var(--border); background: #F9FAFB; }
+.ud-shot img { display: block; width: 100%; aspect-ratio: 1; object-fit: cover; }
+.ud-shot.is-primary { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(212,175,55,.35); }
+.ud-shot-tag {
+  position: absolute; top: 6px; right: 6px; padding: 2px 7px; border-radius: 999px;
+  background: var(--accent); color: var(--brand-800); font-size: 9.5px; font-weight: 800;
+  letter-spacing: .04em; text-transform: uppercase;
+}
+
+/* Moderation is the point of this page, so its buttons get a full width stack
+   in the rail rather than a row of small controls. */
+.ud-mod .btn { width: 100%; justify-content: center; }
+.ud-mod form + form, .ud-mod .btn + form, .ud-mod form + .btn { margin-top: 8px; }
+.ud-mod-note { margin: 0 0 13px; font-size: 12px; color: var(--muted); }
+
+@media (max-width: 1100px) {
+  .ud-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 1080px) {
+  /* The rail moves under the profile instead of squeezing the facts. At 1024
+     the main column was down to ~360px, too narrow to read a bio in. It moves
+     above the profile too: moderation, photos and reports are what an admin
+     acts on, and they should not sit below eight hundred pixels of bio. */
+  .ud-grid { grid-template-columns: minmax(0, 1fr); }
+  .ud-side { order: -1; }
+}
+
+@media (max-width: 900px) {
+  /* One column: the avatar, identity and actions stack, centred, and the meter
+     and actions span the full width under them. */
+  .ud-hero-inner { grid-template-columns: minmax(0, 1fr); justify-items: center; text-align: center; }
+  .ud-hero-body { width: 100%; }
+  .ud-hero-name, .ud-hero-badges, .ud-hero-meta { justify-content: center; }
+  .ud-hero-side { width: 100%; min-width: 0; }
+  .ud-meter-head { justify-content: center; }
+  .ud-hero-actions .btn { flex: 1 1 45%; }
+}
+
+@media (max-width: 700px) {
+  .ud-card-body { padding: 16px; }
+  .ud-card-head { padding: 14px 16px; }
+}
+
+@media (max-width: 560px) {
+  .ud-hero { padding: 20px 16px; }
+  .ud-avatar { width: 88px; height: 88px; border-radius: 24px; }
+  .ud-avatar .initials { font-size: 30px; }
+  .ud-hero-name { font-size: 20px; }
+  .ud-hero-side { gap: 12px; }
+  .ud-gallery { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+  /* Two compact tiles per row, the same shape the listing pages use, so the
+     numbers stay readable instead of four 90px columns. */
+  .ud-stats { gap: 10px; }
+  .ud-stats .stat-tile {
+    display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center;
+    column-gap: 11px; padding: 12px 13px;
+  }
+  .ud-stats .stat-tile .st-ico { grid-row: 1 / span 2; width: 34px; height: 34px; font-size: 14px; border-radius: 11px; margin-bottom: 0; }
+  .ud-stats .stat-tile .st-num { font-size: 20px; line-height: 1.15; }
+  .ud-stats .stat-tile .st-lbl { font-size: 11.5px; line-height: 1.3; }
+}

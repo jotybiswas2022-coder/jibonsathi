@@ -340,7 +340,7 @@
 
     {{-- ========================== NEW MEMBERS (marquee) ========================== --}}
     @if ($newest->isNotEmpty())
-        <section class="section-tight section-new mobile-hide">
+        <section class="section-tight section-new">
             <div class="container">
                 <div class="section-head reveal">
                     <span class="section-eyebrow"><i class="fas fa-user-plus"></i> Just Joined</span>

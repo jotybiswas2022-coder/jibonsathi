@@ -1694,6 +1694,46 @@ input[type="date"] { min-height: 48px; }
   .footer-links a { padding-block: 6px; }
 }
 
+/* ------------------- 28.9 Hero artwork off on phones ------------------- */
+/* The hero picture is decoration only: the mandala, the arch photo, the two orbs,
+   the petals and the "Rishta ready" / "Verified" / "92% Match" chips. Once the
+   grid stacks, it sat as a 340px block between the buttons and the stats, so a
+   phone visitor scrolled past nothing but artwork. The copy, CTAs, trust row and
+   stats carry the section on their own; the artwork returns from 768px up. */
+@media (max-width: 767px) {
+  .hero-visual { display: none; }
+  /* The panel normally rides 34px up over the hero's bottom edge, which read as
+     deliberate overlap on desktop. With the artwork gone that pull left it
+     pressed against the stat cards, so on a phone it drops back into normal
+     flow and gets a small gap instead. */
+  .search-panel { margin-top: 22px; }
+}
+
+/* ------------------- 28.10 New members: swipe row on phones ------------------- */
+/* The section is wanted on a phone, but a marquee that never stops moving is
+   hard to aim a thumb at, so the auto-scroll row becomes a scroll-snap strip the
+   visitor drags. The second, aria-hidden track only exists to make the desktop
+   loop seamless, so it is dropped here to keep the strip free of duplicates.
+   The edge fade is a fixed mask on the marquee box, which would dim whichever
+   pill happened to sit at either end mid-scroll, so the strip relies on its
+   own gutter instead. */
+@media (max-width: 640px) {
+  .marquee {
+    display: block;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x proximity;
+    scrollbar-width: none;
+    padding: 12px 20px 14px;
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+  .marquee::-webkit-scrollbar { display: none; }
+  .marquee-track { animation: none; }
+  .marquee-track[aria-hidden="true"] { display: none; }
+  .marquee .member-pill { scroll-snap-align: start; }
+}
+
 /* ==========================================================================
    29. Navbar v2
    Fix: the guest "Login / Create Profile" pair was rendered twice on desktop —

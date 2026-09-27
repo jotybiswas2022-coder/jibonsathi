@@ -5,6 +5,9 @@
 @section('content')
     @php($heroUsers = $featured->take(4)->values())
     @php($heroMain = $heroUsers->first())
+    {{-- Every number in the hero counts approved accounts, and the avatars above
+         it are drawn from the same approved set, so the two can never disagree. --}}
+    @php($heroApproved = max($stats['approved'], $heroUsers->count()))
 
     {{-- ============================= HERO ============================= --}}
     <section class="hero">
@@ -33,14 +36,18 @@
                                 @foreach ($heroUsers as $member)
                                     <span class="avatar avatar-sm"><img src="{{ $member->photoUrl() }}" alt="{{ $member->name }}"></span>
                                 @endforeach
-                                <span class="hs-avatars-more">+{{ number_format(max($stats['members'] - $heroUsers->count(), 0)) }}</span>
+                                {{-- A "+0" badge reads like a bug, and it only turns
+                                     up when every approved profile is already on screen. --}}
+                                @if ($heroApproved > $heroUsers->count())
+                                    <span class="hs-avatars-more">+{{ number_format($heroApproved - $heroUsers->count()) }}</span>
+                                @endif
                             </div>
                             <div class="hs-copy">
                                 <span class="hs-stars">
                                     <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
                                     <span>4.9/5</span>
                                 </span>
-                                <span class="hs-label">Loved by <strong>{{ number_format($stats['members']) }}+</strong> members</span>
+                                <span class="hs-label">Loved by <strong>{{ number_format($heroApproved) }}+</strong> members</span>
                             </div>
                         </div>
                     @endif
@@ -53,12 +60,8 @@
 
                     <div class="hero-stat">
                         <div>
-                            <div class="num" data-counter="{{ $stats['members'] }}" data-suffix="+">{{ number_format($stats['members']) }}+</div>
-                            <div class="lbl">Members</div>
-                        </div>
-                        <div>
-                            <div class="num" data-counter="{{ $stats['verified'] }}">{{ number_format($stats['verified']) }}</div>
-                            <div class="lbl">Verified Profiles</div>
+                            <div class="num" data-counter="{{ $heroApproved }}" data-suffix="+">{{ number_format($heroApproved) }}+</div>
+                            <div class="lbl">Approved Members</div>
                         </div>
                         <div>
                             <div class="num" data-counter="{{ $stats['stories'] }}">{{ number_format($stats['stories']) }}</div>

@@ -43,6 +43,14 @@ class HomeController extends Controller
                 ->get(),
             'stats' => [
                 'members' => \App\Models\User::query()->active()->count(),
+                // The hero advertises accounts the moderation team has let
+                // through, so this count is the same set as the profiles in its
+                // avatar row. 'members' stays the registered total, which is
+                // what the stats band further down is labelled with.
+                'approved' => \App\Models\Profile::query()
+                    ->where('profile_status', \App\Models\Profile::STATUS_APPROVED)
+                    ->whereHas('user', fn ($q) => $q->active())
+                    ->count(),
                 'verified' => \App\Models\Profile::query()->where('verification_status', 'verified')->count(),
                 'stories' => SuccessStory::query()->published()->count(),
                 'divisions' => \App\Models\Profile::query()->whereNotNull('division')->distinct('division')->count('division'),

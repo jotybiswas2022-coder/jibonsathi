@@ -281,6 +281,11 @@
         const show = input.type === 'password';
         input.type = show ? 'text' : 'password';
         btn.querySelector('i').className = show ? 'fas fa-eye-slash' : 'fas fa-eye';
+        // A screen reader hears the button's name, so it has to change with the state.
+        const nextLabel = show ? 'Hide password' : 'Show password';
+        btn.setAttribute('aria-label', nextLabel);
+        btn.setAttribute('aria-pressed', show ? 'true' : 'false');
+        if (show) input.focus();
       });
     });
   }

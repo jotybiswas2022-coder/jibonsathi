@@ -2,6 +2,7 @@
 @php($siteName = $settings['site_name'] ?? 'Jibon Sathi')
 @php($membersCount = \App\Models\User::query()->active()->count())
 @php($storiesCount = \App\Models\SuccessStory::query()->published()->count())
+@php($story = \App\Models\SuccessStory::query()->published()->orderByDesc('is_featured')->orderBy('sort_order')->orderByDesc('id')->first())
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -57,6 +58,24 @@
                         <div class="lbl">Free Forever</div>
                     </div>
                 </div>
+
+                {{-- A real couple from the site's own stories, so the panel earns the
+                     space it takes instead of sitting as a flat gradient. --}}
+                @if ($story && filled($story->story))
+                    <figure class="auth-story">
+                        <i class="fas fa-quote-left" aria-hidden="true"></i>
+                        <blockquote>{{ \Illuminate\Support\Str::limit($story->story, 168) }}</blockquote>
+                        <figcaption>
+                            <span class="names">{{ $story->coupleLabel() }}</span>
+                            @if ($story->location)
+                                <span class="meta"><i class="fas fa-location-dot"></i> {{ $story->location }}</span>
+                            @endif
+                            @if ($story->married_on)
+                                <span class="meta"><i class="fas fa-ring"></i> Married {{ $story->married_on->format('M Y') }}</span>
+                            @endif
+                        </figcaption>
+                    </figure>
+                @endif
             </div>
         </div>
 

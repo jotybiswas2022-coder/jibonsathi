@@ -3104,3 +3104,96 @@ body:has(.mobile-cta) { padding-bottom: calc(74px + env(safe-area-inset-bottom))
   .bio-list dd { font-size: 13.5px; }
   .mini-list li > strong { text-align: left; }
 }
+
+/* ==========================================================================
+   37. Sign in page
+   Measured on the old page: at 390x844 the first input sat at y=458, past the
+   halfway mark, and the document was 896px tall, so "Create your free profile"
+   was cut off. The trust row above the fields was the bulk of that, and it was
+   reassurance for a decision the visitor had not made yet.
+   ========================================================================== */
+
+/* --------------------------- 37.1 Form-level error --------------------------- */
+/* A rejected sign-in and a rate-limited form are both raised as a validation
+   error on "email", so a wrong password used to look like a typo in a field. */
+.auth-alert { align-items: flex-start; margin-bottom: 20px; }
+.auth-alert i { font-size: 17px; }
+
+/* --------------------------- 37.2 Label row, hint, link --------------------------- */
+.field-label-row { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+.field-link { font-size: 12.5px; font-weight: 600; color: var(--brand); white-space: nowrap; }
+.field-link:hover { text-decoration: underline; }
+.field-hint { font-size: 12px; color: var(--muted-2); }
+
+/* --------------------------- 37.3 Password toggle --------------------------- */
+/* Was positioned with four inline styles and had no accessible state. */
+.pass-toggle {
+  position: absolute; right: 6px; top: 50%; transform: translateY(-50%);
+  display: grid; place-items: center; width: 36px; height: 36px;
+  border: 0; border-radius: 10px; background: transparent;
+  color: var(--muted-2); font-size: 14px; cursor: pointer;
+  transition: color 0.15s ease, background 0.15s ease;
+}
+.pass-toggle:hover { color: var(--brand); background: var(--brand-050); }
+.pass-toggle:focus-visible { outline: 2px solid var(--brand); outline-offset: 1px; }
+.input-icon-wrap:has(.pass-toggle) .input { padding-right: 46px; }
+
+/* --------------------------- 37.4 Submit & reassurance --------------------------- */
+.auth-remember { margin: 0 0 18px; font-size: 13.5px; }
+.auth-submit { letter-spacing: 0.01em; }
+.auth-reassure {
+  list-style: none; display: flex; flex-wrap: wrap; gap: 8px 16px;
+  margin: 18px 0 0; padding-top: 15px; border-top: 1px dashed var(--border);
+}
+.auth-reassure li { display: inline-flex; align-items: center; gap: 7px; font-size: 12.5px; font-weight: 600; color: var(--muted); }
+.auth-reassure i { color: var(--success); font-size: 12px; }
+
+/* Register block: the divider, the question and the button read as one unit. */
+.auth-alt {
+  display: flex; flex-direction: column; align-items: center; gap: 11px;
+  margin-top: 26px; padding-top: 22px; border-top: 1px solid var(--border);
+}
+.auth-alt > span { font-size: 13.5px; color: var(--muted); }
+
+/* --------------------------- 37.5 Brand panel story --------------------------- */
+/* The panel held a headline, a paragraph and three numbers in 900px of gradient.
+   A real couple from the site's own stories gives the space something to say. */
+.auth-story {
+  position: relative; margin: 28px 0 0; padding: 18px 20px;
+  border-radius: 18px; background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+}
+.auth-story > i { position: absolute; top: 13px; right: 16px; font-size: 22px; color: rgba(212, 175, 55, 0.45); }
+.auth-story blockquote {
+  margin: 0; font-size: 13.5px; line-height: 1.7;
+  color: rgba(255, 255, 255, 0.86); font-style: italic;
+}
+.auth-story figcaption {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 6px 14px;
+  margin-top: 13px; padding-top: 12px; border-top: 1px solid rgba(255, 255, 255, 0.14);
+}
+.auth-story .names { font-weight: 700; font-size: 13.5px; color: #fff; }
+.auth-story .meta { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: rgba(255, 255, 255, 0.62); }
+
+/* A short laptop window cannot hold the story under the stats, and the phone
+   hero is a single row, so the story has no place on either. */
+@media (max-height: 800px) and (min-width: 901px) {
+  .auth-story { display: none; }
+}
+@media (max-width: 900px) {
+  .auth-story { display: none; }
+}
+
+/* --------------------------- 37.6 Phone: the hero becomes one row --------------------------- */
+/* 35.3 already shrank the panel, but it kept the long headline and paragraph,
+   which is what pushed the first input down the screen. */
+@media (max-width: 640px) {
+  .auth-brand-panel {
+    flex-direction: row; align-items: center; justify-content: space-between;
+    gap: 14px; padding: 16px 18px;
+  }
+  .auth-brand-panel .brand { margin-bottom: 0; white-space: nowrap; }
+  .auth-brand-panel h2, .auth-brand-panel p { display: none; }
+  .auth-brand-eyebrow { margin-bottom: 0; }
+  .auth-form-panel { padding-top: 22px; }
+}

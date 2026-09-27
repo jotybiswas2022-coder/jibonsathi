@@ -3831,19 +3831,22 @@ body:has(.mobile-cta) { padding-bottom: calc(74px + env(safe-area-inset-bottom))
 .reg-head h1 { font-size: clamp(21px, 3vw, 26px); margin-bottom: 6px; }
 .reg-head p { margin: 0; font-size: 14px; }
 
-/* Photo picker. A dashed panel marks it as the optional extra it is. */
+/* Photo picker. A tinted panel frames the shared dropzone, so the one optional
+   extra on the step reads as a section rather than another input. */
 .reg-photo {
-  border: 1.5px dashed var(--border-strong); border-radius: var(--radius-lg);
-  background: var(--bg); padding: 18px; margin-bottom: 24px;
+  border: 1px solid var(--border); border-radius: var(--radius-lg);
+  background: var(--brand-050); padding: 18px; margin-bottom: 24px;
 }
-.reg-photo-head { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+.reg-photo-head { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
 .reg-photo-ico {
   width: 44px; height: 44px; border-radius: 14px; flex: none; display: flex; align-items: center;
   justify-content: center; font-size: 18px; background: var(--brand-100); color: var(--brand);
 }
 .reg-photo-head h2 { margin: 0; font-size: 15px; }
 .reg-photo-head p { margin: 1px 0 0; font-size: 12px; color: var(--muted); }
-.reg-photo .input[type="file"] { background: #fff; cursor: pointer; }
+.reg-photo-note { margin: 12px 0 0; }
+.reg-photo .pm-drop { background: #fff; }
+.reg-photo .pm-drop:hover, .reg-photo .pm-drop.is-over { background: var(--brand-050); }
 
 /* The country chooses which of the two location controls is shown. `hidden` is
    asserted here because a stray `display` on a wrapper would otherwise win. */

@@ -75,18 +75,45 @@
                     @csrf
                     @method('PUT')
 
-                    {{-- Photo --}}
+                    {{-- Photo. Uses the shared uploader: dropping or picking a file
+                         previews it and checks the size and dimensions before the
+                         step is saved. --}}
                     <div class="reg-photo">
                         <div class="reg-photo-head">
                             <span class="reg-photo-ico"><i class="fas fa-camera"></i></span>
                             <div>
                                 <h2>Profile photo <span class="text-muted" style="font-weight:400">· optional</span></h2>
-                                <p>A clear, recent photo helps your profile stand out. JPG, PNG or WebP — max 4MB.</p>
+                                <p>A clear, recent photo helps your profile stand out.</p>
                             </div>
                         </div>
-                        <input type="file" name="photo" id="photo" class="input @error('photo') error @enderror"
-                               accept="image/jpeg,image/png,image/webp">
-                        @error('photo') <span class="form-error">{{ $message }}</span> @enderror
+
+                        <label class="pm-drop" data-photo-drop>
+                            <input type="file" name="photo" id="photo" class="pm-file"
+                                   accept="image/jpeg,image/png,image/webp">
+                            <span class="pm-drop-ico"><i class="fas fa-cloud-arrow-up"></i></span>
+                            <span class="pm-drop-title">Choose a photo to upload</span>
+                            <span class="pm-drop-sub">or drag and drop one here</span>
+                        </label>
+
+                        <div class="pm-preview" data-photo-preview hidden>
+                            <img src="" alt="" class="pm-preview-img" data-photo-img>
+                            <div class="pm-preview-body">
+                                <strong class="pm-preview-name" data-photo-name></strong>
+                                <span class="pm-preview-note" data-photo-note></span>
+                            </div>
+                            <button type="button" class="pm-act pm-act-plain" data-photo-clear
+                                    title="Choose a different photo" aria-label="Choose a different photo">
+                                <i class="fas fa-xmark"></i>
+                            </button>
+                        </div>
+
+                        <p class="pm-upload-note reg-photo-note">
+                            <i class="fas fa-image"></i> JPG, PNG or WebP &middot; up to 4 MB &middot; at least 200&times;200
+                        </p>
+
+                        @error('photo')
+                            <div class="alert alert-danger pm-alert"><i class="fas fa-circle-exclamation"></i><span>{{ $message }}</span></div>
+                        @enderror
                     </div>
 
                     {{-- Identity --}}

@@ -3201,6 +3201,9 @@ body:has(.mobile-cta) { padding-bottom: calc(74px + env(safe-area-inset-bottom))
 /* --------------------------- 38.1 Panel frame --------------------------- */
 .auth-brand-panel {
   display: grid; grid-template-rows: auto 1fr; align-content: start;
+  /* The original panel was a flex column with justify-content: flex-end, which
+     still applied here and pushed the whole grid track to the right edge. */
+  justify-content: start;
   padding: 52px 56px 48px;
 }
 /* The old rules pinned the content to the bottom with an inline margin. */
@@ -3209,7 +3212,9 @@ body:has(.mobile-cta) { padding-bottom: calc(74px + env(safe-area-inset-bottom))
   align-self: center; display: grid; gap: 34px;
   grid-template-columns: minmax(0, 1.05fr) minmax(300px, 0.95fr);
   gap: 44px; align-items: center;
-  max-width: 860px; margin: 0 auto; width: 100%;
+  /* Left-aligned on purpose: centring this block put the headline ~300px in on a
+     wide screen, out of line with the logo sitting above it. */
+  max-width: 1120px; width: 100%;
 }
 .auth-panel-lead { min-width: 0; }
 .auth-panel-aside { min-width: 0; display: grid; gap: 18px; }
@@ -3342,4 +3347,52 @@ body:has(.mobile-cta) { padding-bottom: calc(74px + env(safe-area-inset-bottom))
   .auth-brand-panel .brand { margin-bottom: 0; white-space: nowrap; }
   .auth-brand-panel h2 { display: none; }
   .auth-brand-eyebrow { margin-bottom: 0; }
+}
+
+/* --------------------------- 38.6 Narrower than the eyebrow --------------------------- */
+/* At 320px the logo's own width leaves about 140px, and the eyebrow pill is
+   wider than that: the panel clipped it and the form underneath started at
+   x=191. Stacking the two costs one line of hero height. */
+@media (max-width: 420px) {
+  .auth-brand-panel { flex-direction: column; align-items: flex-start; gap: 10px; padding: 14px 16px 15px; }
+  .auth-brand-eyebrow { font-size: 10.5px; letter-spacing: 0.1em; }
+}
+
+/* ==========================================================================
+   39. Forms on a phone
+   The auth pages and the six registration steps are the only forms long enough
+   to scroll. Three things break at 390px and below: the wizard's action row
+   keeps its desktop flex line and pushes the primary button off-screen, the
+   small controls drop under a comfortable touch target, and the last row of
+   the footer ends up underneath the fixed tab bar.
+   ========================================================================== */
+
+/* --------------------------- 39.1 Action row, stacked --------------------------- */
+/* Back and Save & Continue share one line on a desktop, but a 215px primary
+   button plus its neighbour needs more than a 390px card's inner width. */
+.form-actions {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  margin-top: 26px;
+}
+
+@media (max-width: 560px) {
+  .form-actions { flex-direction: column; align-items: stretch; gap: 10px; margin-top: 22px; }
+  .form-actions > .btn { width: 100%; }
+}
+
+/* --------------------------- 39.2 Touch targets --------------------------- */
+@media (max-width: 640px) {
+  /* 18px and 36px controls are accurate to the eye and impossible to hit with a
+     thumb, so the label or the wrapper carries the 44px target instead. */
+  .auth-card :is(.checkbox, .radio) { min-height: 44px; }
+  .auth-card .field-link { min-height: 40px; display: inline-flex; align-items: center; }
+  .auth-card .pass-toggle { width: 44px; height: 44px; }
+  .chip { min-height: 44px; }
+}
+
+/* --------------------------- 39.3 Footer behind the tab bar --------------------------- */
+/* The mobile tab bar is fixed to the bottom of the window, so at the end of a
+   long scroll the footer's last row sat exactly underneath it. */
+@media (max-width: 991px) {
+  body:has(.bottom-nav) .footer-bottom { padding-bottom: calc(22px + 65px + env(safe-area-inset-bottom)); }
 }

@@ -83,7 +83,7 @@
                 <span class="text-tiny text-muted" style="text-align:right" data-count-target></span>
             </div>
 
-            <div class="flex justify-between mt-5" style="gap:12px">
+            <div class="form-actions">
                 <a href="{{ route('register.step', ['step' => 3]) }}" class="btn btn-ghost"><i class="fas fa-arrow-left"></i> Back</a>
                 <button type="submit" class="btn btn-primary btn-lg">Save & Continue <i class="fas fa-arrow-right"></i></button>
             </div>

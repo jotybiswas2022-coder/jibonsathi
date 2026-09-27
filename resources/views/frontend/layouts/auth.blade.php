@@ -78,7 +78,7 @@
                             </span>
                         </div>
                         <div class="stat">
-                            <span class="ico"><i class="fas fa-badge-check"></i></span>
+                            <span class="ico"><i class="fas fa-user-check"></i></span>
                             <span class="body">
                                 <span class="num">{{ number_format($verifiedCount) }}</span>
                                 <span class="lbl">Verified profiles</span>
@@ -110,7 +110,7 @@
                                     <span class="names">{{ $story->coupleLabel() }}</span>
                                     <span class="meta">
                                         @if ($story->location)<i class="fas fa-location-dot"></i> {{ $story->location }}@endif
-                                        @if ($story->married_on)<i class="fas fa-calendar-heart"></i> {{ $story->married_on->format('M Y') }}@endif
+                                        @if ($story->married_on)<i class="fas fa-calendar-day"></i> {{ $story->married_on->format('M Y') }}@endif
                                     </span>
                                 </figcaption>
                             </span>

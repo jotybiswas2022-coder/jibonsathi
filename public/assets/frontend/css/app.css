@@ -3184,16 +3184,162 @@ body:has(.mobile-cta) { padding-bottom: calc(74px + env(safe-area-inset-bottom))
   .auth-story { display: none; }
 }
 
-/* --------------------------- 37.6 Phone: the hero becomes one row --------------------------- */
-/* 35.3 already shrank the panel, but it kept the long headline and paragraph,
-   which is what pushed the first input down the screen. */
+/* --------------------------- 37.6 Phone --------------------------- */
+@media (max-width: 640px) {
+  .auth-form-panel { padding-top: 22px; }
+}
+
+/* ==========================================================================
+   38. The auth brand panel
+   The headline, a paragraph, three bare numbers and a "100%" sat in a 980px
+   rectangle: the text hugged the left edge, the numbers were a row of plain
+   type with no hierarchy, and the whole right half was empty gradient. The
+   panel is now composed as a two-column layout on wide screens, with real
+   numbers, a real couple, and layers that carry the empty space.
+   ========================================================================== */
+
+/* --------------------------- 38.1 Panel frame --------------------------- */
+.auth-brand-panel {
+  display: grid; grid-template-rows: auto 1fr; align-content: start;
+  padding: 52px 56px 48px;
+}
+/* The old rules pinned the content to the bottom with an inline margin. */
+.auth-brand-panel > .brand { align-self: start; }
+.auth-panel-body {
+  align-self: center; display: grid; gap: 34px;
+  grid-template-columns: minmax(0, 1.05fr) minmax(300px, 0.95fr);
+  gap: 44px; align-items: center;
+  max-width: 860px; margin: 0 auto; width: 100%;
+}
+.auth-panel-lead { min-width: 0; }
+.auth-panel-aside { min-width: 0; display: grid; gap: 18px; }
+
+/* Decoration. Three layers instead of one flat gradient: a warm glow, a pair
+   of outlined rings for depth, and a dot field that gives the right side
+   something to sit against. */
+.auth-panel-glow {
+  position: absolute; top: -22%; right: -14%;
+  width: 720px; height: 720px; border-radius: 50%; pointer-events: none;
+  background: radial-gradient(circle at 50% 50%, rgba(212, 175, 55, 0.26), rgba(212, 175, 55, 0) 62%);
+}
+.auth-panel-rings {
+  position: absolute; right: -170px; bottom: -190px;
+  width: 620px; height: 620px; border-radius: 50%; pointer-events: none;
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  box-shadow: inset 0 0 0 78px rgba(255, 255, 255, 0.035), inset 0 0 0 156px rgba(255, 255, 255, 0.025);
+}
+.auth-panel-dots {
+  position: absolute; left: 0; top: 0; right: 0; bottom: 0; pointer-events: none;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.13) 1px, transparent 1px);
+  background-size: 26px 26px;
+  -webkit-mask-image: radial-gradient(620px 520px at 82% 34%, #000, transparent 72%);
+  mask-image: radial-gradient(620px 520px at 82% 34%, #000, transparent 72%);
+}
+
+/* --------------------------- 38.2 Headline block --------------------------- */
+.auth-brand-eyebrow {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 6px 14px; border-radius: 999px; margin-bottom: 18px;
+  background: rgba(212, 175, 55, 0.14);
+  border: 1px solid rgba(212, 175, 55, 0.34);
+  color: #F2D48A; font-size: 11.5px; font-weight: 700;
+  letter-spacing: 0.12em; text-transform: uppercase;
+}
+.auth-brand-eyebrow i { font-size: 10px; }
+.auth-brand-panel h2 {
+  max-width: 15ch; margin-bottom: 14px; line-height: 1.14;
+  letter-spacing: -0.022em; color: #fff;
+}
+/* Warm white towards the baseline. Guarded, because color: transparent on an
+   unsupported background-clip leaves the headline invisible. */
+@supports ((background-clip: text) or (-webkit-background-clip: text)) {
+  .auth-brand-panel h2 {
+    background: linear-gradient(180deg, #FFFFFF 26%, #FBE7C4);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+}
+.auth-brand-panel p { max-width: 42ch; font-size: 15px; line-height: 1.68; color: rgba(255, 255, 255, 0.72); }
+
+.auth-panel-live {
+  display: inline-flex; align-items: center; gap: 9px; margin-top: 20px;
+  padding: 7px 14px 7px 12px; border-radius: 999px;
+  background: rgba(34, 197, 94, 0.13); border: 1px solid rgba(34, 197, 94, 0.32);
+  color: #BBF7D0; font-size: 12.5px; font-weight: 600;
+}
+.auth-panel-live i { font-size: 8px; color: #4ADE80; }
+
+.auth-panel-trust { list-style: none; display: flex; flex-direction: column; gap: 9px; margin: 24px 0 0; padding: 0; }
+.auth-panel-trust li { display: flex; align-items: center; gap: 10px; font-size: 13px; font-weight: 500; color: rgba(255, 255, 255, 0.74); }
+.auth-panel-trust i { width: 22px; height: 22px; flex: none; display: grid; place-items: center; border-radius: 7px; font-size: 10.5px; background: rgba(255, 255, 255, 0.10); color: #F2D48A; }
+
+/* --------------------------- 38.3 Stats as tiles --------------------------- */
+.auth-brand-stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin-top: 0; }
+.auth-brand-stats .stat {
+  display: flex; flex-direction: column; gap: 12px; padding: 16px 14px;
+  border-radius: 16px; background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.11);
+}
+.auth-brand-stats .ico {
+  width: 34px; height: 34px; border-radius: 11px; display: grid; place-items: center;
+  background: rgba(212, 175, 55, 0.18); color: #F2D48A; font-size: 14px;
+}
+.auth-brand-stats .body { display: flex; flex-direction: column; min-width: 0; }
+.auth-brand-stats .num { font-family: var(--font-display); font-weight: 800; font-size: 25px; line-height: 1.1; letter-spacing: -0.02em; color: #fff; }
+.auth-brand-stats .lbl { font-size: 11.5px; line-height: 1.35; color: rgba(255, 255, 255, 0.58); margin-top: 2px; }
+
+/* --------------------------- 38.4 Story card --------------------------- */
+.auth-story {
+  display: flex; gap: 14px; align-items: flex-start; margin: 0; padding: 16px;
+  border-radius: 18px; background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+.auth-story .pic {
+  flex: none; width: 52px; height: 52px; border-radius: 15px; overflow: hidden;
+  display: grid; place-items: center;
+  background: linear-gradient(135deg, rgba(212, 175, 55, 0.30), rgba(255, 255, 255, 0.12));
+  color: #fff; font-family: var(--font-display); font-weight: 700; font-size: 17px;
+}
+.auth-story .pic img { width: 100%; height: 100%; object-fit: cover; }
+.auth-story .body { display: block; min-width: 0; }
+.auth-story blockquote {
+  margin: 0; font-size: 12.5px; line-height: 1.62;
+  color: rgba(255, 255, 255, 0.80); font-style: italic;
+}
+.auth-story figcaption { display: flex; flex-direction: column; gap: 3px; margin-top: 9px; }
+.auth-story .names { font-weight: 700; font-size: 13px; color: #fff; }
+.auth-story .meta { display: flex; flex-wrap: wrap; gap: 4px 12px; font-size: 11.5px; color: rgba(255, 255, 255, 0.55); }
+.auth-story .meta i { font-size: 10px; margin-right: 3px; opacity: 0.8; }
+
+/* --------------------------- 38.5 Narrow panel, one column --------------------------- */
+/* Between the phone breakpoint and 1180px the panel has one column's worth of
+   width, so the two-column body would squeeze both halves. */
+@media (max-width: 1180px) {
+  .auth-panel-body { grid-template-columns: minmax(0, 1fr); gap: 26px; max-width: 560px; }
+  .auth-brand-panel h2 { max-width: 20ch; }
+  .auth-brand-stats { max-width: 460px; }
+  /* One column makes the panel taller than a 768px window, and the same
+     reassurances already sit under the submit button on the form side. */
+  .auth-panel-trust { display: none; }
+}
+@media (max-width: 900px) {
+  /* The phone hero is one row of logo and tagline; none of this belongs there. */
+  .auth-panel-glow, .auth-panel-rings, .auth-panel-dots { display: none; }
+  .auth-brand-stats, .auth-story, .auth-panel-live, .auth-panel-trust, .auth-brand-panel p { display: none; }
+  /* An empty second column would still pay the 34px row gap, which is a third of
+     the panel's height here. */
+  .auth-panel-body { display: block; }
+  .auth-panel-aside { display: none; }
+}
+
+/* On a phone the whole panel is one row again: the grid frame from 38.1 would
+   otherwise stack the brand above the body and put the first input back at the
+   halfway mark of the screen. */
 @media (max-width: 640px) {
   .auth-brand-panel {
-    flex-direction: row; align-items: center; justify-content: space-between;
+    display: flex; flex-direction: row; align-items: center; justify-content: space-between;
     gap: 14px; padding: 16px 18px;
   }
   .auth-brand-panel .brand { margin-bottom: 0; white-space: nowrap; }
-  .auth-brand-panel h2, .auth-brand-panel p { display: none; }
+  .auth-brand-panel h2 { display: none; }
   .auth-brand-eyebrow { margin-bottom: 0; }
-  .auth-form-panel { padding-top: 22px; }
 }

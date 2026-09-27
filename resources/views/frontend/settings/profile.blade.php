@@ -75,24 +75,37 @@
                 </div>
             </div>
 
+            @php
+                $divisionCountry = old('country', $user->profile?->country);
+                $divisionUsesList = \App\Support\Reference::usesDivisions($divisionCountry);
+                $divisionValue = old('division', $user->profile?->division);
+            @endphp
             <div class="field-group">
                 <div class="field">
                     <label for="country">Country</label>
-                    <select name="country" id="country" class="input">
+                    <select name="country" id="country" class="input" data-country-select>
                         <option value="">Select</option>
                         @foreach (\App\Support\Reference::countries() as $key => $label)
-                            <option value="{{ $key }}" @selected(old('country', $user->profile?->country) === $key)>{{ $label }}</option>
+                            <option value="{{ $key }}" @selected($divisionCountry === $key)>{{ $label }}</option>
                         @endforeach
                     </select>
                 </div>
+                {{-- Bangladesh picks a division; anywhere else the member types a
+                     state or province. The script (app.js) swaps the two. --}}
                 <div class="field">
-                    <label for="division">Division</label>
-                    <select name="division" id="division" class="input">
+                    <label for="division" data-division-label>{{ $divisionUsesList ? 'Division' : 'State / Province / Region' }}</label>
+                    <select name="division" id="division" class="input" data-division-select @if (! $divisionUsesList) hidden disabled @endif>
                         <option value="">Select</option>
                         @foreach (\App\Support\Reference::divisionNames() as $division)
-                            <option value="{{ $division }}" @selected(old('division', $user->profile?->division) === $division)>{{ $division }}</option>
+                            <option value="{{ $division }}" @selected($divisionValue === $division)>{{ $division }}</option>
                         @endforeach
                     </select>
+                    <input type="text" name="division" id="division_state" class="input" maxlength="80"
+                           placeholder="State, province or region" value="{{ $divisionValue }}" data-division-text
+                           @if ($divisionUsesList) hidden disabled @endif>
+                    <span class="field-hint" data-division-hint @if ($divisionUsesList) hidden @endif>
+                        State, province or region outside Bangladesh.
+                    </span>
                 </div>
             </div>
 

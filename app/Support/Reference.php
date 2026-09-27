@@ -198,6 +198,19 @@ class Reference
         return array_keys(self::divisions());
     }
 
+    /**
+     * Whether a country answers its location question with a division.
+     *
+     * Only Bangladesh has the eight divisions the rest of the app is built
+     * around. Everywhere else the same answer is a free-text state, province or
+     * region, so the country chooses which control the member is shown instead
+     * of forcing a Bangladeshi division onto a member living in Dubai.
+     */
+    public static function usesDivisions(?string $country): bool
+    {
+        return $country === 'bangladesh';
+    }
+
     /** @return list<string> */
     public static function allDistricts(): array
     {

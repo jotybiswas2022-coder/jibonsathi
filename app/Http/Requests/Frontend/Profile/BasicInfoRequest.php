@@ -18,13 +18,13 @@ class BasicInfoRequest extends FormRequest
      */
     public function rules(): array
     {
-        return self::stepRules();
+        return self::stepRules($this->input('country'));
     }
 
     /**
      * @return array<string, mixed>
      */
-    public static function stepRules(): array
+    public static function stepRules(?string $country = null): array
     {
         return [
             'gender' => ['required', Rule::in(array_keys(Reference::genders()))],
@@ -34,7 +34,12 @@ class BasicInfoRequest extends FormRequest
             'religion' => ['required', Rule::in(array_keys(Reference::religions()))],
             'mother_tongue' => ['nullable', 'string', 'max:60'],
             'country' => ['required', Rule::in(array_keys(Reference::countries()))],
-            'division' => ['required', Rule::in(Reference::divisionNames())],
+            // Bangladesh picks one of the eight divisions from a list. Everywhere
+            // else the same answer is a state or province the member types, so it
+            // is only checked for being present and short.
+            'division' => Reference::usesDivisions($country)
+                ? ['required', Rule::in(Reference::divisionNames())]
+                : ['required', 'string', 'max:80'],
             'district' => ['required', 'string', 'max:80'],
             'city' => ['nullable', 'string', 'max:120'],
             'headline' => ['nullable', 'string', 'max:160'],
@@ -55,6 +60,11 @@ class BasicInfoRequest extends FormRequest
 
     protected function prepareForValidation(): void
     {
+        // Only Bangladesh has districts that can be traced back to a division.
+        if (! Reference::usesDivisions($this->input('country'))) {
+            return;
+        }
+
         if ($this->filled('district') && ! $this->filled('division')) {
             $division = collect(Reference::divisions())
                 ->filter(fn (array $districts) => in_array($this->district, $districts, true))

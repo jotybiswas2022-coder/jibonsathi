@@ -26,7 +26,7 @@ class ProfileStepRequest extends FormRequest
     public function rules(): array
     {
         return match ($this->step()) {
-            2 => BasicInfoRequest::stepRules(),
+            2 => BasicInfoRequest::stepRules($this->input('country')),
             3 => CareerRequest::stepRules(),
             4 => FamilyRequest::stepRules(),
             5 => LifestyleRequest::stepRules(),
@@ -49,7 +49,10 @@ class ProfileStepRequest extends FormRequest
 
     protected function prepareForValidation(): void
     {
-        if ($this->step() === 2 && $this->filled('district') && ! $this->filled('division')) {
+        if ($this->step() === 2
+            && \App\Support\Reference::usesDivisions($this->input('country'))
+            && $this->filled('district')
+            && ! $this->filled('division')) {
             $division = collect(\App\Support\Reference::divisions())
                 ->filter(fn (array $districts) => in_array($this->district, $districts, true))
                 ->keys()

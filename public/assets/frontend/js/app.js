@@ -25,6 +25,7 @@
     initNotifBell();
     initAutoClose();
     initCharacterCounters();
+    initCountryDivision();
     initScrollReveal();
     initNavbarScroll();
     initCounters();
@@ -615,6 +616,44 @@
       const btn = $('.alert-close', el);
       if (btn) btn.addEventListener('click', () => el.remove());
       setTimeout(() => el.remove(), 6000);
+    });
+  }
+
+  /* --------------------------- country → division ---------------------------- */
+  /* Bangladesh answers its location question with one of eight divisions;
+     everywhere else the same answer is a free-text state or province. The server
+     renders both controls, and this swaps which one is visible and submitted.
+     With JavaScript off the division select stays as it was rendered. */
+  function initCountryDivision() {
+    const countries = $$('[data-country-select]');
+    if (!countries.length) return;
+
+    const sync = (select) => {
+      const scope = select.closest('form') || document;
+      const isBangladesh = select.value === 'bangladesh';
+
+      $$('[data-division-select]', scope).forEach((el) => {
+        el.hidden = !isBangladesh;
+        el.disabled = !isBangladesh;
+        el.required = isBangladesh;
+      });
+
+      $$('[data-division-text]', scope).forEach((el) => {
+        el.hidden = isBangladesh;
+        el.disabled = isBangladesh;
+        el.required = !isBangladesh;
+      });
+
+      const label = isBangladesh ? 'Division' : 'State / Province / Region';
+      $$('[data-division-label]', scope).forEach((el) => { el.textContent = label; });
+
+      // The hint only makes sense once the select is gone.
+      $$('[data-division-hint]', scope).forEach((el) => { el.hidden = isBangladesh; });
+    };
+
+    countries.forEach((select) => {
+      sync(select);
+      select.addEventListener('change', () => sync(select));
     });
   }
 

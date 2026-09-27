@@ -362,12 +362,24 @@
                         <div class="ud-gallery">
                             @foreach ($user->photos as $photo)
                                 <div class="ud-shot {{ $photo->is_primary ? 'is-primary' : '' }}">
-                                    <a href="{{ $photo->url() }}" target="_blank" rel="noopener">
-                                        <img src="{{ $photo->url() }}" alt="">
+                                    <a href="{{ $photo->url() }}" target="_blank" rel="noopener" aria-label="Open photo {{ $loop->iteration }} of {{ $user->name }} at full size">
+                                        <img src="{{ $photo->url() }}" alt="" loading="lazy">
                                     </a>
                                     @if ($photo->is_primary)
                                         <span class="ud-shot-tag">Primary</span>
                                     @endif
+                                    {{-- The button sits top-left because the gold Primary
+                                         tag owns the top-right corner. --}}
+                                    <form method="POST" action="{{ route('backend.users.photos.destroy', [$user, $photo]) }}"
+                                          data-confirm-title="Remove this photo?"
+                                          data-confirm="{{ $photo->is_primary ? 'It disappears from the member\'s gallery for good. Since it is the primary photo, the next one takes over as their profile picture.' : 'It disappears from the member\'s gallery for good.' }}"
+                                          data-confirm-ok="Remove photo" data-confirm-icon="error"
+                                          data-confirm-color="#DC2626">
+                                        @csrf @method('DELETE')
+                                        <button class="ud-shot-x" aria-label="Remove photo {{ $loop->iteration }} from the gallery">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </form>
                                 </div>
                             @endforeach
                         </div>

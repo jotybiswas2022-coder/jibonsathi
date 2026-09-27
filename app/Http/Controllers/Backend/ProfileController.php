@@ -13,7 +13,6 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 
 class ProfileController extends Controller
@@ -103,18 +102,16 @@ class ProfileController extends Controller
     /**
      * Remove an inappropriate photo (and its file) from a member gallery.
      */
-    public function destroyPhoto(ProfilePhoto $photo): RedirectResponse
+    public function destroyPhoto(Profile $profile, ProfilePhoto $photo): RedirectResponse
     {
         Gate::authorize('manage', User::class);
 
-        Storage::disk('public')->delete($photo->path);
+        /* The route carries the profile, so the photo has to belong to it, and a
+           profile whose member is gone has nothing to fall back on. */
+        $owner = $profile->user;
+        abort_if($owner === null || $photo->user_id !== $owner->id, 404);
 
-        $owner = $photo->user;
-        $photo->delete();
-
-        if ($owner) {
-            $this->profiles->recalculateCompletion($owner);
-        }
+        $this->profiles->deletePhoto($owner, $photo);
 
         return back()->with('success', 'Photo removed from the member gallery.');
     }

@@ -36,6 +36,7 @@ Route::prefix('admin')->name('backend.')->middleware(['web', 'admin'])->group(fu
         Route::post('/{user}/suspend', [UserController::class, 'suspend'])->name('suspend');
         Route::post('/{user}/activate', [UserController::class, 'activate'])->name('activate');
         Route::delete('/{user}', [UserController::class, 'destroy'])->name('destroy');
+        Route::delete('/{user}/photos/{photo}', [UserController::class, 'destroyPhoto'])->name('photos.destroy');
     });
 
     Route::prefix('profiles')->name('profiles.')->group(function () {

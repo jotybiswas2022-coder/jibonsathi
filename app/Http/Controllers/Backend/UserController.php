@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Backend;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Backend\MemberDetailsRequest;
 use App\Http\Requests\Backend\UserUpdateRequest;
+use App\Models\ProfilePhoto;
 use App\Models\User;
 use App\Notifications\AccountStatusNotification;
 use App\Services\ProfileService;
@@ -168,6 +169,26 @@ class UserController extends Controller
         return redirect()
             ->route('backend.users.show', $user)
             ->with('success', "{$user->name}'s details have been updated.");
+    }
+
+    /**
+     * Remove one photo from a member's gallery, from the member profile page.
+     *
+     * The gallery work lives in the service because deleting the primary photo
+     * has to promote the next one and repoint the avatar; doing it here would
+     * leave a deleted file behind as the member's profile picture.
+     */
+    public function destroyPhoto(User $user, ProfilePhoto $photo): RedirectResponse
+    {
+        Gate::authorize('manage', User::class);
+
+        /* The route is member scoped, so a photo id belonging to somebody else
+           must not be removable through this page. */
+        abort_unless($photo->user_id === $user->id, 404);
+
+        $this->profiles->deletePhoto($user, $photo);
+
+        return back()->with('success', 'Photo removed from the member gallery.');
     }
 
     /**

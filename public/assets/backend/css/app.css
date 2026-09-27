@@ -1360,6 +1360,21 @@ table.st-table { min-width: 0; }
   background: var(--accent); color: var(--brand-800); font-size: 9.5px; font-weight: 800;
   letter-spacing: .04em; text-transform: uppercase;
 }
+/* Removing a photo is a routine admin action here rather than the point of the
+   page, so the button stays out of the way until the tile is hovered. Touch has
+   no hover to wait for, so there it is always shown. The gold Primary tag owns
+   the top-right corner, which is why this one sits top-left. */
+.ud-shot-x {
+  position: absolute; top: 6px; left: 6px; z-index: 2;
+  width: 26px; height: 26px; border: 0; border-radius: 8px; cursor: pointer;
+  background: rgba(17,24,39,.55); color: #fff; font-size: 11px;
+  display: inline-flex; align-items: center; justify-content: center;
+  opacity: 0; transition: opacity .16s ease, background .16s ease;
+}
+.ud-shot:hover .ud-shot-x, .ud-shot:focus-within .ud-shot-x, .ud-shot-x:focus-visible { opacity: 1; }
+.ud-shot-x:hover { background: var(--danger); }
+.ud-shot-x:focus-visible { outline: 3px solid rgba(139,30,63,.3); outline-offset: 2px; }
+@media (hover: none) { .ud-shot-x { opacity: 1; } }
 
 /* Moderation is the point of this page, so its buttons get a full width stack
    in the rail rather than a row of small controls. */

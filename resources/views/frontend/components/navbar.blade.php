@@ -29,6 +29,17 @@
                 <i class="fas fa-briefcase"></i> Success Stories
             </a>
 
+            {{-- Admin shortcut. The backend has its own layout and sidebar, so this
+                 just hands over to /admin; the route group behind it is guarded by
+                 the admin middleware anyway. --}}
+            @auth
+                @if (auth()->user()->is_admin)
+                    <a href="{{ route('backend.dashboard.index') }}" class="nav-link nav-link-admin {{ request()->routeIs('backend.*') ? 'active' : '' }}">
+                        <i class="fas fa-shield-halved"></i> Admin Panel
+                    </a>
+                @endif
+            @endauth
+
             {{-- Guests: shown only inside the opened mobile menu. The desktop CTAs
                  live in .nav-actions — keeping a single copy of each. --}}
             @guest

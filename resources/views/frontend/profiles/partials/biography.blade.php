@@ -8,16 +8,13 @@
 @endphp
 
 <div class="bio-grid">
-    {{-- Basic information --}}
+    {{-- Basic information. Age, height and the top-level location moved to the
+         "At a glance" strip on the profile page, so they are not repeated here. --}}
     <div class="card card-pad bio-card">
         <h3 class="card-title"><i class="fas fa-id-card"></i> Basic Information</h3>
         <dl class="bio-list">
             <div><dt>Full Name</dt><dd>{{ $profile->name }}</dd></div>
-            <div><dt>Age</dt><dd>{{ $p?->ageGroup() ?? '—' }}</dd></div>
-            <div><dt>Height</dt><dd>{{ $p?->heightLabel() ?? '—' }}</dd></div>
             <div><dt>Gender</dt><dd>{{ $profile->genderLabel() }}</dd></div>
-            <div><dt>Marital Status</dt><dd>{{ $R::label($p?->marital_status, 'marital_status') }}</dd></div>
-            <div><dt>Religion</dt><dd>{{ $R::label($p?->religion, 'religion') }}</dd></div>
             <div><dt>Mother Tongue</dt><dd>{{ $p?->mother_tongue ?: '—' }}</dd></div>
             <div><dt>Country</dt><dd>{{ $R::label($p?->country, 'country') }}</dd></div>
             <div><dt>Division</dt><dd>{{ $p?->division ?: '—' }}</dd></div>

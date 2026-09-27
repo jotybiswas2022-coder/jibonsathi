@@ -126,9 +126,22 @@ class Profile extends Model
 
     public function locationLabel(): string
     {
-        $parts = array_filter([$this->city, $this->district, $this->division, $this->country]);
+        // Signups often repeat a name — a city and its district both "Panchagarh"
+        // read as "Panchagarh, Panchagarh, Rangpur" in every card and search
+        // result. Each level is kept once, in the usual city → district →
+        // division order. The country stays in the profile's Basic Information,
+        // where it is a labelled row rather than part of a running label.
+        $parts = [];
 
-        return $parts ? implode(', ', array_slice($parts, 0, 3)) : 'Location not set';
+        foreach ([$this->city, $this->district, $this->division] as $part) {
+            $part = trim((string) $part);
+
+            if ($part !== '' && ! in_array($part, $parts, true)) {
+                $parts[] = $part;
+            }
+        }
+
+        return $parts ? implode(', ', $parts) : 'Location not set';
     }
 
     public function isApproved(): bool

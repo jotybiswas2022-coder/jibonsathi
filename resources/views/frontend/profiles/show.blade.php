@@ -12,10 +12,12 @@
     $myInterest = $interest && $viewer && $interest->sender_id === $viewer->id;
     $theirInterest = $interest && $viewer && $interest->receiver_id === $viewer->id;
     $eduLabel = \App\Support\Reference::educationLevels()[$profile->education?->level] ?? null;
+    $R = \App\Support\Reference::class;
 @endphp
 
 {{-- Profile header band: the identity, at a glance, before the two columns. --}}
 <div class="profile-band">
+    <span class="pb-glow" aria-hidden="true"></span>
     <div class="container">
         <nav class="crumbs" aria-label="Breadcrumb">
             <a href="{{ route('discover.index') }}"><i class="fas fa-arrow-left"></i> Back to Discover</a>
@@ -23,7 +25,7 @@
 
         <div class="profile-band-inner">
             <div class="pb-id">
-                <span class="avatar pb-avatar">
+                <span class="avatar pb-avatar {{ $profile->isVerifiedProfile() ? 'is-verified' : '' }}">
                     @if ($isAvatar)
                         <span class="initials">{{ $profile->initials }}</span>
                     @else
@@ -44,17 +46,20 @@
                         <p class="pb-headline">{{ $p->headline }}</p>
                     @endif
                     @if ($p)
-                        <div class="pb-meta">
+                        <div class="pb-chips">
                             <span><i class="fas fa-cake-candles"></i> {{ $p->ageGroup() }}</span>
                             <span><i class="fas fa-ruler-vertical"></i> {{ $p->heightLabel() }}</span>
                             <span><i class="fas fa-location-dot"></i> {{ $p->locationLabel() }}</span>
-                            <span><i class="fas fa-eye"></i> {{ $viewCount }} profile views</span>
+                            <span><i class="fas fa-eye"></i> {{ $viewCount }} views</span>
                         </div>
                     @endif
                 </div>
             </div>
-            <div class="pb-side text-tiny text-muted">
-                {{ $profile->isOnline() ? 'Online now' : 'Last seen '.$profile->lastSeenLabel() }}
+            <div class="pb-side">
+                <span class="pb-presence {{ $profile->isOnline() ? 'is-online' : '' }}">
+                    <i class="fas {{ $profile->isOnline() ? 'fa-circle' : 'fa-clock' }}"></i>
+                    {{ $profile->isOnline() ? 'Online now' : 'Last seen '.$profile->lastSeenLabel() }}
+                </span>
             </div>
         </div>
     </div>
@@ -75,6 +80,9 @@
                         <img src="{{ $photoSrc }}" alt="{{ $profile->name }}" data-photo-main>
                     @endif
 
+                    @if ($photos->count() > 1)
+                        <span class="gallery-count"><i class="fas fa-images"></i> {{ $photos->count() }} photos</span>
+                    @endif
                 </div>
 
                 @if ($photos->count() > 1)
@@ -83,18 +91,70 @@
                             <button type="button" class="ph-thumb {{ $photo->is_primary ? 'active' : '' }}"
                                     data-full="{{ \App\Support\Media::url($photo->path, $profile->name) }}"
                                     data-caption="{{ $profile->name }}">
-                                <img src="{{ \App\Support\Media::url($photo->path, $profile->name) }}" alt="Photo">
+                                <img src="{{ \App\Support\Media::url($photo->path, $profile->name) }}" alt="Photo of {{ $profile->name }}">
                             </button>
                         @endforeach
                     </div>
                 @endif
             </div>
 
+            {{-- At a glance: the facts a family reads first, pulled out of the long
+                 reference lists further down so nothing important is buried. --}}
+            @if ($p)
+                <div class="card card-pad fact-strip">
+                    <h3 class="card-title"><i class="fas fa-bolt"></i> At a glance</h3>
+                    <div class="fact-grid">
+                        <div class="fact">
+                            <span class="fact-ico"><i class="fas fa-cake-candles"></i></span>
+                            <div class="fact-body">
+                                <span class="fact-lbl">Age</span>
+                                <strong class="fact-val">{{ $p->ageGroup() ?: '—' }}</strong>
+                            </div>
+                        </div>
+                        <div class="fact">
+                            <span class="fact-ico"><i class="fas fa-ruler-vertical"></i></span>
+                            <div class="fact-body">
+                                <span class="fact-lbl">Height</span>
+                                <strong class="fact-val">{{ $p->heightLabel() ?: '—' }}</strong>
+                            </div>
+                        </div>
+                        <div class="fact">
+                            <span class="fact-ico"><i class="fas fa-location-dot"></i></span>
+                            <div class="fact-body">
+                                <span class="fact-lbl">Lives in</span>
+                                <strong class="fact-val">{{ $p->locationLabel() ?: '—' }}</strong>
+                            </div>
+                        </div>
+                        <div class="fact">
+                            <span class="fact-ico"><i class="fas fa-graduation-cap"></i></span>
+                            <div class="fact-body">
+                                <span class="fact-lbl">Education</span>
+                                <strong class="fact-val">{{ $eduLabel ?: '—' }}</strong>
+                            </div>
+                        </div>
+                        <div class="fact">
+                            <span class="fact-ico"><i class="fas fa-mosque"></i></span>
+                            <div class="fact-body">
+                                <span class="fact-lbl">Religion</span>
+                                <strong class="fact-val">{{ $R::label($p->religion, 'religion') }}</strong>
+                            </div>
+                        </div>
+                        <div class="fact">
+                            <span class="fact-ico"><i class="fas fa-ring"></i></span>
+                            <div class="fact-body">
+                                <span class="fact-lbl">Marital status</span>
+                                <strong class="fact-val">{{ $R::label($p->marital_status, 'marital_status') }}</strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            @endif
+
             {{-- About --}}
             @if ($p?->about_me)
-                <div class="card card-pad">
+                <div class="card card-pad about-card">
                     <h3 class="card-title"><i class="fas fa-quote-left"></i> About {{ \Illuminate\Support\Str::before($profile->name, ' ') }}</h3>
-                    <p style="white-space:pre-wrap;color:var(--muted);line-height:1.75">{{ $p->about_me }}</p>
+                    <p class="about-text">{{ $p->about_me }}</p>
                 </div>
             @endif
 
@@ -122,6 +182,8 @@
             {{-- Match card --}}
             @if ($score !== null)
                 <div class="card card-pad match-card">
+                    <h3 class="card-title"><i class="fas fa-heart-circle-check"></i> Compatibility</h3>
+
                     <div class="score-ring" style="--p: {{ $score['percentage'] }}%">
                         <span class="score-num">{{ $score['percentage'] }}%</span>
                         <span class="score-lbl">Match</span>
@@ -229,7 +291,7 @@
             {{-- Partner preference summary --}}
             @php($pref = $profile->partnerPreference)
             @if ($pref)
-                <div class="card card-pad">
+                <div class="card card-pad seeking-card">
                     <h3 class="card-title"><i class="fas fa-bullseye"></i> Seeking</h3>
                     <ul class="mini-list">
                         @if ($pref->preferred_gender)

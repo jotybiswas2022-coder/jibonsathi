@@ -2945,3 +2945,162 @@ body:has(.mobile-cta) { padding-bottom: calc(74px + env(safe-area-inset-bottom))
   .auth-brand-panel h2 { font-size: 21px; }
   .auth-card h1 { font-size: 22px; }
 }
+/* ==========================================================================
+   36. Profile page redesign
+   The page had one problem on a phone and one on desktop:
+   - mobile: the two columns flattened with the whole action card last, so
+     "Send Interest" sat below the photo, the about text and four bio cards.
+     The cards are now re-sequenced (photo -> score -> actions -> facts ->
+     about -> details) using `display: contents` on the two column wrappers.
+   - desktop: everything a family reads first was buried in the reference
+     lists. The header now carries soft fact chips and a presence pill, and a
+     new "At a glance" strip surfaces the six facts that matter, so the long
+     lists below no longer repeat them.
+   ========================================================================== */
+
+/* --------------------------- 36.1 Header band --------------------------- */
+.profile-band {
+  padding: 0 0 26px;
+  background:
+    radial-gradient(840px 340px at 8% -60%, rgba(212, 175, 55, 0.26), transparent 60%),
+    radial-gradient(780px 360px at 97% -12%, rgba(139, 30, 63, 0.14), transparent 62%),
+    linear-gradient(180deg, #FFF2EA, var(--bg));
+}
+.pb-glow {
+  position: absolute; right: -130px; top: -150px;
+  width: 360px; height: 360px; border-radius: 50%;
+  background: radial-gradient(circle at 42% 42%, rgba(212, 175, 55, 0.20), rgba(212, 175, 55, 0) 70%);
+  pointer-events: none;
+}
+.profile-band-inner { align-items: flex-end; }
+.pb-avatar {
+  width: 96px; height: 96px; border-radius: 28px;
+  box-shadow: 0 18px 42px rgba(139, 30, 63, 0.24);
+}
+.pb-avatar.is-verified { box-shadow: 0 0 0 3px var(--accent), 0 18px 42px rgba(139, 30, 63, 0.24); }
+.pb-name { letter-spacing: -0.03em; }
+.pb-headline { margin-bottom: 11px; }
+
+/* Fact chips in the header, replacing the plain comma-less meta line */
+.pb-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.pb-chips > span {
+  display: inline-flex; align-items: center; gap: 7px;
+  padding: 6px 12px; border-radius: 999px;
+  background: rgba(255, 255, 255, 0.82);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-xs);
+  font-size: 12.5px; font-weight: 600; color: var(--text);
+}
+.pb-chips i { color: var(--brand); font-size: 11.5px; }
+
+.pb-side { display: flex; }
+.pb-presence {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 8px 14px; border-radius: 999px;
+  background: rgba(255, 255, 255, 0.84);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-xs);
+  font-size: 12.5px; font-weight: 600; color: var(--muted);
+}
+.pb-presence i { font-size: 9px; color: var(--muted-2); }
+.pb-presence.is-online {
+  color: var(--success); background: var(--success-bg);
+  border-color: rgba(22, 163, 74, 0.26);
+}
+.pb-presence.is-online i { color: var(--success); }
+
+/* --------------------------- 36.2 Gallery --------------------------- */
+.gallery-main img { aspect-ratio: 4 / 3.6; max-height: 520px; }
+.gallery-fill-img { aspect-ratio: 4 / 3.6; max-height: 520px; }
+.gallery-count {
+  position: absolute; left: 14px; bottom: 14px; z-index: 2;
+  display: inline-flex; align-items: center; gap: 7px;
+  padding: 6px 12px; border-radius: 999px;
+  background: rgba(31, 41, 55, 0.62); color: #fff;
+  font-size: 12px; font-weight: 600;
+  -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
+}
+/* A scrolling strip instead of a wrapping grid: the row keeps one line whatever
+   the photo count, and it never leaves a ragged second row of squares. */
+.gallery-thumbs {
+  display: flex; gap: 10px; padding: 12px;
+  overflow-x: auto; scrollbar-width: none;
+}
+.gallery-thumbs::-webkit-scrollbar { display: none; }
+.gallery-thumbs .ph-thumb { width: 70px; flex: none; }
+
+/* --------------------------- 36.3 At a glance --------------------------- */
+.fact-strip .card-title { margin-bottom: 14px; }
+.fact-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.fact {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 14px; border-radius: var(--radius);
+  background: var(--brand-050); border: 1px solid var(--border);
+}
+.fact-ico {
+  flex: none; width: 38px; height: 38px; border-radius: 12px;
+  display: grid; place-items: center;
+  background: #fff; color: var(--brand); font-size: 15px;
+  box-shadow: var(--shadow-xs);
+}
+.fact-body { display: flex; flex-direction: column; min-width: 0; }
+.fact-lbl { font-size: 11.5px; font-weight: 500; color: var(--muted); }
+.fact-val { font-size: 14px; font-weight: 700; color: var(--text); line-height: 1.35; }
+
+/* --------------------------- 36.4 About & score --------------------------- */
+.about-text { white-space: pre-wrap; color: var(--muted); font-size: 14.5px; line-height: 1.8; margin: 0; }
+.match-card .card-title { margin-bottom: 0; }
+.score-ring { width: 108px; height: 108px; }
+
+/* --------------------------- 36.5 When the columns collapse --------------------------- */
+/* 31.19 and 35.1 each tuned a piece of this page. At 991px and under the two
+   wrappers stop being columns and become the grid itself, which is what lets the
+   cards be re-sequenced: photo first, then the score and the actions, and only
+   then the reading matter. The sticky offset is meaningless once they are items. */
+@media (max-width: 991px) {
+  .profile-layout { grid-template-columns: minmax(0, 1fr); gap: 18px; }
+  .profile-main, .profile-side { display: contents; }
+
+  .gallery { order: 1; }
+  .match-card { order: 2; }
+  .actions-card { order: 3; }
+  .fact-strip { order: 4; }
+  .seeking-card { order: 5; }
+  .about-card { order: 6; }
+  .bio-grid { order: 7; }
+  .profile-similar { order: 8; }
+}
+
+/* --------------------------- 36.6 Phone --------------------------- */
+@media (max-width: 640px) {
+  .profile-page { padding-bottom: 32px; }
+  .profile-page .card-pad { padding: 18px; }
+
+  .profile-band { padding-bottom: 20px; }
+  .pb-glow { width: 240px; height: 240px; right: -110px; top: -120px; }
+  .pb-avatar { width: 78px; height: 78px; border-radius: 24px; }
+  .pb-name { font-size: 23px; }
+  .pb-headline { font-size: 13.5px; margin: 4px 0 9px; }
+  .pb-chips { gap: 6px; }
+  .pb-chips > span { font-size: 12px; padding: 5px 11px; }
+  /* The name already carries the Online badge, so the pill is a second copy. */
+  .pb-side { display: none; }
+
+  /* Portrait crop: a 4:3.4 landscape frame wasted most of a phone screen. */
+  .gallery-main img, .gallery-fill-img { aspect-ratio: 4 / 4.2; max-height: none; }
+  .gallery-thumbs { padding: 10px; gap: 8px; }
+  .gallery-thumbs .ph-thumb { width: 60px; }
+
+  .fact-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  .fact { padding: 10px 12px; gap: 10px; }
+  .fact-ico { width: 34px; height: 34px; font-size: 14px; }
+  .fact-val { font-size: 13.5px; }
+
+  /* A 128px label column left barely 150px for values like "Greater Dhaka" on a
+     360px screen, so the label moves above the value. flex: none also drops the
+     108px basis 35.1 set on dt, which would become a height in a column. */
+  .bio-list > div, .mini-list li { flex-direction: column; align-items: flex-start; gap: 2px; padding: 8px 0; }
+  .bio-list dt { flex: none; font-size: 11.5px; }
+  .bio-list dd { font-size: 13.5px; }
+  .mini-list li > strong { text-align: left; }
+}

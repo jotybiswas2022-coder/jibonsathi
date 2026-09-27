@@ -45,7 +45,7 @@ class SettingController extends Controller
             }
         }
 
-        foreach (['logo' => 'logo_path', 'favicon' => 'favicon_path'] as $input => $key) {
+        foreach (['logo' => 'logo_path', 'favicon' => 'favicon_path', 'hero_image' => 'hero_image_path'] as $input => $key) {
             $existing = SiteSetting::get($key);
 
             if ($request->hasFile($input)) {

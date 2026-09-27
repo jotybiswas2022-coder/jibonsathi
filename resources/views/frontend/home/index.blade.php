@@ -79,7 +79,12 @@
 
                     <div class="hero-arch">
                         <div class="hero-arch-photo">
-                            @if ($heroMain)
+                            {{-- An admin can drop a picture into this arch from Site
+                                 Settings. With nothing uploaded it stays a member's
+                                 photo, so the hero is never an empty frame. --}}
+                            @if (! empty($heroImage))
+                                <img src="{{ \App\Support\Media::url($heroImage) }}" alt="{{ $settings['site_name'] ?? 'Jibon Sathi' }} — real couples, real introductions">
+                            @elseif ($heroMain)
                                 <img src="{{ $heroMain->photoUrl() }}" alt="{{ $heroMain->name }}">
                             @else
                                 <span>💍</span>

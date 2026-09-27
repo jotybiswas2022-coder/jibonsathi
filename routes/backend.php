@@ -25,9 +25,13 @@ Route::prefix('admin')->name('backend.')->middleware(['web', 'admin'])->group(fu
 
     Route::prefix('users')->name('users.')->group(function () {
         Route::get('/', [UserController::class, 'index'])->name('index');
+        Route::get('/create', [UserController::class, 'create'])->name('create');
+        Route::post('/', [UserController::class, 'store'])->name('store');
         Route::get('/{user}', [UserController::class, 'show'])->name('show');
         Route::get('/{user}/edit', [UserController::class, 'edit'])->name('edit');
         Route::put('/{user}', [UserController::class, 'update'])->name('update');
+        Route::get('/{user}/details', [UserController::class, 'details'])->name('details');
+        Route::put('/{user}/details', [UserController::class, 'updateDetails'])->name('details.update');
         Route::post('/{user}/verify', [UserController::class, 'verify'])->name('verify');
         Route::post('/{user}/suspend', [UserController::class, 'suspend'])->name('suspend');
         Route::post('/{user}/activate', [UserController::class, 'activate'])->name('activate');

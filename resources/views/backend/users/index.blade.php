@@ -43,6 +43,7 @@
             <p>Every account on Jibon Sathi and where it stands. Filter to a status, search a name or email, then open an account to verify, suspend or edit it.</p>
         </div>
         <div class="page-head-actions">
+            <a href="{{ route('backend.users.create') }}" class="btn btn-primary"><i class="fas fa-user-plus"></i> Create Member</a>
             <a href="{{ $tileUrl(null) }}" class="btn btn-outline {{ $status === null ? 'is-active' : '' }}"
                @if ($status === null && $term === '') aria-disabled="true" tabindex="-1" style="pointer-events:none;opacity:.5" @endif
                @if ($status === null) aria-current="true" @endif>

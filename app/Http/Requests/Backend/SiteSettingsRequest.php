@@ -35,6 +35,7 @@ class SiteSettingsRequest extends FormRequest
             'terms_conditions' => ['nullable', 'string', 'max:20000'],
             'logo' => ['nullable', 'image', 'mimes:png,jpg,jpeg,svg,webp', 'max:2048'],
             'favicon' => ['nullable', 'file', 'mimes:png,ico,svg,jpg,jpeg', 'max:512'],
+            'hero_image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:4096'],
         ];
     }
 }

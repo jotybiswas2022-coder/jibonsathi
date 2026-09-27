@@ -38,7 +38,9 @@
             <p class="text-tiny text-muted mb-4">Joined {{ $user->created_at?->format('d M Y') }} · Last seen {{ $user->lastSeenLabel() }}</p>
 
             <div style="display:flex;flex-direction:column;gap:8px;text-align:left">
-                <a href="{{ route('backend.users.edit', $user) }}" class="btn btn-outline btn-sm"><i class="fas fa-pen"></i> Edit Member</a>
+                <a href="{{ route('backend.users.create') }}" class="btn btn-primary btn-sm btn-block"><i class="fas fa-user-plus"></i> Create Member</a>
+                <a href="{{ route('backend.users.details', $user) }}" class="btn btn-outline btn-sm"><i class="fas fa-pen-to-square"></i> Edit All Details</a>
+                <a href="{{ route('backend.users.edit', $user) }}" class="btn btn-outline btn-sm"><i class="fas fa-pen"></i> Edit Account</a>
                 @unless ($isVerified)
                     <form method="POST" action="{{ route('backend.users.verify', $user) }}"
                           data-confirm-title="Approve and verify?"
@@ -102,7 +104,7 @@
                 <div class="card-body">
                     <div class="grid" style="grid-template-columns:1fr 1fr 1fr">
                         <div>
-                            <div class="section-block-title"><i class="fas fa-user"></i> Basic</div>
+                            <div class="section-block-title"><i class="fas fa-user"></i> Basic <a href="{{ route('backend.users.details', $user) }}#details-basic" class="btn btn-ghost btn-sm" style="margin-left:auto"><i class="fas fa-pen"></i> Edit</a></div>
                             @if ($user->profile)
                                 @foreach ([
                                     ['Gender', $user->genderLabel()],
@@ -119,14 +121,14 @@
                             @endif
                         </div>
                         <div>
-                            <div class="section-block-title"><i class="fas fa-graduation-cap"></i> Education & Career</div>
+                            <div class="section-block-title"><i class="fas fa-graduation-cap"></i> Education &amp; Career <a href="{{ route('backend.users.details', $user) }}#details-education" class="btn btn-ghost btn-sm" style="margin-left:auto"><i class="fas fa-pen"></i> Edit</a></div>
                             <div class="info-row"><i class="fas fa-grip-lines"></i><div style="min-width:0"><div class="ir-label">Education</div><div class="ir-value">{{ $user->education?->level ?? '—' }}</div></div></div>
                             <div class="info-row"><i class="fas fa-grip-lines"></i><div style="min-width:0"><div class="ir-label">Field</div><div class="ir-value">{{ $user->education?->field ?? '—' }}</div></div></div>
                             <div class="info-row"><i class="fas fa-grip-lines"></i><div style="min-width:0"><div class="ir-label">Occupation</div><div class="ir-value">{{ $user->occupation?->occupation ?? '—' }}</div></div></div>
                             <div class="info-row"><i class="fas fa-grip-lines"></i><div style="min-width:0"><div class="ir-label">Company</div><div class="ir-value">{{ $user->occupation?->company ?? '—' }}</div></div></div>
                         </div>
                         <div>
-                            <div class="section-block-title"><i class="fas fa-map-location-dot"></i> Location</div>
+                            <div class="section-block-title"><i class="fas fa-map-location-dot"></i> Location <a href="{{ route('backend.users.details', $user) }}#details-location" class="btn btn-ghost btn-sm" style="margin-left:auto"><i class="fas fa-pen"></i> Edit</a></div>
                             <div class="info-row"><i class="fas fa-grip-lines"></i><div style="min-width:0"><div class="ir-label">City / District</div><div class="ir-value">{{ $user->profile?->locationLabel() ?? '—' }}</div></div></div>
                             <div class="info-row"><i class="fas fa-grip-lines"></i><div style="min-width:0"><div class="ir-label">Division</div><div class="ir-value">{{ $user->profile?->division ?? '—' }}</div></div></div>
                             <div class="info-row"><i class="fas fa-grip-lines"></i><div style="min-width:0"><div class="ir-label">Family type</div><div class="ir-value">{{ $user->familyDetail?->family_type ? ucfirst(str_replace('_',' ',$user->familyDetail->family_type)) : '—' }}</div></div></div>
@@ -138,7 +140,7 @@
 
             <div class="grid" style="grid-template-columns:1fr 1fr">
                 <div class="card">
-                    <div class="card-head"><h3>Photos ({{ $user->photos->count() }})</h3></div>
+                    <div class="card-head"><h3>Photos ({{ $user->photos->count() }})</h3><a href="{{ route('backend.users.details', $user) }}#details-photo" class="btn btn-outline btn-sm"><i class="fas fa-plus"></i> Add photo</a></div>
                     <div class="card-body">
                         @if ($user->photos->isEmpty())
                             <p class="text-muted">No photos uploaded.</p>

@@ -268,6 +268,34 @@
                             @if ($errors->has('footer_about'))<span class="form-error"><i class="fas fa-circle-exclamation"></i> {{ $errMsg('footer_about') }}</span>@endif
                         </div>
 
+                        {{-- The picture inside the arch on the right of the hero. Left
+                             empty, the hero keeps showing a member's photo. --}}
+                        <div class="field">
+                            <div class="field-top"><label for="hero_image">Hero Image</label></div>
+                            <input type="hidden" name="remove_hero_image" value="" data-remove-field="hero_image">
+                            <input type="file" name="hero_image" id="hero_image" class="sr-only" accept="image/jpeg,image/png,image/webp" data-preview="heroImageThumb">
+                            <label class="uploader" for="hero_image" data-uploader="hero_image">
+                                <span class="media-thumb" id="heroImageThumb">
+                                    @if (! empty($settings['hero_image_path']))
+                                        <img src="{{ Media::url($settings['hero_image_path']) }}" alt="Current hero image">
+                                    @else
+                                        <i class="fas fa-image"></i>
+                                    @endif
+                                </span>
+                                <span class="uploader-info">
+                                    <span class="ui-name">Hero Image</span>
+                                    <span class="ui-file" data-file-name="hero_image" data-idle-name="{{ ! empty($settings['hero_image_path']) ? 'Current hero image is saved' : 'No hero image uploaded yet' }}">{{ ! empty($settings['hero_image_path']) ? 'Current hero image is saved' : 'No hero image uploaded yet' }}</span>
+                                    <span class="btn btn-outline btn-sm"><i class="fas fa-upload"></i> Choose file</span>
+                                </span>
+                            </label>
+                            @if (! empty($settings['hero_image_path']))
+                                <button type="button" class="uploader-remove" data-remove="hero_image">
+                                    <i class="fas fa-trash"></i> <span data-remove-label>Remove</span>
+                                </button>
+                            @endif
+                            <span class="hint">JPG, PNG or WEBP &middot; up to 4 MB. Shown in the arch on the right of the hero. Leave empty to show a member photo instead.</span>
+                        </div>
+
                         {{-- Live preview of the hero --}}
                         <div class="hero-pv">
                             <div class="hp-eyebrow"><i class="fas fa-heart"></i> <span data-hero-brand>{{ $val('site_name') ?: ($defaults['site_name'] ?? 'Jibon Sathi') }}</span></div>

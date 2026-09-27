@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Backend;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Backend\MemberDetailsRequest;
 use App\Http\Requests\Backend\UserUpdateRequest;
 use App\Models\User;
 use App\Notifications\AccountStatusNotification;
@@ -11,7 +12,9 @@ use App\Support\Reference;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 
 class UserController extends Controller
@@ -73,6 +76,126 @@ class UserController extends Controller
         $counts['all'] = array_sum($counts);
 
         return $counts;
+    }
+
+    public function create(): View
+    {
+        Gate::authorize('manage', User::class);
+
+        return view('backend.users.create', [
+            'statuses' => Reference::userStatuses(),
+        ]);
+    }
+
+    /**
+     * Create a member and, in the same submit, everything we know about them.
+     */
+    public function store(MemberDetailsRequest $request): RedirectResponse
+    {
+        Gate::authorize('manage', User::class);
+
+        $user = DB::transaction(function () use ($request): User {
+            $user = User::create([
+                'name' => $request->validated('name'),
+                'username' => $this->uniqueUsername($request->validated('username') ?: $request->validated('name')),
+                'email' => $request->validated('email'),
+                'phone' => $request->validated('phone'),
+                'password' => $request->validated('password'),
+                'status' => $request->validated('status'),
+                'is_admin' => $request->boolean('is_admin'),
+            ]);
+
+            $this->profiles->saveFromAdmin($user, $request->profilePayload());
+
+            if ($request->hasFile('photo')) {
+                $this->profiles->storePhoto($user, $request->file('photo'), makePrimary: true);
+            }
+
+            return $user;
+        });
+
+        return redirect()
+            ->route('backend.users.show', $user)
+            ->with('success', "{$user->name} has been created.");
+    }
+
+    /**
+     * Every detail about a member, on one form. Reachable from the profile page,
+     * which is where a moderator is when a member phones to correct something.
+     */
+    public function details(User $user): View
+    {
+        Gate::authorize('manage', User::class);
+
+        $user->load(['profile', 'education', 'occupation', 'familyDetail', 'lifestyleDetail', 'partnerPreference']);
+
+        return view('backend.users.details', [
+            'user' => $user,
+            'statuses' => Reference::userStatuses(),
+        ]);
+    }
+
+    public function updateDetails(MemberDetailsRequest $request, User $user): RedirectResponse
+    {
+        Gate::authorize('manage', User::class);
+
+        DB::transaction(function () use ($request, $user): void {
+            $account = [
+                'name' => $request->validated('name'),
+                'email' => $request->validated('email'),
+                'phone' => $request->validated('phone'),
+                'status' => $request->validated('status'),
+                'is_admin' => $request->boolean('is_admin'),
+            ];
+
+            if ($request->filled('username') && $request->validated('username') !== $user->username) {
+                $account['username'] = $this->uniqueUsername($request->validated('username'), $user);
+            }
+
+            $user->fill($account)->save();
+
+            if ($request->filled('password')) {
+                $user->forceFill(['password' => $request->validated('password')])->save();
+            }
+
+            $this->profiles->saveFromAdmin($user, $request->profilePayload());
+
+            if ($request->hasFile('photo')) {
+                $this->profiles->storePhoto($user, $request->file('photo'));
+            }
+        });
+
+        return redirect()
+            ->route('backend.users.show', $user)
+            ->with('success', "{$user->name}'s details have been updated.");
+    }
+
+    /**
+     * A username the admin typed wins, so it is only tidied up (lower-cased, no
+     * punctuation) and never rebuilt from the name. When the tidied form is
+     * already taken by somebody else, a number is added until it is free.
+     */
+    private function uniqueUsername(string $source, ?User $ignore = null): string
+    {
+        $base = Str::of($source)->ascii()->lower()->replaceMatches('/[^a-z0-9]+/', '')->limit(16, '')->value();
+
+        if ($base === '') {
+            $base = 'member';
+        }
+
+        $candidate = $base;
+        $suffix = 1;
+
+        while (
+            User::withTrashed()
+                ->where('username', $candidate)
+                ->when($ignore, fn ($query) => $query->whereKeyNot($ignore->getKey()))
+                ->exists()
+        ) {
+            $candidate = $base.$suffix++;
+        }
+
+        return $candidate;
     }
 
     public function show(User $user): View

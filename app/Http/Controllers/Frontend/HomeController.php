@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Frontend;
 
 use App\Http\Controllers\Controller;
+use App\Models\SiteSetting;
 use App\Models\SuccessStory;
 use App\Services\DashboardService;
 use App\Services\DiscoveryService;
@@ -34,6 +35,7 @@ class HomeController extends Controller
             'newest' => $newest,
             'recommended' => $recommended,
             'scores' => $viewer ? $this->matcher->decorate($gallery, $viewer) : [],
+            'heroImage' => SiteSetting::get('hero_image_path'),
             'stories' => SuccessStory::query()
                 ->published()
                 ->orderByDesc('is_featured')

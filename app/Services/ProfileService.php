@@ -12,6 +12,7 @@ use App\Models\ProfilePhoto;
 use App\Models\ProfileView;
 use App\Models\User;
 use App\Notifications\ProfileViewedNotification;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -206,11 +207,163 @@ class ProfileService
     }
 
     /**
+     * Write a whole profile supplied by an admin, in one pass.
+     *
+     * The wizard step savers above skip empty values on purpose, because a member
+     * walking through six steps should not blank out a field they have not
+     * reached yet. An admin filling in one long form means exactly what they
+     * typed, so empties are written as empties here.
+     */
+    public function saveFromAdmin(User $user, array $data): Profile
+    {
+        $profile = $this->profileFor($user);
+
+        $profile->fill([
+            'gender' => $data['gender'] ?? $profile->gender,
+            'date_of_birth' => $data['date_of_birth'] ?? null,
+            'height_cm' => $data['height_cm'] ?? null,
+            'marital_status' => $data['marital_status'] ?? null,
+            'religion' => $data['religion'] ?? null,
+            'mother_tongue' => $data['mother_tongue'] ?? null,
+            'country' => $data['country'] ?? null,
+            'division' => $data['division'] ?? null,
+            'district' => $data['district'] ?? null,
+            'city' => $data['city'] ?? null,
+            'headline' => $data['headline'] ?? null,
+            'about_me' => $data['about_me'] ?? null,
+            'profile_status' => $data['profile_status'] ?? $profile->profile_status,
+            'verification_status' => $data['verification_status'] ?? $profile->verification_status,
+        ])->save();
+
+        /* approved_at is the only timestamp on the row, and the admin sets the
+           profile status directly, so stamp it here instead of leaving an
+           approved profile with no date on it. */
+        if (($data['profile_status'] ?? null) === 'approved' && $profile->approved_at === null) {
+            $profile->forceFill(['approved_at' => now()])->save();
+        }
+
+        $this->saveAdminRelated($user, $data);
+
+        $this->recalculateCompletion($user);
+
+        return $profile->refresh();
+    }
+
+    /**
+     * The related records on the admin's long form. A section is created when
+     * the admin filled something in; an existing row is also updated when the
+     * section came back empty, because the long form always posts every field
+     * and an empty box there means the admin deliberately cleared it.
+     */
+    private function saveAdminRelated(User $user, array $data): void
+    {
+        $shouldSave = function (array $keys, ?Model $existing) use ($data): bool {
+            if (collect($keys)->contains(fn (string $key): bool => filled($data[$key] ?? null))) {
+                return true;
+            }
+
+            return $existing !== null
+                && collect($keys)->contains(fn (string $key): bool => array_key_exists($key, $data));
+        };
+
+        /* number inputs post '' when cleared, which must not be handed to an
+           integer column as an empty string. */
+        $number = fn (string $key): ?int => filled($data[$key] ?? null) ? (int) $data[$key] : null;
+
+        if ($shouldSave(['level', 'degree', 'institution', 'field_of_study', 'start_year', 'end_year'], $user->education)) {
+            Education::updateOrCreate(
+                ['user_id' => $user->id, 'is_highest' => true],
+                [
+                    'level' => $data['level'] ?? null,
+                    'degree' => $data['degree'] ?? null,
+                    'institution' => $data['institution'] ?? null,
+                    'field_of_study' => $data['field_of_study'] ?? null,
+                    'start_year' => $number('start_year'),
+                    'end_year' => $number('end_year'),
+                ]
+            );
+        }
+
+        if ($shouldSave(['designation', 'company', 'employment_type', 'income_range', 'work_location'], $user->occupation)) {
+            Occupation::updateOrCreate(
+                ['user_id' => $user->id, 'is_current' => true],
+                [
+                    'designation' => $data['designation'] ?? null,
+                    'company' => $data['company'] ?? null,
+                    'employment_type' => $data['employment_type'] ?? null,
+                    'income_range' => $data['income_range'] ?? null,
+                    'work_location' => $data['work_location'] ?? null,
+                ]
+            );
+        }
+
+        if ($shouldSave([
+            'family_type', 'family_status', 'father_occupation', 'mother_occupation',
+            'brothers', 'sisters', 'family_income_range', 'about_family',
+        ], $user->familyDetail)) {
+            FamilyDetail::updateOrCreate(
+                ['user_id' => $user->id],
+                [
+                    'family_type' => $data['family_type'] ?? null,
+                    'family_status' => $data['family_status'] ?? null,
+                    'father_occupation' => $data['father_occupation'] ?? null,
+                    'mother_occupation' => $data['mother_occupation'] ?? null,
+                    'brothers' => $number('brothers'),
+                    'sisters' => $number('sisters'),
+                    'family_income_range' => $data['family_income_range'] ?? null,
+                    'about_family' => $data['about_family'] ?? null,
+                ]
+            );
+        }
+
+        if ($shouldSave(['diet', 'smoking', 'drinking', 'hobbies', 'interests', 'about_lifestyle'], $user->lifestyleDetail)) {
+            LifestyleDetail::updateOrCreate(
+                ['user_id' => $user->id],
+                [
+                    'diet' => $data['diet'] ?? null,
+                    'smoking' => $data['smoking'] ?? null,
+                    'drinking' => $data['drinking'] ?? null,
+                    'hobbies' => $this->cleanList($data['hobbies'] ?? []),
+                    'interests' => $this->cleanList($data['interests'] ?? []),
+                    'about_lifestyle' => $data['about_lifestyle'] ?? null,
+                ]
+            );
+        }
+
+        if ($shouldSave([
+            'preferred_gender', 'age_min', 'age_max', 'height_min_cm', 'height_max_cm',
+            'preferred_country', 'preferred_division', 'preferred_district',
+            'religions', 'marital_statuses', 'notes',
+        ], $user->partnerPreference)) {
+            PartnerPreference::updateOrCreate(
+                ['user_id' => $user->id],
+                [
+                    'preferred_gender' => $data['preferred_gender'] ?? null,
+                    'age_min' => $number('age_min'),
+                    'age_max' => $number('age_max'),
+                    'height_min_cm' => $number('height_min_cm'),
+                    'height_max_cm' => $number('height_max_cm'),
+                    'preferred_country' => $data['preferred_country'] ?? null,
+                    'preferred_division' => $data['preferred_division'] ?? null,
+                    'preferred_district' => $data['preferred_district'] ?? null,
+                    'religions' => $this->cleanList($data['religions'] ?? []),
+                    'marital_statuses' => $this->cleanList($data['marital_statuses'] ?? []),
+                    'notes' => $data['notes'] ?? null,
+                ]
+            );
+        }
+    }
+
+    /**
      * Recalculate the whole-profile completion percentage.
+     *
+     * The relations are reloaded, not just filled in: a photo upload in the same
+     * request has to be able to add its points, and loadMissing would hand back
+     * the "no photo" value cached earlier in the request.
      */
     public function recalculateCompletion(User $user): int
     {
-        $user->loadMissing(['profile', 'education', 'occupation', 'familyDetail', 'lifestyleDetail', 'partnerPreference', 'primaryPhoto']);
+        $user->load(['profile', 'education', 'occupation', 'familyDetail', 'lifestyleDetail', 'partnerPreference', 'primaryPhoto']);
 
         $profile = $user->profile;
         $score = 0;

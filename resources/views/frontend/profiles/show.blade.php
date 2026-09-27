@@ -9,6 +9,7 @@
     $photoSrc = $primaryPhoto ? \App\Support\Media::url($primaryPhoto->path, $profile->name) : $profile->photoUrl();
     $isAvatar = \Str::contains($photoSrc, '/media/avatar/');
     $viewer = auth()->user();
+    $isSelf = $viewer && $viewer->id === $profile->id;
     $myInterest = $interest && $viewer && $interest->sender_id === $viewer->id;
     $theirInterest = $interest && $viewer && $interest->receiver_id === $viewer->id;
     $eduLabel = \App\Support\Reference::educationLevels()[$profile->education?->level] ?? null;
@@ -214,6 +215,14 @@
 
             {{-- Actions --}}
             <div class="card card-pad actions-card">
+                @if ($isSelf)
+                    <div class="alert" style="margin-bottom:14px">
+                        <i class="fas fa-circle-user"></i>
+                        <div>This is your own profile — this is how other members see it.</div>
+                    </div>
+                    <a href="{{ route('settings.profile') }}" class="btn btn-primary btn-block btn-lg"><i class="fas fa-pen"></i> Edit Profile</a>
+                    <a href="{{ route('dashboard') }}" class="btn btn-ghost btn-block" style="margin-top:10px">Back to Dashboard</a>
+                @else
                 @auth
                     @if ($theirInterest && $interest->isPending())
                         <div class="alert" style="margin-bottom:14px">
@@ -286,6 +295,7 @@
                         @endif
                     </div>
                 @endauth
+                @endif
             </div>
 
             {{-- Partner preference summary --}}

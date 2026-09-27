@@ -24,7 +24,10 @@ class ProfileController extends Controller
     {
         $viewer = $request->user();
 
-        abort_if($viewer && $viewer->id === $user->id, 404, 'Use your dashboard to preview your own profile.');
+        // The owner may open their own profile page, not just other members.
+        // The view swaps the interaction buttons for links back to the profile
+        // editor when the viewer is the profile owner.
+        $isSelf = $viewer && $viewer->id === $user->id;
 
         Gate::authorize('view', $user);
 
@@ -46,7 +49,8 @@ class ProfileController extends Controller
             $viewed = $this->profiles->recordView($user, $viewer, $request->ip());
         }
 
-        $score = $viewer ? $this->matcher->score($viewer, $user) : null;
+        // Scoring a member against themselves produces a meaningless 100% match.
+        $score = $viewer && ! $isSelf ? $this->matcher->score($viewer, $user) : null;
 
         $interest = $viewer ? $user->interestWith($viewer) : null;
 
@@ -60,9 +64,10 @@ class ProfileController extends Controller
             'canMessage' => $viewer ? Gate::allows('message', $user) : false,
             'canInteract' => $viewer ? $viewer->canInteractWith($user) : true,
             'viewCount' => ProfileView::query()->where('user_id', $user->id)->count(),
-            'mutualMatch' => $viewer ? $this->matcher->isMutual($viewer, $user) : false,
+            'mutualMatch' => $viewer && ! $isSelf ? $this->matcher->isMutual($viewer, $user) : false,
             'viewed' => $viewed,
-            'similar' => $viewer ? $this->similar($viewer, $user) : collect(),
+            'isSelf' => $isSelf,
+            'similar' => $viewer && ! $isSelf ? $this->similar($viewer, $user) : collect(),
         ]);
     }
 

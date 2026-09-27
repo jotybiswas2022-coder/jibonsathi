@@ -375,24 +375,20 @@
                 </select>
             </div>
         </div>
-        <div class="field-group">
-            <div class="field">
-                <label for="hobbies">Hobbies <span class="text-muted">(hold Ctrl to pick several)</span></label>
-                <select name="hobbies[]" id="hobbies" class="input" multiple size="6">
-                    @foreach (Reference::hobbies() as $hobby)
-                        <option value="{{ $hobby }}" @selected(in_array($hobby, $listed('hobbies', $user?->lifestyleDetail?->hobbies ?? []), true))>{{ $hobby }}</option>
-                    @endforeach
-                </select>
-            </div>
-            <div class="field">
-                <label for="interests">Interests <span class="text-muted">(hold Ctrl to pick several)</span></label>
-                <select name="interests[]" id="interests" class="input" multiple size="6">
-                    @foreach (Reference::interests() as $interest)
-                        <option value="{{ $interest }}" @selected(in_array($interest, $listed('interests', $user?->lifestyleDetail?->interests ?? []), true))>{{ $interest }}</option>
-                    @endforeach
-                </select>
-            </div>
-        </div>
+        {{-- These two carry twenty and eighteen options, so they get the full
+             width of the card rather than half of it. --}}
+        <x-backend::multi-select
+            name="hobbies[]"
+            label="Hobbies"
+            :options="Reference::hobbies()"
+            :selected="$listed('hobbies', $user?->lifestyleDetail?->hobbies ?? [])"
+            hint="Tick everything that applies." />
+        <x-backend::multi-select
+            name="interests[]"
+            label="Interests"
+            :options="Reference::interests()"
+            :selected="$listed('interests', $user?->lifestyleDetail?->interests ?? [])"
+            hint="Tick everything that applies." />
         <div class="field">
             <label for="about_lifestyle">About Lifestyle</label>
             <textarea name="about_lifestyle" id="about_lifestyle" class="input" rows="3" maxlength="1000">{{ $v('about_lifestyle', $user?->lifestyleDetail?->about_lifestyle) }}</textarea>
@@ -453,22 +449,18 @@
             </div>
         </div>
         <div class="field-group">
-            <div class="field">
-                <label for="religions">Preferred Religions <span class="text-muted">(hold Ctrl to pick several)</span></label>
-                <select name="religions[]" id="religions" class="input" multiple size="5">
-                    @foreach (Reference::religions() as $key => $label)
-                        <option value="{{ $key }}" @selected(in_array($key, $listed('religions', $user?->partnerPreference?->religions ?? []), true))>{{ $label }}</option>
-                    @endforeach
-                </select>
-            </div>
-            <div class="field">
-                <label for="marital_statuses">Accepted Marital Statuses <span class="text-muted">(hold Ctrl to pick several)</span></label>
-                <select name="marital_statuses[]" id="marital_statuses" class="input" multiple size="5">
-                    @foreach (Reference::maritalStatuses() as $key => $label)
-                        <option value="{{ $key }}" @selected(in_array($key, $listed('marital_statuses', $user?->partnerPreference?->marital_statuses ?? []), true))>{{ $label }}</option>
-                    @endforeach
-                </select>
-            </div>
+            <x-backend::multi-select
+                name="religions[]"
+                label="Preferred Religions"
+                :options="Reference::religions()"
+                :selected="$listed('religions', $user?->partnerPreference?->religions ?? [])"
+                hint="Leave empty to accept any." />
+            <x-backend::multi-select
+                name="marital_statuses[]"
+                label="Accepted Marital Statuses"
+                :options="Reference::maritalStatuses()"
+                :selected="$listed('marital_statuses', $user?->partnerPreference?->marital_statuses ?? [])"
+                hint="Leave empty to accept any." />
         </div>
         <div class="field">
             <label for="notes">Notes On The Preference</label>
@@ -481,7 +473,17 @@
         <div class="section-block-title" id="details-photo" style="margin-bottom:14px"><i class="fas fa-camera"></i> Photo</div>
         <div class="field">
             <label for="photo">{{ $editing ? 'Add Another Photo' : 'Profile Photo' }} <span class="text-muted">(optional)</span></label>
-            <input type="file" name="photo" id="photo" class="input" accept="image/jpeg,image/png,image/webp">
+            <input type="file" name="photo" id="photo" class="sr-only" accept="image/jpeg,image/png,image/webp" data-preview="photoThumb">
+            <label class="uploader" for="photo" data-uploader="photo">
+                <span class="media-thumb" id="photoThumb">
+                    <i class="fas fa-camera"></i>
+                </span>
+                <span class="uploader-info">
+                    <span class="ui-name">{{ $editing ? 'Add a photo to the gallery' : 'Upload the profile photo' }}</span>
+                    <span class="ui-file" data-file-name="photo" data-idle-name="No file chosen yet">No file chosen yet</span>
+                    <span class="btn btn-outline btn-sm"><i class="fas fa-upload"></i> Choose file</span>
+                </span>
+            </label>
             <span class="hint">JPG, PNG or WEBP &middot; up to 4 MB.
                 @if ($editing && $user->photos->isNotEmpty())
                     This member already has {{ $user->photos->count() }} photo(s); the new one is added to the gallery.

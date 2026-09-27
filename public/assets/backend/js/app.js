@@ -17,6 +17,8 @@
     initCharts();
     initTabs();
     initFormKit($('[data-form-kit]'));
+    initFilePickers();
+    initMultiSelects();
     initSettings();
     initLiveSearch();
     initListFilter();
@@ -356,67 +358,6 @@
       pair.field.addEventListener('input', () => updateCounter(pair.counter, pair.field));
     });
 
-    /* ------------------------------ file pickers ------------------------------ */
-    $$('[data-preview]', form).forEach((input) => {
-      const thumb = document.getElementById(input.dataset.preview);
-      const label = $('[data-uploader="' + input.id + '"]', form);
-      const name = $('[data-file-name="' + input.id + '"]', form);
-      const removeBtn = $('[data-remove="' + input.id + '"]', form);
-      const removeFlag = $('[data-remove-field="' + input.name + '"]', form);
-
-      /* Removing an existing image is a pending change, not an instant delete:
-         the file is only unlinked when the form is saved, so a mis-click can be
-         undone and nothing is lost if the visitor simply navigates away. */
-      const idleName = name ? (name.dataset.idleName || name.textContent) : '';
-
-      const paintRemoving = (on) => {
-        if (label) label.classList.toggle('is-removing', on);
-        if (name) name.textContent = on ? 'Will be removed when you save' : idleName;
-        if (removeBtn) {
-          removeBtn.classList.toggle('is-armed', on);
-          const text = $('[data-remove-label]', removeBtn);
-          if (text) text.textContent = on ? 'Keep it' : 'Remove';
-        }
-      };
-
-      const setRemoving = (on) => {
-        if (! removeFlag) return;
-        removeFlag.value = on ? '1' : '';
-        paintRemoving(on);
-      };
-
-      input.addEventListener('change', () => {
-        const file = input.files && input.files[0];
-        if (! file) return;
-
-        if (name) name.textContent = file.name + ' · ' + Math.max(1, Math.round(file.size / 1024)) + ' KB';
-        if (label) {
-          label.classList.add('has-file');
-          label.classList.remove('is-removing');
-        }
-
-        /* A newly chosen file always wins over a pending removal. */
-        if (removeFlag) removeFlag.value = '';
-        if (removeBtn) {
-          removeBtn.classList.remove('is-armed');
-          const text = $('[data-remove-label]', removeBtn);
-          if (text) text.textContent = 'Remove';
-        }
-
-        if (thumb && file.type.indexOf('image') === 0) {
-          const reader = new FileReader();
-          reader.onload = (e) => { thumb.innerHTML = '<img alt="" src="' + e.target.result + '">'; };
-          reader.readAsDataURL(file);
-        }
-      });
-
-      if (removeBtn) {
-        removeBtn.addEventListener('click', () => {
-          setRemoving(! (removeFlag && removeFlag.value === '1'));
-        });
-      }
-    });
-
     /* Clear buttons on the social URL fields, shown only while there is a value. */
     const paintClear = (field) => {
       const btn = $('[data-clear="' + field.id + '"]', form);
@@ -530,6 +471,102 @@
     });
 
     paintBar();
+  }
+
+  /* ============================== file pickers =============================== */
+  /* Previewing the file you just picked has nothing to do with the save bar, so
+     this runs on the whole document: any form can drop in a `.uploader` and get
+     the thumbnail, the file name and the confirmed state without asking for the
+     form kit. Scoped to the input's own form, so a nested form cannot be read. */
+  function initFilePickers() {
+    $$('input[type=file][data-preview]').forEach((input) => {
+      const scope = input.form || document;
+      const thumb = document.getElementById(input.dataset.preview);
+      const label = $('[data-uploader="' + input.id + '"]', scope);
+      const name = $('[data-file-name="' + input.id + '"]', scope);
+      const removeBtn = $('[data-remove="' + input.id + '"]', scope);
+      const removeFlag = $('[data-remove-field="' + input.name + '"]', scope);
+
+      /* Removing an existing image is a pending change, not an instant delete:
+         the file is only unlinked when the form is saved, so a mis-click can be
+         undone and nothing is lost if the visitor simply navigates away. */
+      const idleName = name ? (name.dataset.idleName || name.textContent) : '';
+
+      const paintRemoving = (on) => {
+        if (label) label.classList.toggle('is-removing', on);
+        if (name) name.textContent = on ? 'Will be removed when you save' : idleName;
+        if (removeBtn) {
+          removeBtn.classList.toggle('is-armed', on);
+          const text = $('[data-remove-label]', removeBtn);
+          if (text) text.textContent = on ? 'Keep it' : 'Remove';
+        }
+      };
+
+      const setRemoving = (on) => {
+        if (! removeFlag) return;
+        removeFlag.value = on ? '1' : '';
+        paintRemoving(on);
+      };
+
+      input.addEventListener('change', () => {
+        const file = input.files && input.files[0];
+        if (! file) return;
+
+        if (name) name.textContent = file.name + ' · ' + Math.max(1, Math.round(file.size / 1024)) + ' KB';
+        if (label) {
+          label.classList.add('has-file');
+          label.classList.remove('is-removing');
+        }
+
+        /* A newly chosen file always wins over a pending removal. */
+        if (removeFlag) removeFlag.value = '';
+        if (removeBtn) {
+          removeBtn.classList.remove('is-armed');
+          const text = $('[data-remove-label]', removeBtn);
+          if (text) text.textContent = 'Remove';
+        }
+
+        if (thumb && file.type.indexOf('image') === 0) {
+          const reader = new FileReader();
+          reader.onload = (e) => { thumb.innerHTML = '<img alt="" src="' + e.target.result + '">'; };
+          reader.readAsDataURL(file);
+        }
+      });
+
+      if (removeBtn) {
+        removeBtn.addEventListener('click', () => {
+          setRemoving(! (removeFlag && removeFlag.value === '1'));
+        });
+      }
+    });
+  }
+
+  /* ============================ multi-select chips =========================== */
+  /* A native multi-select needs Ctrl+click, which no admin on a laptop touchpad
+     discovers. These groups are checkboxes wearing a chip, so the count in the
+     corner is the only thing left to keep honest, plus a way back to empty. */
+  function initMultiSelects() {
+    $$('[data-ms]').forEach((group) => {
+      const count = $('[data-ms-count]', group);
+      const clear = $('[data-ms-clear]', group);
+      const boxes = $$('input[type=checkbox]', group);
+
+      const paint = () => {
+        const total = boxes.filter((box) => box.checked).length;
+        if (count) count.textContent = total + ' selected';
+        if (clear) clear.hidden = total === 0;
+        group.classList.toggle('has-selection', total > 0);
+      };
+
+      boxes.forEach((box) => box.addEventListener('change', paint));
+      if (clear) {
+        clear.addEventListener('click', () => {
+          boxes.forEach((box) => { box.checked = false; });
+          paint();
+        });
+      }
+      paint();
+    });
   }
 
   /* ============================== settings page ============================== */
